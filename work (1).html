@@ -1,9 +1,9 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Tracker</title>
+    <title>Task Tracker Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans text-gray-900">
@@ -40,17 +40,38 @@
     </div>
 
     <script>
-        // Use Global arrays to ensure they are always ready
         var myTasks = [];
         var activeFol = 'treatment';
         var cycleActive = false;
         var cyclePos = 0;
+
+        // 1. LOAD DATA ON STARTUP
+        function loadData() {
+            try {
+                var saved = localStorage.getItem('my_task_data_v10');
+                if (saved) {
+                    myTasks = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.log("Saving is blocked by this app's security settings.");
+            }
+        }
+
+        // 2. SAVE DATA WHENEVER A CHANGE OCCURS
+        function saveData() {
+            try {
+                localStorage.setItem('my_task_data_v10', JSON.stringify(myTasks));
+            } catch (e) {
+                // If it fails, we don't crash the app
+            }
+        }
 
         function handleAddTask() {
             var el = document.getElementById('newInput');
             if (!el.value.trim()) return;
             myTasks.push({ id: Date.now(), txt: el.value, fol: activeFol, res: '' });
             el.value = '';
+            saveData(); // Save
             refresh();
         }
 
@@ -62,7 +83,7 @@
 
         function toggleCycle() {
             var filt = myTasks.filter(function(t) { return t.fol === activeFol; });
-            if (filt.length === 0) return alert("Nothing to cycle in this folder!");
+            if (filt.length === 0) return alert("Nothing to cycle!");
             cycleActive = !cycleActive;
             cyclePos = 0;
             refresh();
@@ -71,22 +92,21 @@
         function record(val) {
             var filt = myTasks.filter(function(t) { return t.fol === activeFol; });
             var cur = filt[cyclePos];
-            
-            // Per request: Copy to Recall, don't delete original
             myTasks.push({ id: Date.now() + 1, txt: cur.txt, fol: 'recall', res: val });
-            
-            // Loop forward
             cyclePos = (cyclePos + 1) % filt.length;
+            saveData(); // Save
             refresh();
         }
 
         function move(id, target) {
             myTasks.forEach(function(t) { if(t.id === id) t.fol = target; });
+            saveData(); // Save
             refresh();
         }
 
         function remove(id) {
             myTasks = myTasks.filter(function(t) { return t.id !== id; });
+            saveData(); // Save
             refresh();
         }
 
@@ -99,7 +119,6 @@
 
             HT.innerText = activeFol.toUpperCase();
             
-            // Update tabs
             ['treatment', 'maintenance', 'recall'].forEach(function(f) {
                 var btn = document.getElementById('t-' + f);
                 btn.className = "p-4 text-[10px] font-black border-b-4 " + (activeFol === f ? "border-blue-600 text-blue-600" : "border-transparent text-gray-400");
@@ -141,7 +160,9 @@
                 });
             }
         }
-        // Run once on load
+
+        // Initialize
+        loadData();
         refresh();
     </script>
 </body>
