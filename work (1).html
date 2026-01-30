@@ -25,7 +25,7 @@
 
         <div id="inputSection" class="flex gap-2 mb-6">
             <input id="newInput" type="text" placeholder="Type task here..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none shadow-inner bg-white">
-            <button onclick="handleAddTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-2xl shadow-lg">+</button>
+            <button onclick="handleAddTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-2xl shadow-lg active:bg-blue-800">+</button>
         </div>
 
         <div id="mainList" class="space-y-3"></div>
@@ -46,7 +46,7 @@
     </div>
 
     <script>
-        // State now includes a positions object for each folder
+        // Expanded state to track everything for the "Refresh Fix"
         var state = {
             tasks: [],
             activeFol: 'treatment',
@@ -58,15 +58,20 @@
             }
         };
 
+        // Saves everything to the browser memory
         function save() {
-            localStorage.setItem('task_session_v3', JSON.stringify(state));
+            localStorage.setItem('task_session_v4', JSON.stringify(state));
         }
 
+        // Loads everything back exactly as it was
         function load() {
-            var data = localStorage.getItem('task_session_v3');
+            var data = localStorage.getItem('task_session_v4');
             if (data) {
-                state = JSON.parse(data);
-                // Backwards compatibility for the new positions object
+                var loadedState = JSON.parse(data);
+                // Merge loaded data into our state
+                state = loadedState;
+                
+                // Ensure positions exists for older saves
                 if (!state.positions) {
                     state.positions = { treatment: 0, maintenance: 0, recall: 0 };
                 }
@@ -86,14 +91,13 @@
         function changeFol(f) {
             state.activeFol = f;
             state.isCyc = false;
-            // No longer resetting position here! Each folder remembers its own.
             save();
             refresh();
         }
 
         function toggleCycle() {
             var filt = state.tasks.filter(t => t.fol === state.activeFol);
-            if (filt.length === 0) return alert("Nothing to cycle!");
+            if (filt.length === 0) return alert("Folder is empty!");
             state.isCyc = !state.isCyc;
             save();
             refresh();
@@ -109,10 +113,10 @@
             var filt = state.tasks.filter(t => t.fol === state.activeFol);
             var cur = filt[state.positions[state.activeFol]];
             
-            // Add result to Recall
+            // Add to Recall
             state.tasks.push({ id: Date.now() + 1, txt: cur.txt, fol: 'recall', res: val });
             
-            // Move position forward for THIS specific folder
+            // Increment position
             state.positions[state.activeFol] = (state.positions[state.activeFol] + 1) % filt.length;
             
             save();
@@ -141,6 +145,7 @@
 
             HT.innerText = state.activeFol.toUpperCase();
             
+            // Update Tab UI
             ['treatment', 'maintenance', 'recall'].forEach(f => {
                 var btn = document.getElementById('t-' + f);
                 btn.className = "p-4 text-[10px] font-black border-b-4 " + (state.activeFol === f ? "border-blue-600 text-blue-600" : "border-transparent text-gray-400");
@@ -150,9 +155,9 @@
             var currentPos = state.positions[state.activeFol];
 
             if (state.isCyc && filtC.length > 0) {
+                // UI for Cycle Mode
                 L.style.display = 'none'; IS.style.display = 'none'; CS.style.display = 'block'; CB.style.display = 'none';
                 
-                // Keep position in bounds if list shortened
                 if (currentPos >= filtC.length) {
                     state.positions[state.activeFol] = 0;
                     currentPos = 0;
@@ -162,6 +167,7 @@
                 CC.style.display = 'block';
                 CC.innerText = (currentPos + 1) + " / " + filtC.length;
             } else {
+                // UI for List Mode
                 state.isCyc = false;
                 L.style.display = 'block'; CS.style.display = 'none'; CC.style.display = 'none';
                 CB.style.display = (state.activeFol === 'recall' && filtC.length === 0 ? 'none' : 'block');
@@ -183,6 +189,8 @@
                 });
             }
         }
+
+        // Initialize the app by loading the previous session
         load();
     </script>
 </body>
