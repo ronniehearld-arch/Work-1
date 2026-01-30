@@ -38,27 +38,38 @@
                 <button onclick="record('No')" class="bg-red-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg">✕ NO</button>
                 <button onclick="record('Yes')" class="bg-green-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg">✓ YES</button>
             </div>
-            <button onclick="toggleCycle()" class="text-gray-400 font-bold underline p-4">Exit Cycle Mode</button>
+            <div class="flex flex-col gap-2 items-center">
+                <button onclick="resetFolderCycle()" class="text-blue-500 text-[10px] font-bold uppercase tracking-widest">Restart this Folder</button>
+                <button onclick="toggleCycle()" class="text-gray-400 font-bold underline p-2">Exit Cycle Mode</button>
+            </div>
         </div>
     </div>
 
     <script>
+        // State now includes a positions object for each folder
         var state = {
             tasks: [],
             activeFol: 'treatment',
             isCyc: false,
-            pos: 0
+            positions: {
+                treatment: 0,
+                maintenance: 0,
+                recall: 0
+            }
         };
 
-        // AUTO-SAVE BRAIN (Enabled for GitHub)
         function save() {
-            localStorage.setItem('task_session', JSON.stringify(state));
+            localStorage.setItem('task_session_v3', JSON.stringify(state));
         }
 
         function load() {
-            var data = localStorage.getItem('task_session');
+            var data = localStorage.getItem('task_session_v3');
             if (data) {
                 state = JSON.parse(data);
+                // Backwards compatibility for the new positions object
+                if (!state.positions) {
+                    state.positions = { treatment: 0, maintenance: 0, recall: 0 };
+                }
                 refresh();
             }
         }
@@ -75,7 +86,7 @@
         function changeFol(f) {
             state.activeFol = f;
             state.isCyc = false;
-            state.pos = 0;
+            // No longer resetting position here! Each folder remembers its own.
             save();
             refresh();
         }
@@ -84,16 +95,26 @@
             var filt = state.tasks.filter(t => t.fol === state.activeFol);
             if (filt.length === 0) return alert("Nothing to cycle!");
             state.isCyc = !state.isCyc;
-            state.pos = 0;
+            save();
+            refresh();
+        }
+
+        function resetFolderCycle() {
+            state.positions[state.activeFol] = 0;
             save();
             refresh();
         }
 
         function record(val) {
             var filt = state.tasks.filter(t => t.fol === state.activeFol);
-            var cur = filt[state.pos];
+            var cur = filt[state.positions[state.activeFol]];
+            
+            // Add result to Recall
             state.tasks.push({ id: Date.now() + 1, txt: cur.txt, fol: 'recall', res: val });
-            state.pos = (state.pos + 1) % filt.length;
+            
+            // Move position forward for THIS specific folder
+            state.positions[state.activeFol] = (state.positions[state.activeFol] + 1) % filt.length;
+            
             save();
             refresh();
         }
@@ -125,23 +146,31 @@
                 btn.className = "p-4 text-[10px] font-black border-b-4 " + (state.activeFol === f ? "border-blue-600 text-blue-600" : "border-transparent text-gray-400");
             });
 
-            if (state.isCyc) {
+            var filtC = state.tasks.filter(t => t.fol === state.activeFol);
+            var currentPos = state.positions[state.activeFol];
+
+            if (state.isCyc && filtC.length > 0) {
                 L.style.display = 'none'; IS.style.display = 'none'; CS.style.display = 'block'; CB.style.display = 'none';
-                var filtC = state.tasks.filter(t => t.fol === state.activeFol);
-                if (state.pos >= filtC.length) state.pos = 0;
-                document.getElementById('displayTask').innerText = filtC[state.pos].txt;
+                
+                // Keep position in bounds if list shortened
+                if (currentPos >= filtC.length) {
+                    state.positions[state.activeFol] = 0;
+                    currentPos = 0;
+                }
+
+                document.getElementById('displayTask').innerText = filtC[currentPos].txt;
                 CC.style.display = 'block';
-                CC.innerText = (state.pos + 1) + " / " + filtC.length;
+                CC.innerText = (currentPos + 1) + " / " + filtC.length;
             } else {
+                state.isCyc = false;
                 L.style.display = 'block'; CS.style.display = 'none'; CC.style.display = 'none';
-                CB.style.display = (state.activeFol === 'recall' ? 'none' : 'block');
+                CB.style.display = (state.activeFol === 'recall' && filtC.length === 0 ? 'none' : 'block');
                 IS.style.display = (state.activeFol === 'recall' ? 'none' : 'flex');
                 
                 L.innerHTML = '';
-                var currentItems = state.tasks.filter(t => t.fol === state.activeFol);
-                if (currentItems.length === 0) L.innerHTML = '<div class="py-20 text-center text-gray-300 font-black uppercase text-xs">Folder Empty</div>';
+                if (filtC.length === 0) L.innerHTML = '<div class="py-20 text-center text-gray-300 font-black uppercase text-xs">Folder Empty</div>';
 
-                currentItems.forEach(t => {
+                filtC.forEach(t => {
                     var card = document.createElement('div');
                     card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center";
                     var btns = '';
