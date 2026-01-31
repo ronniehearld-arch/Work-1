@@ -1,161 +1,232 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Master Tracker v7.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
-        .tab-on { background: #3b82f6 !important; color: white !important; }
+        .active-tab { background: #3b82f6 !important; color: white !important; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="font-sans">
 
-    <div id="s-name" class="p-6 fixed inset-0 z-50 bg-slate-900 overflow-y-auto">
+    <div id="screen-name" class="p-6 fixed inset-0 z-50 bg-slate-900 overflow-y-auto">
         <h1 class="text-3xl font-black text-green-400 mb-2 uppercase italic">Profiles</h1>
-        <div id="l-name" class="space-y-3 mb-32"></div>
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-slate-900 border-t border-slate-800">
-            <input id="i-name" type="text" placeholder="NAME..." class="w-full p-4 rounded-xl bg-slate-800 border-2 border-slate-700 mb-2 uppercase font-bold text-white">
-            <button onclick="addN()" class="w-full bg-green-500 text-black font-black py-4 rounded-xl uppercase">Add Person</button>
+        <p class="text-slate-500 text-xs mb-8 uppercase font-bold tracking-widest">Select or Add a Student</p>
+        <div id="list-names" class="space-y-3 mb-40"></div>
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-slate-900 border-t border-slate-800 shadow-2xl">
+            <input id="input-name" type="text" placeholder="ENTER NAME..." class="w-full p-4 rounded-xl bg-slate-800 border-2 border-slate-700 mb-3 uppercase font-bold text-white outline-none focus:border-green-500">
+            <button onclick="addProfile()" class="w-full bg-green-500 text-slate-900 font-black py-4 rounded-xl uppercase shadow-lg active:scale-95 transition-transform">Add Person</button>
         </div>
     </div>
 
-    <div id="s-loc" class="p-6 fixed inset-0 z-40 bg-slate-900 hidden text-center">
-        <button onclick="location.reload()" class="absolute top-6 left-6 text-green-400 font-bold">⬅ BACK</button>
-        <h1 class="text-2xl font-black mt-16 mb-8 uppercase italic">Select Location</h1>
-        <div id="l-loc" class="grid grid-cols-2 gap-4"></div>
+    <div id="screen-loc" class="p-6 fixed inset-0 z-40 bg-slate-900 hidden text-center overflow-y-auto">
+        <button onclick="location.reload()" class="absolute top-6 left-6 text-green-400 font-bold uppercase text-xs">⬅ Back to Profiles</button>
+        <h1 class="text-2xl font-black mt-16 mb-8 uppercase italic tracking-tight">Select Location</h1>
+        <div id="list-loc" class="grid grid-cols-2 gap-4 max-w-sm mx-auto"></div>
     </div>
 
-    <div id="s-app" class="p-4 fixed inset-0 z-30 bg-white text-slate-900 hidden overflow-y-auto pb-24">
-        <div class="flex justify-between items-center mb-4 border-b pb-2">
-            <button onclick="showLoc()" class="text-blue-600 font-black text-xs uppercase">⬅ Locations</button>
-            <span id="u-info" class="font-black text-[10px] text-slate-400 uppercase"></span>
+    <div id="screen-app" class="p-4 fixed inset-0 z-30 bg-white text-slate-900 hidden overflow-y-auto pb-32">
+        <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+            <button onclick="backToLoc()" class="text-blue-600 font-black text-[10px] uppercase bg-blue-50 px-3 py-1 rounded-full">⬅ Locations</button>
+            <span id="display-info" class="font-black text-[10px] text-slate-400 uppercase tracking-widest"></span>
         </div>
         
-        <div class="flex gap-1 mb-4 bg-slate-100 p-1 rounded-lg">
-            <button onclick="setT('B')" id="t-B" class="flex-1 py-2 text-[10px] font-bold rounded bg-white">BASE</button>
-            <button onclick="setT('T')" id="t-T" class="flex-1 py-2 text-[10px] font-bold rounded bg-white">TX</button>
-            <button onclick="setT('M')" id="t-M" class="flex-1 py-2 text-[10px] font-bold rounded bg-white">MAINT</button>
-            <button onclick="setT('D')" id="t-D" class="flex-1 py-2 text-[10px] font-bold rounded bg-white">DONE</button>
+        <div class="flex gap-1 mb-6 bg-slate-100 p-1 rounded-xl shadow-inner">
+            <button onclick="setFolder('B')" id="tab-B" class="flex-1 py-3 text-[10px] font-black rounded-lg transition-colors uppercase">Baseline</button>
+            <button onclick="setFolder('T')" id="tab-T" class="flex-1 py-3 text-[10px] font-black rounded-lg transition-colors uppercase">TX</button>
+            <button onclick="setFolder('M')" id="tab-M" class="flex-1 py-3 text-[10px] font-black rounded-lg transition-colors uppercase">Maint</button>
+            <button onclick="setFolder('D')" id="tab-D" class="flex-1 py-3 text-[10px] font-black rounded-lg transition-colors uppercase">Done</button>
         </div>
 
-        <div id="goal-box" class="p-4 bg-slate-50 border-2 border-dashed rounded-2xl mb-4">
-            <input id="i-task" type="text" placeholder="Goal name..." class="w-full p-3 border rounded-lg mb-2">
+        <div class="p-5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] mb-6">
+            <input id="input-task" type="text" placeholder="New Goal Name..." class="w-full p-4 border rounded-xl mb-3 font-bold uppercase outline-none focus:border-blue-400">
             <div class="flex gap-2">
-                <button onclick="addG('trial')" class="flex-1 bg-blue-600 text-white py-2 rounded font-bold text-[10px] uppercase">+ TRIAL</button>
-                <button onclick="addG('ta')" class="flex-1 bg-orange-500 text-white py-2 rounded font-bold text-[10px] uppercase">+ TA</button>
+                <button onclick="saveTask('trial')" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-black text-[10px] uppercase shadow-md active:scale-95">+ Trial Goal</button>
+                <button onclick="saveTask('ta')" class="flex-1 bg-orange-500 text-white py-3 rounded-xl font-black text-[10px] uppercase shadow-md active:scale-95">+ TA Goal</button>
             </div>
         </div>
-        <div id="l-task" class="space-y-2"></div>
+
+        <div id="list-tasks" class="space-y-3"></div>
     </div>
 
-    <div id="s-ta" class="fixed inset-0 bg-white z-[60] p-6 hidden flex flex-col">
-        <h2 id="ta-title" class="text-xl font-black uppercase text-center mb-6"></h2>
-        <div id="ta-body" class="space-y-3 flex-1 overflow-y-auto"></div>
-        <button onclick="closeTA()" class="w-full bg-green-500 text-white py-4 rounded-xl font-black mt-4 uppercase">Submit</button>
+    <div id="screen-ta" class="fixed inset-0 bg-white z-[60] p-6 hidden flex flex-col">
+        <div class="flex justify-between items-center mb-8">
+            <h2 id="ta-header" class="text-xl font-black uppercase italic text-slate-800"></h2>
+            <button onclick="closeTA()" class="text-slate-300 font-bold uppercase text-xs">Cancel</button>
+        </div>
+        <div id="ta-steps-container" class="space-y-4 flex-1 overflow-y-auto pr-2"></div>
+        <button onclick="submitTA()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black mt-6 shadow-xl uppercase tracking-widest active:scale-95 transition-transform">Complete Session</button>
     </div>
 
     <script>
-        let names = JSON.parse(localStorage.getItem('tt_names')||"[]"), curN="", curL="", curT="B";
-        const LOCS = ["DTT", "MOTOR", "CENTER", "ARTS", "DARK", "OUTSIDE", "BATH", "MIDDAY"];
+        let profiles = JSON.parse(localStorage.getItem('tracker_names') || "[]");
+        let activeUser = "", activeLoc = "", activeFolder = "B";
+        const LOCATIONS = ["DTT", "Motor Room", "Centers", "Arts/Crafts", "Sensory", "Outside", "Bathroom", "Midday"];
 
-        function addN(){
-            let v = document.getElementById('i-name').value.trim().toUpperCase();
-            if(v && !names.includes(v)){ names.push(v); localStorage.setItem('tt_names', JSON.stringify(names)); }
-            document.getElementById('i-name').value=""; renderN();
+        // PROFILE LOGIC
+        function addProfile() {
+            const input = document.getElementById('input-name');
+            const name = input.value.trim().toUpperCase();
+            if (name && !profiles.includes(name)) {
+                profiles.push(name);
+                localStorage.setItem('tracker_names', JSON.stringify(profiles));
+                input.value = "";
+                renderProfiles();
+            }
         }
 
-        function renderN(){
-            let l = document.getElementById('l-name'); l.innerHTML = "";
-            names.forEach(n => {
-                let d = document.createElement('div');
-                d.className = "bg-slate-800 p-5 rounded-xl flex justify-between border border-slate-700";
-                d.innerHTML = `<span onclick="selN('${n}')" class="flex-1 font-black uppercase">${n}</span><button onclick="remN('${n}')" class="text-red-500 font-bold ml-4">✕</button>`;
-                l.appendChild(d);
+        function renderProfiles() {
+            const list = document.getElementById('list-names');
+            list.innerHTML = profiles.length ? "" : "<div class='text-center text-slate-600 font-bold py-20 uppercase tracking-widest border-2 border-dashed border-slate-800 rounded-3xl'>No Profiles Found</div>";
+            profiles.forEach(name => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-800 p-5 rounded-2xl flex justify-between items-center border border-slate-700 shadow-xl active:scale-95 transition-transform";
+                div.innerHTML = `
+                    <span onclick="selectProfile('${name}')" class="flex-1 font-black uppercase text-lg text-white cursor-pointer">${name}</span>
+                    <button onclick="deleteProfile('${name}')" class="text-red-900 bg-red-400/10 w-8 h-8 rounded-full font-bold ml-4">✕</button>
+                `;
+                list.appendChild(div);
             });
         }
 
-        function remN(n){ if(confirm("Delete?")){ names=names.filter(x=>x!==n); localStorage.setItem('tt_names', JSON.stringify(names)); renderN(); } }
+        function deleteProfile(name) {
+            if (confirm(`Delete ${name} and all data?`)) {
+                profiles = profiles.filter(p => p !== name);
+                localStorage.setItem('tracker_names', JSON.stringify(profiles));
+                renderProfiles();
+            }
+        }
 
-        function selN(n){
-            curN = n; document.getElementById('s-name').classList.add('hidden');
-            document.getElementById('s-loc').classList.remove('hidden');
-            let l = document.getElementById('l-loc'); l.innerHTML = "";
-            LOCS.forEach(x => {
-                let b = document.createElement('button');
-                b.className = "bg-slate-800 p-6 rounded-xl border border-slate-700 font-black";
-                b.innerText = x; b.onclick = () => { curL=x; showApp(); }; l.appendChild(b);
+        function selectProfile(name) {
+            activeUser = name;
+            document.getElementById('screen-name').classList.add('hidden');
+            document.getElementById('screen-loc').classList.remove('hidden');
+            const list = document.getElementById('list-loc');
+            list.innerHTML = "";
+            LOCATIONS.forEach(loc => {
+                const btn = document.createElement('button');
+                btn.className = "bg-slate-800 p-6 rounded-2xl border-2 border-slate-700 font-black uppercase text-[10px] text-white active:bg-green-500 active:text-slate-900 active:border-green-400 transition-all shadow-lg";
+                btn.innerText = loc;
+                btn.onclick = () => { activeLoc = loc; startApp(); };
+                list.appendChild(btn);
             });
         }
 
-        function showApp(){
-            document.getElementById('s-loc').classList.add('hidden');
-            document.getElementById('s-app').classList.remove('hidden');
-            document.getElementById('u-info').innerText = `${curN} | ${curL}`;
-            refresh();
+        // APP LOGIC
+        function startApp() {
+            document.getElementById('screen-loc').classList.add('hidden');
+            document.getElementById('screen-app').classList.remove('hidden');
+            document.getElementById('display-info').innerText = `${activeUser} | ${activeLoc}`;
+            refreshApp();
         }
 
-        function showLoc(){ document.getElementById('s-app').classList.add('hidden'); document.getElementById('s-loc').classList.remove('hidden'); }
-
-        function addG(type){
-            let v = document.getElementById('i-task').value.trim().toUpperCase();
-            if(!v) return;
-            let s = type==='ta' ? prompt("Steps (comma separated):") : "";
-            let key = `d_${curN}_${curL}`;
-            let d = JSON.parse(localStorage.getItem(key)||"[]");
-            d.push({id:Date.now(), text:v, type, tab:curT, steps: s?s.split(','):[]});
-            localStorage.setItem(key, JSON.stringify(d));
-            document.getElementById('i-task').value=""; refresh();
+        function backToLoc() {
+            document.getElementById('screen-app').classList.add('hidden');
+            document.getElementById('screen-loc').classList.remove('hidden');
         }
 
-        function refresh(){
-            let l = document.getElementById('l-task'); l.innerHTML = "";
-            let data = JSON.parse(localStorage.getItem(`d_${curN}_${curL}`)||"[]");
-            data.filter(x => x.tab === curT).forEach(x => {
-                let d = document.createElement('div');
-                d.className = "p-4 bg-slate-50 border rounded-xl flex justify-between items-center";
-                d.innerHTML = `
-                    <div onclick="run('${x.id}')" class="flex-1 font-black text-xs uppercase">${x.text} ${x.type==='ta'?'<span class="text-orange-500">[TA]</span>':''}</div>
-                    <div class="flex gap-1">
-                        <button onclick="mv('${x.id}')" class="bg-blue-600 text-white px-2 py-1 rounded text-[8px] font-bold uppercase">Move</button>
-                        <button onclick="delT('${x.id}')" class="text-red-300 font-bold px-2">✕</button>
-                    </div>`;
-                l.appendChild(d);
+        function saveTask(type) {
+            const input = document.getElementById('input-task');
+            const val = input.value.trim().toUpperCase();
+            if (!val) return;
+            let steps = [];
+            if (type === 'ta') {
+                const s = prompt("Enter TA steps separated by commas (e.g. Wash hands, Dry hands, Finish):");
+                if (!s) return;
+                steps = s.split(',').map(item => item.trim());
+            }
+            const key = `data_${activeUser}_${activeLoc}`;
+            const data = JSON.parse(localStorage.getItem(key) || "[]");
+            data.push({ id: Date.now(), text: val, type: type, folder: activeFolder, steps: steps });
+            localStorage.setItem(key, JSON.stringify(data));
+            input.value = "";
+            refreshApp();
+        }
+
+        function refreshApp() {
+            const list = document.getElementById('list-tasks');
+            list.innerHTML = "";
+            const data = JSON.parse(localStorage.getItem(`data_${activeUser}_${activeLoc}`) || "[]");
+            
+            data.filter(task => task.folder === activeFolder).forEach(task => {
+                const div = document.createElement('div');
+                div.className = "p-5 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center shadow-sm";
+                div.innerHTML = `
+                    <div onclick="runTask('${task.id}')" class="flex-1 cursor-pointer">
+                        <p class="font-black text-xs uppercase text-slate-700 tracking-tight">${task.text}</p>
+                        ${task.type === 'ta' ? '<span class="text-[8px] font-black text-orange-500 bg-orange-50 px-2 py-0.5 rounded uppercase mt-1 inline-block">Task Analysis</span>' : ''}
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="moveTask('${task.id}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-[9px] font-black uppercase shadow-sm active:bg-blue-700">Move ➡</button>
+                        <button onclick="deleteTask('${task.id}')" class="text-slate-300 font-bold px-2 text-lg hover:text-red-500 transition-colors">✕</button>
+                    </div>
+                `;
+                list.appendChild(div);
             });
-            ['B','T','M','D'].forEach(t => document.getElementById('t-'+t).className = `flex-1 py-2 text-[10px] font-bold rounded ${curT===t?'tab-on':'text-slate-400'}`);
+
+            ['B','T','M','D'].forEach(f => {
+                const btn = document.getElementById('tab-'+f);
+                btn.className = activeFolder === f ? "flex-1 py-3 text-[10px] font-black rounded-lg transition-colors uppercase active-tab shadow-md" : "flex-1 py-3 text-[10px] font-black rounded-lg transition-colors uppercase text-slate-400 bg-white hover:bg-slate-50";
+            });
         }
 
-        function mv(id){
-            let k = `d_${curN}_${curL}`, d = JSON.parse(localStorage.getItem(k));
-            d.forEach(x => { if(x.id == id) x.tab = (x.tab==='B'?'T':x.tab==='T'?'M':x.tab==='M'?'D':'B'); });
-            localStorage.setItem(k, JSON.stringify(d)); refresh();
+        function moveTask(id) {
+            const key = `data_${activeUser}_${activeLoc}`;
+            const data = JSON.parse(localStorage.getItem(key));
+            data.forEach(task => {
+                if (task.id == id) {
+                    if (task.folder === 'B') task.folder = 'T';
+                    else if (task.folder === 'T') task.folder = 'M';
+                    else if (task.folder === 'M') task.folder = 'D';
+                    else task.folder = 'B';
+                }
+            });
+            localStorage.setItem(key, JSON.stringify(data));
+            refreshApp();
         }
 
-        function delT(id){ let k = `d_${curN}_${curL}`, d = JSON.parse(localStorage.getItem(k)); localStorage.setItem(k, JSON.stringify(d.filter(x=>x.id != id))); refresh(); }
-        function setT(t){ curT = t; refresh(); }
+        function deleteTask(id) {
+            const key = `data_${activeUser}_${activeLoc}`;
+            const data = JSON.parse(localStorage.getItem(key));
+            localStorage.setItem(key, JSON.stringify(data.filter(t => t.id != id)));
+            refreshApp();
+        }
 
-        function run(id){
-            let d = JSON.parse(localStorage.getItem(`d_${curN}_${curL}`)).find(x=>x.id==id);
-            if(d.type==='trial') return alert("Trial recorded!");
-            document.getElementById('ta-title').innerText = d.text;
-            let b = document.getElementById('ta-body'); b.innerHTML = "";
-            d.steps.forEach(s => {
-                let r = document.createElement('div');
-                r.className = "flex justify-between items-center p-4 bg-slate-100 rounded-xl";
-                r.innerHTML = `<span class="font-bold text-xs uppercase">${s}</span>
+        function setFolder(f) { activeFolder = f; refreshApp(); }
+
+        // TA RUNNER LOGIC
+        function runTask(id) {
+            const data = JSON.parse(localStorage.getItem(`data_${activeUser}_${activeLoc}`));
+            const task = data.find(t => t.id == id);
+            if (task.type === 'trial') return alert("Record Trial: Data point logged.");
+            
+            document.getElementById('ta-header').innerText = task.text;
+            const container = document.getElementById('ta-steps-container');
+            container.innerHTML = "";
+            task.steps.forEach((step, idx) => {
+                const row = document.createElement('div');
+                row.className = "flex justify-between items-center p-5 bg-slate-50 rounded-2xl border border-slate-100";
+                row.innerHTML = `
+                    <span class="font-bold text-xs uppercase text-slate-600 max-w-[60%]">${idx+1}. ${step}</span>
                     <div class="flex gap-2">
-                        <button onclick="this.className='w-12 h-12 rounded-full bg-red-500 text-white font-bold'" class="w-12 h-12 rounded-full border-2 font-bold">N</button>
-                        <button onclick="this.className='w-12 h-12 rounded-full bg-green-500 text-white font-bold'" class="w-12 h-12 rounded-full border-2 font-bold">Y</button>
-                    </div>`;
-                b.appendChild(r);
+                        <button onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('bg-red-500','bg-green-500','text-white')); this.classList.add('bg-red-500','text-white')" class="w-12 h-12 rounded-full border-2 border-slate-200 font-black text-slate-400 text-xs transition-colors">NO</button>
+                        <button onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('bg-red-500','bg-green-500','text-white')); this.classList.add('bg-green-500','text-white')" class="w-12 h-12 rounded-full border-2 border-slate-200 font-black text-slate-400 text-xs transition-colors">YES</button>
+                    </div>
+                `;
+                container.appendChild(row);
             });
-            document.getElementById('s-ta').classList.remove('hidden');
+            document.getElementById('screen-ta').classList.remove('hidden');
         }
 
-        function closeTA(){ document.getElementById('s-ta').classList.add('hidden'); }
+        function closeTA() { document.getElementById('screen-ta').classList.add('hidden'); }
+        function submitTA() { alert("Session Recorded Successfully."); closeTA(); }
 
-        renderN();
+        // Initial Boot
+        renderProfiles();
     </script>
 </body>
 </html>
