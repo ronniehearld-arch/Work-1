@@ -8,49 +8,52 @@
 </head>
 <body class="bg-gray-100 font-sans text-gray-900 pb-24">
 
-    <div class="bg-green-600 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">
-        App Status: Version 5.3 (Fixed Profile Logic)
+    <div class="bg-orange-600 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">
+        App Status: Version 5.4 (Emergency Repair)
     </div>
 
     <div id="profileScreen" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
-        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase tracking-widest text-center italic italic">Select Person</h1>
+        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase tracking-widest text-center italic">Select Person</h1>
         
-        <div id="profileList" class="w-full max-w-xs space-y-4 mb-8"></div>
+        <div id="profileList" class="w-full max-w-xs space-y-4 mb-8">
+            </div>
         
         <div class="w-full max-w-xs border-t border-blue-800 pt-6 pb-10 text-center">
-            <input id="newProfileName" type="text" placeholder="Type name..." class="w-full p-4 rounded-2xl mb-4 outline-none bg-white text-lg shadow-inner">
-            <button onclick="addPerson()" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl active:scale-95 transition-transform border-b-4 border-green-700">
+            <input id="newProfileName" type="text" placeholder="Enter Name..." class="w-full p-4 rounded-2xl mb-4 outline-none bg-white text-lg shadow-lg text-black">
+            <button id="addBtn" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl active:bg-green-600">
                 + ADD PERSON
             </button>
             
-            <button onclick="forceReset()" class="mt-12 text-blue-400 text-[10px] font-bold uppercase underline tracking-tighter opacity-50">
-                Names still gone? Click to Reset App
+            <button onclick="localStorage.clear(); location.reload();" class="mt-8 bg-red-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg">
+                Full System Wipe (Fixes Everything)
             </button>
+            
+            <div id="debugLog" class="mt-4 text-[10px] text-red-400 font-mono"></div>
         </div>
     </div>
 
     <div id="appUI" class="hidden min-h-screen">
         <div class="bg-white border-b sticky top-0 z-50 shadow-sm">
             <div class="flex justify-between items-center p-2 bg-gray-50 border-b">
-                 <button onclick="location.reload()" class="p-2 text-blue-600 font-black text-[10px]">⬅ BACK TO NAMES</button>
+                 <button onclick="location.reload()" class="p-2 text-blue-600 font-black text-[10px]">⬅ NAMES</button>
                  <span id="activeUserLabel" class="text-[10px] font-black text-gray-400 uppercase tracking-widest"></span>
             </div>
             <div class="flex justify-around">
-                <button onclick="changeFol('baseline')" id="t-baseline" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase transition-all">Baseline</button>
-                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase transition-all">Treatment</button>
-                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase transition-all">Maint.</button>
+                <button onclick="changeFol('baseline')" id="t-baseline" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Baseline</button>
+                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Treatment</button>
+                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Maint.</button>
             </div>
         </div>
 
         <div class="p-4 max-w-md mx-auto">
             <div class="flex justify-between items-center mb-4">
                 <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic underline decoration-blue-200">BASELINE</h1>
-                <button onclick="toggleCycle()" id="cycleBtn" class="bg-yellow-400 text-blue-900 px-4 py-2 rounded-xl font-black text-xs shadow-md active:scale-90">CYCLE ALL</button>
+                <button onclick="toggleCycle()" id="cycleBtn" class="bg-yellow-400 text-blue-900 px-4 py-2 rounded-xl font-black text-xs shadow-md">CYCLE ALL</button>
             </div>
 
             <div id="inputSection" class="flex gap-2 mb-6">
-                <input id="taskInput" type="text" placeholder="Add new task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none shadow-inner bg-white">
-                <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg active:scale-90">+</button>
+                <input id="taskInput" type="text" placeholder="Add new task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none bg-white">
+                <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg">+</button>
             </div>
 
             <div id="mainList" class="space-y-3"></div>
@@ -58,88 +61,87 @@
             <div id="cycleScreen" class="hidden text-center py-4">
                 <div id="cycleCounter" class="text-blue-500 font-black text-xs mb-2"></div>
                 <div class="bg-white p-12 rounded-[40px] shadow-2xl border-4 border-blue-500 mb-8">
-                    <h2 id="displayTask" class="text-4xl font-black text-gray-800 break-words leading-tight uppercase italic">...</h2>
+                    <h2 id="displayTask" class="text-4xl font-black text-gray-800 break-words uppercase">...</h2>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <button onclick="record('No')" class="bg-red-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:bg-red-700 active:scale-95 transition-all">✕ NO</button>
-                    <button onclick="record('Yes')" class="bg-green-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:bg-green-700 active:scale-95 transition-all">✓ YES</button>
+                    <button onclick="record('No')" class="bg-red-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✕ NO</button>
+                    <button onclick="record('Yes')" class="bg-green-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✓ YES</button>
                 </div>
-                <button onclick="exitCycle()" class="block w-full text-gray-400 font-bold underline p-2">Exit Cycle Mode</button>
+                <button onclick="exitCycle()" class="block w-full text-gray-400 font-bold underline p-2">Exit</button>
             </div>
         </div>
 
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-lg z-[60]">
-            <button onclick="changeFol('trials')" id="t-trials" class="flex flex-col items-center py-2 w-1/3 rounded-xl">
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-lg z-50">
+            <button onclick="changeFol('trials')" id="t-trials" class="flex flex-col items-center py-2 w-1/3">
                 <span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trial Sheet</span>
             </button>
-            <button onclick="changeFol('mastered')" id="t-mastered" class="flex flex-col items-center py-2 w-1/3 rounded-xl">
+            <button onclick="changeFol('mastered')" id="t-mastered" class="flex flex-col items-center py-2 w-1/3">
                 <span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span>
             </button>
-            <button onclick="changeFol('recall')" id="t-recall" class="flex flex-col items-center py-2 w-1/3 rounded-xl">
+            <button onclick="changeFol('recall')" id="t-recall" class="flex flex-col items-center py-2 w-1/3">
                 <span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">History</span>
             </button>
         </div>
     </div>
 
     <script>
-        // FAIL-SAFE DATA LOADING
-        function getProfiles() {
-            try {
-                const stored = localStorage.getItem('tt_profiles');
-                return stored ? JSON.parse(stored) : [];
-            } catch (e) {
-                return [];
-            }
+        // FORCED DATA REPAIR
+        let profiles = [];
+        try {
+            const raw = localStorage.getItem('tt_profiles');
+            profiles = raw ? JSON.parse(raw) : [];
+            if (!Array.isArray(profiles)) profiles = [];
+        } catch(e) {
+            profiles = [];
+            document.getElementById('debugLog').innerText = "Error loading profiles: " + e.message;
         }
 
-        let profiles = getProfiles();
         let currentName = '';
         let currentFol = 'baseline';
         let isCyc = false;
         let positions = {};
 
-        function addPerson() {
+        // DIRECT CLICK HANDLER
+        document.getElementById('addBtn').addEventListener('click', function() {
             const input = document.getElementById('newProfileName');
             const name = input.value.trim();
-            if(!name) { alert("Please enter a name"); return; }
             
-            if(!profiles.includes(name)) {
-                profiles.push(name);
-                localStorage.setItem('tt_profiles', JSON.stringify(profiles));
+            if(!name) {
+                alert("Type a name first!");
+                return;
             }
-            input.value = '';
-            renderProfiles();
+
+            try {
+                if(!profiles.includes(name)) {
+                    profiles.push(name);
+                    localStorage.setItem('tt_profiles', JSON.stringify(profiles));
+                }
+                input.value = '';
+                renderProfiles();
+                document.getElementById('debugLog').innerText = "Last Added: " + name;
+            } catch (e) {
+                document.getElementById('debugLog').innerText = "Save Error: " + e.message;
+            }
+        });
+
+        function renderProfiles() {
+            const list = document.getElementById('profileList');
+            list.innerHTML = '';
+            profiles.forEach(p => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-5 rounded-2xl font-black shadow-md flex justify-between items-center mb-2 active:scale-95";
+                div.innerHTML = `<span onclick="selectProfile('${p}')" class="flex-1 cursor-pointer uppercase text-black">${p}</span> 
+                                 <button onclick="removePerson('${p}', event)" class="bg-red-50 text-red-500 px-3 py-1 rounded-lg text-[10px] font-black border border-red-100">DEL</button>`;
+                list.appendChild(div);
+            });
         }
 
         function removePerson(name, e) {
             e.stopPropagation();
-            if(confirm("Delete everything for " + name + "?")) {
-                profiles = profiles.filter(p => p !== name);
-                localStorage.setItem('tt_profiles', JSON.stringify(profiles));
-                localStorage.removeItem('data_' + name);
-                renderProfiles();
-            }
-        }
-
-        function forceReset() {
-            if(confirm("This will delete ALL data. Are you sure?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        function renderProfiles() {
-            const list = document.getElementById('profileList');
-            if(!list) return;
-            list.innerHTML = '';
-            
-            profiles.forEach(p => {
-                const div = document.createElement('div');
-                div.className = "bg-white p-5 rounded-2xl font-black shadow-md flex justify-between items-center mb-2 active:scale-95";
-                div.innerHTML = `<span onclick="selectProfile('${p}')" class="flex-1 cursor-pointer uppercase">${p}</span> 
-                                 <button onclick="removePerson('${p}', event)" class="bg-red-50 text-red-500 px-3 py-1 rounded-lg text-[10px] font-black border border-red-100">DEL</button>`;
-                list.appendChild(div);
-            });
+            profiles = profiles.filter(p => p !== name);
+            localStorage.setItem('tt_profiles', JSON.stringify(profiles));
+            localStorage.removeItem('data_' + name);
+            renderProfiles();
         }
 
         function selectProfile(name) {
@@ -185,7 +187,6 @@
             let filtered = data.filter(t => t.folder === currentFol);
             let pos = positions[currentFol] || 0;
             let curTask = filtered[pos];
-
             data.push({ id: Date.now() + Math.random(), text: curTask.text, folder: 'recall', res: val, date: new Date().toLocaleDateString() });
             positions[currentFol] = (pos + 1) % filtered.length;
             localStorage.setItem('data_' + currentName, JSON.stringify(data));
@@ -209,6 +210,8 @@
         function changeFol(f) {
             currentFol = f;
             exitCycle();
+            document.getElementById('headerTitle').innerText = f.toUpperCase();
+            refresh();
         }
 
         function refresh() {
@@ -222,8 +225,59 @@
                 const b = document.getElementById('t-' + t);
                 b.className = `p-4 flex-1 text-[10px] font-black border-b-4 uppercase ${currentFol === t ? 'border-blue-600 text-blue-600 bg-blue-50' : 'border-transparent text-gray-400 bg-white'}`;
             });
-            ['trials', 'mastered', 'recall'].forEach(t => {
-                const b = document.getElementById('t-' + t);
-                const active = currentFol === t;
-                b.className = `flex flex-col items-center py-2 w-1/3 rounded-xl ${active ?
-                                                                                  
+
+            let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
+            let filtered = data.filter(t => t.folder === currentFol);
+
+            if (isCyc && filtered.length > 0) {
+                list.style.display = 'none'; inputSect.style.display = 'none'; cycBtn.style.display = 'none';
+                cycleView.classList.remove('hidden');
+                let pos = positions[currentFol] || 0;
+                document.getElementById('displayTask').innerText = filtered[pos].text;
+                document.getElementById('cycleCounter').innerText = (pos + 1) + " / " + filtered.length;
+            } else {
+                list.style.display = 'block';
+                cycleView.classList.add('hidden');
+                inputSect.style.display = (['baseline', 'treatment', 'maintenance'].includes(currentFol)) ? 'flex' : 'none';
+                cycBtn.style.display = (filtered.length > 0 && ['baseline', 'treatment', 'maintenance'].includes(currentFol)) ? 'block' : 'none';
+
+                if (currentFol === 'trials') { renderTrialSheet(data); return; }
+
+                filtered.forEach((t, index) => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center mb-2 active:bg-gray-50";
+                    let moveBtns = '';
+                    if (currentFol === 'baseline') moveBtns = `<button onclick="moveTask(${t.id},'treatment')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">START TX</button>`;
+                    else if (currentFol === 'treatment') moveBtns = `<div class="flex gap-1"><button onclick="moveTask(${t.id},'baseline')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK</button><button onclick="moveTask(${t.id},'maintenance')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">TO MAINT</button></div>`;
+                    else if (currentFol === 'maintenance') moveBtns = `<div class="flex gap-1"><button onclick="moveTask(${t.id},'treatment')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK TO TX</button><button onclick="moveTask(${t.id},'mastered')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">MASTER</button></div>`;
+                    else if (currentFol === 'mastered') moveBtns = `<button onclick="moveTask(${t.id},'maintenance')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK TO MAINT</button>`;
+
+                    card.innerHTML = `<span onclick="startCycleAt(${index})" class="font-bold text-gray-700 text-sm flex-1 cursor-pointer py-2 uppercase italic">${t.text}</span><div class="flex gap-2 items-center">${moveBtns}<button onclick="deleteTask(${t.id})" class="text-red-200 px-2 font-bold">✕</button></div>`;
+                    list.appendChild(card);
+                });
+            }
+        }
+
+        function renderTrialSheet(data) {
+            const list = document.getElementById('mainList');
+            const history = data.filter(t => t.folder === 'recall');
+            const stats = {};
+            history.forEach(t => {
+                if(!stats[t.text]) stats[t.text] = { yes: 0, total: 0 };
+                stats[t.text].total++;
+                if(t.res === 'Yes') stats[t.text].yes++;
+            });
+            list.innerHTML = '';
+            for(let task in stats) {
+                let pct = Math.round((stats[task].yes / stats[task].total) * 100);
+                const div = document.createElement('div');
+                div.className = "bg-white p-5 rounded-3xl shadow-sm mb-3 flex justify-between items-center border-2 border-white";
+                div.innerHTML = `<div><p class="font-black uppercase">${task}</p><p class="text-[10px] font-bold text-gray-400">${stats[task].yes}/${stats[task].total} SUCCESS</p></div><p class="text-3xl font-black ${pct >= 80 ? 'text-green-600' : 'text-red-500'}">${pct}%</p>`;
+                list.appendChild(div);
+            }
+        }
+
+        renderProfiles();
+    </script>
+</body>
+</html>
