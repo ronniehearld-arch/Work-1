@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.5.7</title>
+    <title>Tracker Pro v6.6.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .hide { display: none !important; }
-        .active-tab { border-bottom: 4px solid #2563eb; color: #2563eb; }
+        .f-btn { 
+            background: white; border: 1px solid #e5e7eb; border-radius: 12px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            padding: 10px 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .f-btn.active { border: 2px solid #2563eb; background: #eff6ff; }
+        .label { font-size: 8px; font-weight: 900; text-transform: uppercase; margin-top: 4px; text-align: center; color: #374151; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans text-gray-900 pb-10">
+<body class="bg-gray-100 font-sans text-gray-900 overflow-hidden h-screen flex flex-col">
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide">
         <h1 class="text-white font-black text-3xl mb-8 mt-12 uppercase italic">Profiles</h1>
@@ -24,37 +30,50 @@
         <div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md"></div>
     </div>
 
-    <div id="app" class="hide min-h-screen">
-        <div class="bg-white p-4 border-b flex justify-between items-center sticky top-0 z-40">
-            <div>
-                <h2 id="u-display" class="font-black text-lg uppercase italic"></h2>
-                <button onclick="exitL()" id="l-display" class="text-blue-600 font-black text-[10px] uppercase"></button>
+    <div id="app" class="hide flex flex-col h-full">
+        
+        <div class="bg-white p-3 border-b shadow-sm z-20">
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="switchTab('baseline')" id="btn-baseline" class="f-btn">
+                    <span class="text-2xl">📁</span><span class="label">Baseline</span>
+                </button>
+                <button onclick="switchTab('treatment')" id="btn-treatment" class="f-btn">
+                    <span class="text-2xl">📁</span><span class="label">Treatment</span>
+                </button>
+                <button onclick="switchTab('maintenance')" id="btn-maintenance" class="f-btn">
+                    <span class="text-2xl">📁</span><span class="label">Maintenance</span>
+                </button>
             </div>
-            <button onclick="location.reload()" class="text-gray-300 font-black text-[10px] uppercase">Sync</button>
         </div>
 
-        <div class="bg-white border-b flex overflow-x-auto no-scrollbar sticky top-[61px] z-30">
-            <button onclick="switchTab('baseline')" id="btn-baseline" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Baseline</button>
-            <button onclick="switchTab('treatment')" id="btn-treatment" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Treatment</button>
-            <button onclick="switchTab('maintenance')" id="btn-maintenance" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Maint</button>
-            <button onclick="switchTab('trials')" id="btn-trials" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Sheet</button>
-            <button onclick="switchTab('recall')" id="btn-recall" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Log</button>
-        </div>
-
-        <div class="p-4 max-w-md mx-auto">
-            <div id="task-container">
+        <div class="flex-1 overflow-y-auto p-4 bg-gray-50" id="main-content">
+            <div id="task-list" class="max-w-md mx-auto pb-20">
                 </div>
+        </div>
+
+        <div class="bg-white p-3 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="switchTab('recall')" id="btn-recall" class="f-btn">
+                    <span class="text-2xl">📋</span><span class="label">Recall</span>
+                </button>
+                <button onclick="switchTab('trials')" id="btn-trials" class="f-btn">
+                    <span class="text-2xl">📊</span><span class="label">Trial Sheet</span>
+                </button>
+                <button onclick="switchTab('mastered')" id="btn-mastered" class="f-btn">
+                    <span class="text-2xl">🎓</span><span class="label">Mastered</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <div id="cyc" class="fixed inset-0 bg-white z-[200] hide flex flex-col p-6">
-        <div id="c-task" class="text-2xl font-black text-center border-b-4 border-black pb-4 mb-6 uppercase"></div>
-        <div id="c-count" class="flex-1 flex items-center justify-center text-9xl font-black">0</div>
+        <div id="c-task" class="text-2xl font-black text-center uppercase border-b-2 pb-4 mb-4"></div>
+        <div id="c-count" class="flex-1 flex items-center justify-center text-9xl font-black text-blue-600">0</div>
         <div class="grid grid-cols-2 gap-6 mb-10">
-            <button onclick="log('No')" class="bg-red-500 text-white py-14 rounded-3xl text-6xl font-black shadow-lg">✕</button>
-            <button onclick="log('Yes')" class="bg-green-500 text-white py-14 rounded-3xl text-6xl font-black shadow-lg">✓</button>
+            <button onclick="log('No')" class="bg-red-500 text-white py-14 rounded-3xl text-6xl font-black">✕</button>
+            <button onclick="log('Yes')" class="bg-green-500 text-white py-14 rounded-3xl text-6xl font-black">✓</button>
         </div>
-        <button onclick="hide('cyc')" class="font-black text-gray-400 uppercase text-xs tracking-widest">Exit Session</button>
+        <button onclick="hide('cyc')" class="font-black text-gray-400 uppercase text-xs">Finish Session</button>
     </div>
 
     <script>
@@ -65,45 +84,37 @@
         function init(){
             u = localStorage.getItem('u'); l = localStorage.getItem('l');
             let savedTab = localStorage.getItem('active_tab') || 'baseline';
-            if(u && l) { 
-                show('app'); document.getElementById('u-display').innerText=u; 
-                document.getElementById('l-display').innerText=l + " ▼"; 
-                switchTab(savedTab);
-            } 
+            if(u && l) { show('app'); switchTab(savedTab); } 
             else if(u) renderL(); else renderP();
         }
 
         function switchTab(tab){
-            curTab = tab;
-            localStorage.setItem('active_tab', tab);
-            
-            // UI Toggle
-            document.querySelectorAll('button[id^="btn-"]').forEach(b => b.classList.remove('active-tab', 'text-blue-600'));
-            document.getElementById(`btn-${tab}`).classList.add('active-tab', 'text-blue-600');
+            curTab = tab; localStorage.setItem('active_tab', tab);
+            document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${tab}`).classList.add('active');
 
-            const cont = document.getElementById('task-container');
-            cont.innerHTML = '';
+            const cont = document.getElementById('task-list');
+            cont.innerHTML = `<h2 class="font-black text-xl uppercase italic mb-4 text-gray-400 border-b pb-2">${tab}</h2>`;
             let d = JSON.parse(localStorage.getItem(`d_${u}_${l}`)||'[]');
 
             if(tab === 'trials'){
-                // PROGRESS SHEET VIEW
-                let table = `<h3 class="font-black text-[10px] text-gray-400 uppercase mb-4 tracking-widest">Summary Progress</h3><table class="w-full text-left bg-white rounded-xl shadow-sm">
-                    <tr class="text-[9px] text-gray-400 uppercase border-b"><th class="p-3">Goal</th><th class="p-3 text-center">N</th><th class="p-3 text-right">%</th></tr>`;
+                let table = `<table class="w-full text-left">
+                    <tr class="text-[9px] text-gray-400 uppercase border-b"><th class="pb-2">Program</th><th class="text-center pb-2">Trials</th><th class="text-right pb-2">%</th></tr>`;
                 let goals = [...new Set(d.filter(x => ['baseline','treatment','maintenance'].includes(x.f)).map(x => x.text))];
                 goals.forEach(g => {
                     let hist = d.filter(x => x.f === 'recall' && x.text === g);
                     let pct = hist.length ? Math.round((hist.filter(x=>x.res==='Yes').length / hist.length)*100) : 0;
-                    table += `<tr class="border-b"><td class="p-3 font-black uppercase text-sm">${g}</td><td class="text-center font-bold text-gray-400">${hist.length}</td><td class="p-3 text-right font-black text-blue-600 text-lg">${pct}%</td></tr>`;
+                    table += `<tr class="border-b"><td class="py-4 font-black uppercase text-sm">${g}</td><td class="text-center font-bold text-gray-400">${hist.length}</td><td class="text-right font-black text-blue-600 text-lg">${pct}%</td></tr>`;
                 });
-                cont.innerHTML = table + `</table>`;
-            } else if(['baseline','treatment','maintenance'].includes(tab)){
-                cont.innerHTML = `<div class="mb-6"><input id="t-in" type="text" placeholder="NEW GOAL..." class="w-full p-4 bg-white rounded-xl mb-2 font-black uppercase outline-none shadow-sm border border-gray-100"><button onclick="addT()" class="w-full bg-black text-white py-3 rounded-xl font-black uppercase text-[10px]">+ Add to ${tab}</button></div>`;
+                cont.innerHTML += table + `</table>`;
+            } else if(['baseline','treatment','maintenance','mastered'].includes(tab)){
+                cont.innerHTML += `<div class="mb-4"><input id="t-in" type="text" placeholder="NEW GOAL..." class="w-full p-4 bg-white rounded-xl mb-2 font-black uppercase outline-none shadow-sm"><button onclick="addT()" class="w-full bg-black text-white py-3 rounded-xl font-black uppercase text-[10px]">+ Add Goal</button></div>`;
                 d.filter(x => x.f === tab).reverse().forEach(t => {
                     cont.innerHTML += `<div class="bg-white p-5 rounded-xl border shadow-sm mb-3 flex justify-between items-center"><div onclick="startT('${t.text}')" class="flex-1 font-black uppercase text-base">${t.text}</div><button onclick="delT(${t.id})" class="text-red-100 font-black px-2">✕</button></div>`;
                 });
             } else if(tab === 'recall'){
                 d.filter(x => x.f === 'recall').reverse().forEach(t => {
-                    cont.innerHTML += `<div class="bg-white p-4 rounded-xl mb-2 flex justify-between items-center shadow-sm border-l-4 ${t.res==='Yes'?'border-green-500':'border-red-500'}"><div class="font-black uppercase text-xs">${t.text}</div><div class="font-black text-xs uppercase">${t.res}</div></div>`;
+                    cont.innerHTML += `<div class="bg-white p-3 rounded-lg mb-2 flex justify-between items-center border-l-4 ${t.res==='Yes'?'border-green-500':'border-red-500'}"><div class="font-black uppercase text-[11px]">${t.text}</div><div class="font-black text-xs uppercase">${t.res}</div></div>`;
                 });
             }
         }
@@ -135,7 +146,6 @@
         }
         function selL(x){ l=x; localStorage.setItem('l',x); location.reload(); }
         function addP(){ let v = document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); p.push(v); localStorage.setItem('profiles', JSON.stringify(p)); document.getElementById('p-in').value=''; renderP(); }
-        function exitL(){ localStorage.removeItem('l'); localStorage.removeItem('active_tab'); location.reload(); }
         init();
     </script>
 </body>
