@@ -3,122 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.6.0</title>
+    <title>Tracker Original</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .hide { display: none !important; }
-        .f-btn { 
-            background: white; border: 1px solid #e5e7eb; border-radius: 12px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            padding: 10px 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        /* The Original Large Grid Style */
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            padding: 20px;
+            margin-top: 20px;
         }
-        .f-btn.active { border: 2px solid #2563eb; background: #eff6ff; }
-        .label { font-size: 8px; font-weight: 900; text-transform: uppercase; margin-top: 4px; text-align: center; color: #374151; }
+        .folder {
+            background: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 15px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .folder:active { background: #f0f0f0; }
+        .folder-label {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-top: 10px;
+            color: #333;
+            text-align: center;
+        }
     </style>
 </head>
-<body class="bg-gray-100 font-sans text-gray-900 overflow-hidden h-screen flex flex-col">
+<body class="bg-gray-50 font-sans">
 
-    <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide">
-        <h1 class="text-white font-black text-3xl mb-8 mt-12 uppercase italic">Profiles</h1>
-        <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
-        <input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-xl mb-4 font-bold uppercase outline-none">
-        <button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-4 rounded-xl shadow-lg">+ ADD PERSON</button>
+    <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-8 flex flex-col items-center hide">
+        <h1 class="text-white font-black text-3xl mb-10 italic">PROFILES</h1>
+        <div id="p-list" class="w-full max-w-xs space-y-4"></div>
+        <div class="mt-8 w-full max-w-xs">
+            <input id="p-in" type="text" placeholder="NAME..." class="w-full p-4 rounded-xl font-bold uppercase mb-4 outline-none">
+            <button onclick="addP()" class="w-full bg-green-500 text-white font-black py-4 rounded-xl shadow-lg">ADD PERSON</button>
+        </div>
     </div>
 
-    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] p-6 flex flex-col items-center hide">
-        <h1 class="font-black text-2xl mb-8 mt-12 text-blue-900 uppercase italic">Select Room</h1>
+    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] p-8 flex flex-col items-center hide">
+        <h1 class="font-black text-2xl mb-10 text-blue-900 italic">SELECT ROOM</h1>
         <div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md"></div>
     </div>
 
-    <div id="app" class="hide flex flex-col h-full">
-        
-        <div class="bg-white p-3 border-b shadow-sm z-20">
-            <div class="grid grid-cols-3 gap-3">
-                <button onclick="switchTab('baseline')" id="btn-baseline" class="f-btn">
-                    <span class="text-2xl">📁</span><span class="label">Baseline</span>
-                </button>
-                <button onclick="switchTab('treatment')" id="btn-treatment" class="f-btn">
-                    <span class="text-2xl">📁</span><span class="label">Treatment</span>
-                </button>
-                <button onclick="switchTab('maintenance')" id="btn-maintenance" class="f-btn">
-                    <span class="text-2xl">📁</span><span class="label">Maintenance</span>
-                </button>
+    <div id="app" class="hide">
+        <div class="p-6 flex justify-between items-center bg-white border-b">
+            <div>
+                <h2 id="u-display" class="font-black text-xl uppercase italic"></h2>
+                <p id="l-display" class="text-blue-500 font-bold text-[10px] uppercase tracking-tighter"></p>
             </div>
+            <button onclick="exitL()" class="text-gray-400 font-bold text-xs border px-3 py-1 rounded-lg">EXIT</button>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 bg-gray-50" id="main-content">
-            <div id="task-list" class="max-w-md mx-auto pb-20">
-                </div>
-        </div>
-
-        <div class="bg-white p-3 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
-            <div class="grid grid-cols-3 gap-3">
-                <button onclick="switchTab('recall')" id="btn-recall" class="f-btn">
-                    <span class="text-2xl">📋</span><span class="label">Recall</span>
-                </button>
-                <button onclick="switchTab('trials')" id="btn-trials" class="f-btn">
-                    <span class="text-2xl">📊</span><span class="label">Trial Sheet</span>
-                </button>
-                <button onclick="switchTab('mastered')" id="btn-mastered" class="f-btn">
-                    <span class="text-2xl">🎓</span><span class="label">Mastered</span>
-                </button>
+        <div class="grid-container">
+            <div onclick="openF('baseline')" class="folder">
+                <span class="text-4xl">📁</span><span class="folder-label">Baseline</span>
+            </div>
+            <div onclick="openF('treatment')" class="folder">
+                <span class="text-4xl">📁</span><span class="folder-label">Treatment</span>
+            </div>
+            <div onclick="openF('maintenance')" class="folder">
+                <span class="text-4xl">📁</span><span class="folder-label">Maint</span>
+            </div>
+            <div onclick="openF('trials')" class="folder">
+                <span class="text-4xl">📊</span><span class="folder-label">Trial Sheet</span>
+            </div>
+            <div onclick="openF('mastered')" class="folder">
+                <span class="text-4xl">🎓</span><span class="folder-label">Mastered</span>
+            </div>
+            <div onclick="openF('recall')" class="folder">
+                <span class="text-4xl">📋</span><span class="folder-label">Recall</span>
             </div>
         </div>
+    </div>
+
+    <div id="f-screen" class="fixed inset-0 bg-white z-[80] hide overflow-y-auto p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 id="f-title" class="font-black text-3xl uppercase italic"></h2>
+            <button onclick="closeF()" class="bg-black text-white font-black text-xs px-6 py-2 rounded-full">BACK</button>
+        </div>
+        <div id="f-content"></div>
     </div>
 
     <div id="cyc" class="fixed inset-0 bg-white z-[200] hide flex flex-col p-6">
-        <div id="c-task" class="text-2xl font-black text-center uppercase border-b-2 pb-4 mb-4"></div>
-        <div id="c-count" class="flex-1 flex items-center justify-center text-9xl font-black text-blue-600">0</div>
-        <div class="grid grid-cols-2 gap-6 mb-10">
-            <button onclick="log('No')" class="bg-red-500 text-white py-14 rounded-3xl text-6xl font-black">✕</button>
-            <button onclick="log('Yes')" class="bg-green-500 text-white py-14 rounded-3xl text-6xl font-black">✓</button>
+        <div id="c-task" class="text-2xl font-black text-center uppercase py-6 border-b-2 mb-6"></div>
+        <div id="c-count" class="flex-1 flex items-center justify-center text-9xl font-black text-blue-700">0</div>
+        <div class="grid grid-cols-2 gap-6 mb-12">
+            <button onclick="log('No')" class="bg-red-500 text-white py-14 rounded-3xl text-6xl font-black shadow-xl">✕</button>
+            <button onclick="log('Yes')" class="bg-green-500 text-white py-14 rounded-3xl text-6xl font-black shadow-xl">✓</button>
         </div>
-        <button onclick="hide('cyc')" class="font-black text-gray-400 uppercase text-xs">Finish Session</button>
+        <button onclick="hide('cyc')" class="font-black text-gray-300 uppercase text-xs">Close Session</button>
     </div>
 
     <script>
-        let u, l, curTab;
+        let u, l, curF, curTask;
         const show = (id) => document.getElementById(id).classList.remove('hide');
         const hide = (id) => document.getElementById(id).classList.add('hide');
 
         function init(){
             u = localStorage.getItem('u'); l = localStorage.getItem('l');
-            let savedTab = localStorage.getItem('active_tab') || 'baseline';
-            if(u && l) { show('app'); switchTab(savedTab); } 
-            else if(u) renderL(); else renderP();
+            if(u && l) { 
+                show('app'); 
+                document.getElementById('u-display').innerText = u; 
+                document.getElementById('l-display').innerText = l; 
+            } 
+            else if(u) renderL(); 
+            else renderP();
         }
 
-        function switchTab(tab){
-            curTab = tab; localStorage.setItem('active_tab', tab);
-            document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`btn-${tab}`).classList.add('active');
-
-            const cont = document.getElementById('task-list');
-            cont.innerHTML = `<h2 class="font-black text-xl uppercase italic mb-4 text-gray-400 border-b pb-2">${tab}</h2>`;
+        function openF(f){
+            curF = f; document.getElementById('f-title').innerText = f;
+            const cont = document.getElementById('f-content'); cont.innerHTML = '';
             let d = JSON.parse(localStorage.getItem(`d_${u}_${l}`)||'[]');
 
-            if(tab === 'trials'){
+            if(f === 'trials'){
                 let table = `<table class="w-full text-left">
-                    <tr class="text-[9px] text-gray-400 uppercase border-b"><th class="pb-2">Program</th><th class="text-center pb-2">Trials</th><th class="text-right pb-2">%</th></tr>`;
+                    <tr class="text-[10px] text-gray-400 border-b uppercase"><th class="pb-2">Program</th><th class="pb-2 text-center">N</th><th class="pb-2 text-right">%</th></tr>`;
                 let goals = [...new Set(d.filter(x => ['baseline','treatment','maintenance'].includes(x.f)).map(x => x.text))];
                 goals.forEach(g => {
                     let hist = d.filter(x => x.f === 'recall' && x.text === g);
                     let pct = hist.length ? Math.round((hist.filter(x=>x.res==='Yes').length / hist.length)*100) : 0;
-                    table += `<tr class="border-b"><td class="py-4 font-black uppercase text-sm">${g}</td><td class="text-center font-bold text-gray-400">${hist.length}</td><td class="text-right font-black text-blue-600 text-lg">${pct}%</td></tr>`;
+                    table += `<tr class="border-b"><td class="py-4 font-black uppercase text-sm">${g}</td><td class="text-center font-bold text-gray-400">${hist.length}</td><td class="text-right font-black text-blue-600 text-xl">${pct}%</td></tr>`;
                 });
-                cont.innerHTML += table + `</table>`;
-            } else if(['baseline','treatment','maintenance','mastered'].includes(tab)){
-                cont.innerHTML += `<div class="mb-4"><input id="t-in" type="text" placeholder="NEW GOAL..." class="w-full p-4 bg-white rounded-xl mb-2 font-black uppercase outline-none shadow-sm"><button onclick="addT()" class="w-full bg-black text-white py-3 rounded-xl font-black uppercase text-[10px]">+ Add Goal</button></div>`;
-                d.filter(x => x.f === tab).reverse().forEach(t => {
-                    cont.innerHTML += `<div class="bg-white p-5 rounded-xl border shadow-sm mb-3 flex justify-between items-center"><div onclick="startT('${t.text}')" class="flex-1 font-black uppercase text-base">${t.text}</div><button onclick="delT(${t.id})" class="text-red-100 font-black px-2">✕</button></div>`;
+                cont.innerHTML = table + `</table>`;
+            } else if(['baseline','treatment','maintenance','mastered'].includes(f)){
+                cont.innerHTML = `<div class="mb-6"><input id="t-in" type="text" placeholder="NEW GOAL..." class="w-full p-4 bg-gray-100 rounded-xl mb-2 font-black uppercase outline-none shadow-inner"><button onclick="addT()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase">+ Create</button></div>`;
+                d.filter(x => x.f === f).reverse().forEach(t => {
+                    cont.innerHTML += `<div class="bg-white p-5 rounded-xl border shadow-sm mb-3 flex justify-between items-center"><div onclick="startT('${t.text}')" class="flex-1 font-black uppercase text-lg">${t.text}</div><button onclick="delT(${t.id})" class="text-red-200 font-black px-2">✕</button></div>`;
                 });
-            } else if(tab === 'recall'){
+            } else if(f === 'recall'){
                 d.filter(x => x.f === 'recall').reverse().forEach(t => {
-                    cont.innerHTML += `<div class="bg-white p-3 rounded-lg mb-2 flex justify-between items-center border-l-4 ${t.res==='Yes'?'border-green-500':'border-red-500'}"><div class="font-black uppercase text-[11px]">${t.text}</div><div class="font-black text-xs uppercase">${t.res}</div></div>`;
+                    cont.innerHTML += `<div class="bg-gray-50 p-4 rounded-xl border mb-2 flex justify-between items-center"><div class="font-black uppercase text-xs">${t.text}</div><div class="font-black text-sm ${t.res==='Yes'?'text-green-500':'text-red-500'}">${t.res}</div></div>`;
                 });
             }
+            show('f-screen');
         }
 
+        function closeF(){ hide('f-screen'); }
         function startT(name){ curTask = {name: name, count: 0}; document.getElementById('c-task').innerText=name; document.getElementById('c-count').innerText="0"; show('cyc'); }
         function log(v){
             let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)||'[]');
@@ -129,23 +157,25 @@
         function addT(){
             let v = document.getElementById('t-in').value.trim().toUpperCase(); if(!v) return;
             let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)||'[]');
-            d.push({id: Date.now(), text: v, f: curTab});
-            localStorage.setItem(k, JSON.stringify(d)); switchTab(curTab);
+            d.push({id: Date.now(), text: v, f: curF});
+            localStorage.setItem(k, JSON.stringify(d)); openF(curF);
         }
-        function delT(id){ if(confirm('Delete?')){ let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)).filter(x=>x.id!==id); localStorage.setItem(k, JSON.stringify(d)); switchTab(curTab); } }
+        function delT(id){ if(confirm('Delete?')){ let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)).filter(x=>x.id!==id); localStorage.setItem(k, JSON.stringify(d)); openF(curF); } }
+        
         function renderP(){
             const list = document.getElementById('p-list'); list.innerHTML = '';
             let p = JSON.parse(localStorage.getItem('profiles')||'[]');
-            p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white p-5 rounded-xl font-black uppercase mb-3 text-left shadow-lg border-b-4 border-blue-200">${x}</button>`; });
+            p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white p-5 rounded-xl font-black uppercase shadow-md text-left">${x}</button>`; });
             show('s-prof');
         }
         function selP(x){ u=x; localStorage.setItem('u',x); renderL(); }
         function renderL(){
             hide('s-prof'); show('s-loc'); const list = document.getElementById('l-list'); list.innerHTML = '';
-            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x => { list.innerHTML += `<button onclick="selL('${x}')" class="bg-white p-4 rounded-xl shadow-sm border font-black uppercase text-[10px] h-24">${x}</button>`; });
+            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x => { list.innerHTML += `<button onclick="selL('${x}')" class="bg-white p-4 rounded-xl shadow-sm border font-black uppercase text-xs h-24">${x}</button>`; });
         }
         function selL(x){ l=x; localStorage.setItem('l',x); location.reload(); }
         function addP(){ let v = document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); p.push(v); localStorage.setItem('profiles', JSON.stringify(p)); document.getElementById('p-in').value=''; renderP(); }
+        function exitL(){ localStorage.clear(); location.reload(); }
         init();
     </script>
 </body>
