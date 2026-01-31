@@ -13,7 +13,8 @@
         <div id="profileList" class="w-full max-w-xs space-y-4 mb-8"></div>
         <div class="w-full max-w-xs border-t border-blue-800 pt-6 pb-10">
             <input id="newProfileName" type="text" placeholder="Type name..." class="w-full p-4 rounded-2xl mb-4 outline-none bg-white text-lg">
-            <button onclick="addPerson()" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl">+ ADD PERSON</button>
+            <button onclick="addPerson()" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl active:bg-green-600">+ ADD PERSON</button>
+            <button onclick="localStorage.clear(); location.reload();" class="w-full mt-4 text-blue-400 text-[10px] font-bold uppercase underline">Emergency App Reset</button>
         </div>
     </div>
 
@@ -31,15 +32,11 @@
         </div>
 
         <div class="p-4 max-w-md mx-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic">BASELINE</h1>
-            </div>
-            
+            <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic mb-4">BASELINE</h1>
             <div id="inputSection" class="flex gap-2 mb-6">
-                <input id="taskInput" type="text" placeholder="Enter new task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-300 outline-none bg-white shadow-inner">
-                <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg active:scale-90 transition-transform">+</button>
+                <input id="taskInput" type="text" placeholder="Enter new task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-300 outline-none bg-white">
+                <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg">+</button>
             </div>
-
             <div id="mainList" class="space-y-3"></div>
         </div>
 
@@ -73,14 +70,24 @@
             renderProfiles();
         }
 
+        function removePerson(name, e) {
+            e.stopPropagation();
+            if(confirm("Delete " + name + "?")) {
+                profiles = profiles.filter(p => p !== name);
+                localStorage.setItem('tt_profiles', JSON.stringify(profiles));
+                localStorage.removeItem('data_' + name);
+                renderProfiles();
+            }
+        }
+
         function renderProfiles() {
             const list = document.getElementById('profileList');
             list.innerHTML = '';
             profiles.forEach(p => {
                 const div = document.createElement('div');
-                div.className = "bg-white p-5 rounded-2xl font-black text-center shadow-md active:scale-95 transition-transform";
-                div.innerText = p.toUpperCase();
-                div.onclick = () => selectProfile(p);
+                div.className = "bg-white p-5 rounded-2xl font-black shadow-md flex justify-between items-center";
+                div.innerHTML = `<span onclick="selectProfile('${p}')" class="flex-1">${p.toUpperCase()}</span> 
+                                 <button onclick="removePerson('${p}', event)" class="bg-red-50 text-red-500 px-3 py-1 rounded-lg text-[10px]">DELETE</button>`;
                 list.appendChild(div);
             });
         }
@@ -95,10 +102,9 @@
 
         function addTask() {
             const input = document.getElementById('taskInput');
-            const taskText = input.value.trim();
-            if(!taskText) return;
+            if(!input.value.trim()) return;
             let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
-            data.push({ id: Date.now(), text: taskText, folder: currentFol });
+            data.push({ id: Date.now(), text: input.value.trim(), folder: currentFol });
             localStorage.setItem('data_' + currentName, JSON.stringify(data));
             input.value = '';
             refresh();
@@ -112,7 +118,6 @@
         }
 
         function deleteTask(id) {
-            if(!confirm("Delete this task?")) return;
             let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
             data = data.filter(t => t.id !== id);
             localStorage.setItem('data_' + currentName, JSON.stringify(data));
@@ -127,15 +132,34 @@
 
         function refresh() {
             const list = document.getElementById('mainList');
-            const inputSect = document.getElementById('inputSection');
             list.innerHTML = '';
             
-            // UI Tab Highlighting
-            const allTabs = ['baseline', 'treatment', 'maintenance', 'mastered', 'recall', 'trials'];
-            allTabs.forEach(t => {
-                const btn = document.getElementById('t-' + t);
-                if(!btn) return;
-                const active = currentFol === t;
-                if(['baseline', 'treatment', 'maintenance'].includes(t)) {
-                    btn.className =
-                        
+            // Tab Highlighting Logic
+            ['baseline', 'treatment', 'maintenance'].forEach(t => {
+                const b = document.getElementById('t-' + t);
+                b.className = `p-4 flex-1 text-[10px] font-black border-b-4 uppercase ${currentFol === t ? 'border-blue-600 text-blue-600 bg-blue-50' : 'border-transparent text-gray-400 bg-white'}`;
+            });
+
+            document.getElementById('inputSection').style.display = (['baseline', 'treatment', 'maintenance'].includes(currentFol)) ? 'flex' : 'none';
+
+            let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
+            let filtered = data.filter(t => t.folder === currentFol);
+
+            filtered.forEach(t => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center mb-2";
+                
+                let moveBtn = '';
+                if (currentFol === 'baseline') moveBtn = `<button onclick="moveTask(${t.id},'treatment')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">START TX</button>`;
+                else if (currentFol === 'treatment') moveBtn = `<button onclick="moveTask(${t.id},'maintenance')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">TO MAINT</button>`;
+                else if (currentFol === 'maintenance') moveBtn = `<button onclick="moveTask(${t.id},'mastered')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">MASTER</button>`;
+                
+                card.innerHTML = `<span class="font-bold text-gray-700">${t.text}</span><div class="flex gap-2">${moveBtn}<button onclick="deleteTask(${t.id})" class="text-red-300 font-bold px-2 text-xl">✕</button></div>`;
+                list.appendChild(card);
+            });
+        }
+
+        renderProfiles();
+    </script>
+</body>
+</html>
