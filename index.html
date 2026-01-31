@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.2.5</title>
+    <title>Tracker Pro v6.2.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div class="bg-red-600 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">v6.2.5 | TA Save Engine Rebuilt</div>
+    <div class="bg-green-600 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">v6.2.6 | TA Step Engine Fixed</div>
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
-        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
+        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Select Person</h1>
         <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
         <div class="w-full max-w-xs border-t border-blue-800 pt-6">
             <input id="p-in" type="text" placeholder="NAME..." class="w-full p-4 rounded-2xl mb-4 bg-white uppercase font-bold outline-none">
@@ -60,9 +60,9 @@
     <div id="ta-mod" class="hide fixed inset-0 bg-black/80 z-[200] p-6 flex items-center justify-center">
         <div class="bg-white w-full max-w-md rounded-[30px] p-6">
             <h2 class="font-black mb-4 uppercase text-orange-600 italic">TA Steps</h2>
-            <div id="ta-ins" class="space-y-2 mb-4 max-h-40 overflow-y-auto"></div>
-            <button onclick="addStep()" class="w-full border-2 border-dashed py-2 rounded-xl text-gray-400 font-bold text-[10px] uppercase">+ Step</button>
-            <button onclick="saveTA()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase">Save Task</button>
+            <div id="ta-ins" class="space-y-2 mb-4 max-h-48 overflow-y-auto"></div>
+            <button onclick="addStepRow()" class="w-full border-2 border-dashed py-2 rounded-xl text-gray-400 font-bold text-[10px] uppercase">+ Add Step</button>
+            <button onclick="saveTA()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase mt-4">Save Task</button>
         </div>
     </div>
 
@@ -86,8 +86,8 @@
 
     <script>
         const LOCS=["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"];
-        let u=localStorage.getItem('u')||'', l=localStorage.getItem('l')||'', f=localStorage.getItem('f')||'baseline', activeT=null, 
-            activeC=JSON.parse(localStorage.getItem('ac'))||null, taS=JSON.parse(localStorage.getItem('ts'))||null;
+        let u=localStorage.getItem('u')||'', l=localStorage.getItem('l')||'', f=localStorage.getItem('f')||'baseline', 
+            activeT=null, activeC=JSON.parse(localStorage.getItem('ac'))||null, taS=JSON.parse(localStorage.getItem('ts'))||null;
 
         function show(id){document.getElementById(id).classList.remove('hide')}
         function hide(id){document.getElementById(id).classList.add('hide')}
@@ -115,7 +115,7 @@
 
         function renderL(){
             const list=document.getElementById('l-list'); list.innerHTML=''; show('s-loc'); hide('app');
-            LOCS.forEach(x=>{ list.innerHTML+=`<button onclick="selL('${x}')" class="bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900 active:bg-blue-600 active:text-white h-20">${x}</button>`; });
+            LOCS.forEach(x=>{ list.innerHTML+=`<button onclick="selL('${x}')" class="bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900 h-20">${x}</button>`; });
         }
 
         function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
@@ -131,8 +131,6 @@
             let filt = d.filter(t=>t.f===f);
             document.getElementById('in-sect').style.display = ['baseline','treatment','maintenance'].includes(f) ? 'block' : 'none';
 
-            if(filt.length === 0) list.innerHTML = '<p class="text-center text-gray-400 text-[10px] py-10 uppercase font-bold tracking-widest">No data in this tab</p>';
-
             filt.forEach(t=>{
                 list.innerHTML+=`<div class="bg-white p-4 rounded-3xl shadow-sm border flex justify-between items-center mb-2">
                     <div onclick="${t.type==='ta'?'runTA':'runC'}(${t.id})" class="flex-1 font-black uppercase text-sm cursor-pointer">${t.text} ${t.type==='ta'?'<span class="text-orange-500 text-[8px]">[TA]</span>':''}</div>
@@ -143,25 +141,44 @@
             });
         }
 
+        // TA SETUP LOGIC
         function addT(type){
             let v=document.getElementById('t-in').value.trim().toUpperCase(); if(!v) return;
-            if(type==='ta'){ activeT={text:v,type:'ta',steps:[]}; show('ta-mod'); document.getElementById('ta-ins').innerHTML=''; addStep(); }
-            else save({id:Date.now(),text:v,type:'trial',f:f}); document.getElementById('t-in').value='';
+            if(type==='ta'){
+                activeT={text:v,type:'ta'};
+                document.getElementById('ta-ins').innerHTML='';
+                show('ta-mod');
+                addStepRow();
+            } else save({id:Date.now(),text:v,type:'trial',f:f});
+            document.getElementById('t-in').value='';
         }
-        function addStep(){ document.getElementById('ta-ins').innerHTML+=`<input class="w-full p-2 border rounded-xl mb-1 ta-s" placeholder="Next step...">`; }
+
+        function addStepRow(){
+            const div = document.createElement('div');
+            div.innerHTML = `<input class="w-full p-2 border rounded-xl mb-1 ta-s uppercase text-xs font-bold" placeholder="Step Description...">`;
+            document.getElementById('ta-ins').appendChild(div);
+            div.firstChild.focus();
+        }
+
         function saveTA(){
-            let s=[]; document.querySelectorAll('.ta-s').forEach(i=>{ if(i.value) s.push(i.value.toUpperCase()); });
-            if(s.length) save({id:Date.now(),text:activeT.text,type:'ta',steps:s,f:f});
-            hide('ta-mod');
+            let steps=[];
+            document.querySelectorAll('.ta-s').forEach(i=>{ if(i.value.trim()) steps.push(i.value.trim().toUpperCase()); });
+            if(steps.length){
+                save({id:Date.now(),text:activeT.text,type:'ta',steps:steps,f:f});
+                hide('ta-mod');
+            } else { alert("Please add at least one step."); }
         }
+
         function save(o){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)||'[]'); d.push(o); localStorage.setItem(k,JSON.stringify(d)); refresh(); }
         function delT(id){ if(confirm('Delete?')){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)).filter(t=>t.id!==id); localStorage.setItem(k,JSON.stringify(d)); refresh(); } }
+        
         function mov(id){
             let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k));
             d.forEach(t=>{ if(t.id===id) t.f=t.f==='baseline'?'treatment':t.f==='treatment'?'maintenance':t.f==='maintenance'?'mastered':'baseline'; });
             localStorage.setItem(k,JSON.stringify(d)); refresh();
         }
 
+        // TRIAL RUNNER
         function runC(id){ let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); activeC={id:id,name:d.text,cnt:0,res:[]}; localStorage.setItem('ac',JSON.stringify(activeC)); resC(); }
         function resC(){ hide('m-list'); show('cyc'); document.getElementById('c-task').innerText=activeC.name; document.getElementById('c-cnt').innerText=`TRIAL ${activeC.cnt+1} OF 10`; }
         function rec(v){
@@ -173,6 +190,7 @@
         }
         function exitC(){ activeC=null; localStorage.removeItem('ac'); hide('cyc'); show('m-list'); refresh(); }
 
+        // TA RUNNER
         function runTA(id){ let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); taS={id:id,name:d.text,steps:d.steps,res:{}}; localStorage.setItem('ts',JSON.stringify(taS)); resTA(); }
         function resTA(){
             show('ta-run'); document.getElementById('ta-h').innerText=taS.name; const list=document.getElementById('ta-s-list'); list.innerHTML='';
@@ -187,9 +205,10 @@
         function subTA(){ 
             let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)); 
             d.push({id:Date.now(),text:taS.name,res:taS.res,f:'ta_history',date:new Date().toLocaleDateString(),time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}); 
-            localStorage.setItem(`d_${u}_${l}`,JSON.stringify(d)); exitTA(); 
+            localStorage.setItem(`d_${u}_${l}`,JSON.stringify(d)); exitTA(); alert('TA Saved to Logs');
         }
         function exitTA(){ taS=null; localStorage.removeItem('ts'); hide('ta-run'); refresh(); }
+        
         function exitN(){ localStorage.removeItem('u'); localStorage.removeItem('l'); location.reload(); }
         function exitL(){ localStorage.removeItem('l'); location.reload(); }
 
