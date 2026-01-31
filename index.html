@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.2.4</title>
+    <title>Tracker Pro v6.2.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div class="bg-indigo-600 text-white text-[10px] font-bold text-center py-1 uppercase">v6.2.4 | Symbols & Persistence Restored</div>
+    <div class="bg-red-600 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">v6.2.5 | TA Save Engine Rebuilt</div>
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
-        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic tracking-tighter">Select Person</h1>
+        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
         <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
         <div class="w-full max-w-xs border-t border-blue-800 pt-6">
             <input id="p-in" type="text" placeholder="NAME..." class="w-full p-4 rounded-2xl mb-4 bg-white uppercase font-bold outline-none">
@@ -40,7 +40,7 @@
 
         <div class="p-4 max-w-md mx-auto">
             <div id="in-sect" class="bg-white p-4 rounded-3xl shadow-md border mb-6">
-                <input id="t-in" type="text" placeholder="Goal Name..." class="w-full p-3 border-2 rounded-xl mb-2 uppercase font-bold">
+                <input id="t-in" type="text" placeholder="Goal Name..." class="w-full p-3 border-2 rounded-xl mb-2 uppercase font-bold outline-none">
                 <div class="flex gap-2">
                     <button onclick="addT('trial')" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-[10px] font-bold uppercase">+ Trial</button>
                     <button onclick="addT('ta')" class="flex-1 bg-orange-500 text-white py-2 rounded-xl text-[10px] font-bold uppercase">+ TA</button>
@@ -50,18 +50,10 @@
         </div>
 
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-lg z-50">
-            <button onclick="tab('trials')" id="b-trials" class="flex flex-col items-center py-1 w-1/4">
-                <span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trials</span>
-            </button>
-            <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center py-1 w-1/4">
-                <span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span>
-            </button>
-            <button onclick="tab('ta_history')" id="b-ta_history" class="flex flex-col items-center py-1 w-1/4">
-                <span class="text-xl">📝</span><span class="text-[8px] font-black uppercase">TA Logs</span>
-            </button>
-            <button onclick="tab('recall')" id="b-recall" class="flex flex-col items-center py-1 w-1/4">
-                <span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">History</span>
-            </button>
+            <button onclick="tab('trials')" id="b-trials" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trials</span></button>
+            <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span></button>
+            <button onclick="tab('ta_history')" id="b-ta_history" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📝</span><span class="text-[8px] font-black uppercase">TA Logs</span></button>
+            <button onclick="tab('recall')" id="b-recall" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">History</span></button>
         </div>
     </div>
 
@@ -69,8 +61,8 @@
         <div class="bg-white w-full max-w-md rounded-[30px] p-6">
             <h2 class="font-black mb-4 uppercase text-orange-600 italic">TA Steps</h2>
             <div id="ta-ins" class="space-y-2 mb-4 max-h-40 overflow-y-auto"></div>
-            <button onclick="addStep()" class="w-full border-2 border-dashed py-2 rounded-xl text-gray-400 font-bold text-[10px] uppercase">+ Add Step</button>
-            <button onclick="saveTA()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase">Save TA</button>
+            <button onclick="addStep()" class="w-full border-2 border-dashed py-2 rounded-xl text-gray-400 font-bold text-[10px] uppercase">+ Step</button>
+            <button onclick="saveTA()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase">Save Task</button>
         </div>
     </div>
 
@@ -85,9 +77,7 @@
 
     <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-6 text-center">
         <div id="c-cnt" class="text-blue-500 font-black text-xs mb-4"></div>
-        <div class="bg-gray-50 p-12 rounded-[40px] border-4 border-blue-500 mb-8 mt-10">
-            <h2 id="c-task" class="text-3xl font-black uppercase"></h2>
-        </div>
+        <div class="bg-gray-50 p-12 rounded-[40px] border-4 border-blue-500 mb-8 mt-10"><h2 id="c-task" class="text-3xl font-black uppercase"></h2></div>
         <div class="grid grid-cols-2 gap-4">
             <button onclick="rec('No')" class="bg-red-500 text-white py-10 rounded-3xl font-black text-2xl shadow-lg">✕</button>
             <button onclick="rec('Yes')" class="bg-green-500 text-white py-10 rounded-3xl font-black text-2xl shadow-lg">✓</button>
@@ -102,10 +92,7 @@
         function show(id){document.getElementById(id).classList.remove('hide')}
         function hide(id){document.getElementById(id).classList.add('hide')}
 
-        function init(){
-            renderP();
-            if(u){ if(l) restore(); else selP(u); }
-        }
+        function init(){ renderP(); if(u){ if(l) restore(); else selP(u); } }
 
         function renderP(){
             const list=document.getElementById('p-list'); let p=JSON.parse(localStorage.getItem('profiles')||'[]');
@@ -132,29 +119,27 @@
         }
 
         function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
-
-        function restore(){
-            hide('s-loc'); show('app'); document.getElementById('u-lab').innerText=`${u} | ${l}`;
-            if(activeC) resC(); else if(taS) resTA(); else refresh();
-        }
-
+        function restore(){ hide('s-loc'); show('app'); document.getElementById('u-lab').innerText=`${u} | ${l}`; if(activeC) resC(); else if(taS) resTA(); else refresh(); }
         function tab(x){ f=x; localStorage.setItem('f',x); refresh(); }
 
         function refresh(){
             const list=document.getElementById('m-list'); list.innerHTML='';
             document.querySelectorAll('button[id^="b-"]').forEach(b=>b.classList.remove('act-t'));
-            document.getElementById('b-'+f).classList.add('act-t');
+            const activeTabBtn = document.getElementById('b-'+f); if(activeTabBtn) activeTabBtn.classList.add('act-t');
             
             let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)||'[]');
             let filt = d.filter(t=>t.f===f);
-            
             document.getElementById('in-sect').style.display = ['baseline','treatment','maintenance'].includes(f) ? 'block' : 'none';
+
+            if(filt.length === 0) list.innerHTML = '<p class="text-center text-gray-400 text-[10px] py-10 uppercase font-bold tracking-widest">No data in this tab</p>';
 
             filt.forEach(t=>{
                 list.innerHTML+=`<div class="bg-white p-4 rounded-3xl shadow-sm border flex justify-between items-center mb-2">
                     <div onclick="${t.type==='ta'?'runTA':'runC'}(${t.id})" class="flex-1 font-black uppercase text-sm cursor-pointer">${t.text} ${t.type==='ta'?'<span class="text-orange-500 text-[8px]">[TA]</span>':''}</div>
-                    <button onclick="mov(${t.id})" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[8px] uppercase font-bold">Move</button>
-                    <button onclick="delT(${t.id})" class="text-red-200 ml-2 font-bold">✕</button></div>`;
+                    <div class="flex gap-2">
+                        <button onclick="mov(${t.id})" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[8px] uppercase font-bold">Move</button>
+                        <button onclick="delT(${t.id})" class="text-red-200 font-bold px-2">✕</button>
+                    </div></div>`;
             });
         }
 
@@ -163,41 +148,32 @@
             if(type==='ta'){ activeT={text:v,type:'ta',steps:[]}; show('ta-mod'); document.getElementById('ta-ins').innerHTML=''; addStep(); }
             else save({id:Date.now(),text:v,type:'trial',f:f}); document.getElementById('t-in').value='';
         }
-
-        function addStep(){ document.getElementById('ta-ins').innerHTML+=`<input class="w-full p-2 border rounded-xl mb-1 ta-s" placeholder="Step...">`; }
+        function addStep(){ document.getElementById('ta-ins').innerHTML+=`<input class="w-full p-2 border rounded-xl mb-1 ta-s" placeholder="Next step...">`; }
         function saveTA(){
-            let s=[]; document.querySelectorAll('.ta-s').forEach(i=>{ if(i.value) s.push(i.value); });
+            let s=[]; document.querySelectorAll('.ta-s').forEach(i=>{ if(i.value) s.push(i.value.toUpperCase()); });
             if(s.length) save({id:Date.now(),text:activeT.text,type:'ta',steps:s,f:f});
             hide('ta-mod');
         }
-
         function save(o){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)||'[]'); d.push(o); localStorage.setItem(k,JSON.stringify(d)); refresh(); }
-        function delT(id){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)).filter(t=>t.id!==id); localStorage.setItem(k,JSON.stringify(d)); refresh(); }
-
+        function delT(id){ if(confirm('Delete?')){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)).filter(t=>t.id!==id); localStorage.setItem(k,JSON.stringify(d)); refresh(); } }
         function mov(id){
             let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k));
             d.forEach(t=>{ if(t.id===id) t.f=t.f==='baseline'?'treatment':t.f==='treatment'?'maintenance':t.f==='maintenance'?'mastered':'baseline'; });
             localStorage.setItem(k,JSON.stringify(d)); refresh();
         }
 
-        function runC(id){
-            let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id);
-            activeC={id:id,name:d.text,cnt:0,res:[]}; localStorage.setItem('ac',JSON.stringify(activeC)); resC();
-        }
+        function runC(id){ let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); activeC={id:id,name:d.text,cnt:0,res:[]}; localStorage.setItem('ac',JSON.stringify(activeC)); resC(); }
         function resC(){ hide('m-list'); show('cyc'); document.getElementById('c-task').innerText=activeC.name; document.getElementById('c-cnt').innerText=`TRIAL ${activeC.cnt+1} OF 10`; }
         function rec(v){
             activeC.res.push(v); activeC.cnt++;
             if(activeC.cnt>=10){ 
-                let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)); d.push({id:Date.now(),text:activeC.name,res:activeC.res,f:'recall'}); localStorage.setItem(`d_${u}_${l}`,JSON.stringify(d));
-                exitC(); alert('Session Saved to History'); 
+                let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)); d.push({id:Date.now(),text:activeC.name,res:activeC.res,f:'recall',date:new Date().toLocaleDateString()}); 
+                localStorage.setItem(`d_${u}_${l}`,JSON.stringify(d)); exitC();
             } else { localStorage.setItem('ac',JSON.stringify(activeC)); resC(); }
         }
         function exitC(){ activeC=null; localStorage.removeItem('ac'); hide('cyc'); show('m-list'); refresh(); }
 
-        function runTA(id){
-            let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id);
-            taS={id:id,name:d.text,steps:d.steps,res:{}}; localStorage.setItem('ts',JSON.stringify(taS)); resTA();
-        }
+        function runTA(id){ let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); taS={id:id,name:d.text,steps:d.steps,res:{}}; localStorage.setItem('ts',JSON.stringify(taS)); resTA(); }
         function resTA(){
             show('ta-run'); document.getElementById('ta-h').innerText=taS.name; const list=document.getElementById('ta-s-list'); list.innerHTML='';
             taS.steps.forEach((s,i)=>{
@@ -209,11 +185,11 @@
         }
         function mS(i,v){ taS.res[i]=v; localStorage.setItem('ts',JSON.stringify(taS)); resTA(); }
         function subTA(){ 
-            let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)); d.push({id:Date.now(),text:taS.name,res:taS.res,f:'ta_history'}); localStorage.setItem(`d_${u}_${l}`,JSON.stringify(d));
-            exitTA(); alert('TA Saved to Logs'); 
+            let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)); 
+            d.push({id:Date.now(),text:taS.name,res:taS.res,f:'ta_history',date:new Date().toLocaleDateString(),time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}); 
+            localStorage.setItem(`d_${u}_${l}`,JSON.stringify(d)); exitTA(); 
         }
         function exitTA(){ taS=null; localStorage.removeItem('ts'); hide('ta-run'); refresh(); }
-
         function exitN(){ localStorage.removeItem('u'); localStorage.removeItem('l'); location.reload(); }
         function exitL(){ localStorage.removeItem('l'); location.reload(); }
 
