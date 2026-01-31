@@ -214,5 +214,32 @@
 
             var filtC = state.tasks.filter(t => t.fol === state.activeFol);
             if (state.isCyc && filtC.length > 0) {
-                L.style.display = 'none'; IS.style.display = 'none'; CS.style.display = 'block'; CB.
+                L.style.display = 'none'; IS.style.display = 'none'; CS.style.display = 'block'; CB.style.display = 'none';
+                if (state.positions[state.activeFol] >= filtC.length) state.positions[state.activeFol] = 0;
+                document.getElementById('displayTask').innerText = filtC[state.positions[state.activeFol]].txt;
+                CC.style.display = 'block'; CC.innerText = (state.positions[state.activeFol] + 1) + " / " + filtC.length;
+            } else {
+                state.isCyc = false;
+                L.style.display = 'block'; CS.style.display = 'none'; CC.style.display = 'none';
+                CB.style.display = (state.activeFol === 'recall' && filtC.length === 0 ? 'none' : 'block');
+                IS.style.display = (state.activeFol === 'recall' ? 'none' : 'flex');
+                L.innerHTML = '';
+                filtC.forEach(t => {
+                    var card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center gap-2";
+                    var btns = '';
+                    if (state.activeFol === 'treatment') btns = `<button onclick="move(${t.id},'maintenance')" class="bg-blue-50 text-blue-600 px-3 py-2 rounded-xl text-[8px] font-black border border-blue-100">MAINT.</button>`;
+                    else if (state.activeFol === 'maintenance') btns = `<button onclick="move(${t.id},'treatment')" class="bg-gray-50 text-gray-500 px-3 py-2 rounded-xl text-[8px] font-black border border-gray-100">BACK</button>`;
+                    else if (state.activeFol === 'recall') btns = `<span class="font-black text-xs mr-2 ${t.res === 'Yes' ? 'text-green-500' : 'text-red-500'}">${t.res.toUpperCase()}</span>`;
                     
+                    var cycBtn = state.activeFol !== 'recall' ? `<button onclick="startAtTask(${t.id})" class="bg-yellow-100 text-yellow-700 px-3 py-2 rounded-xl text-[8px] font-black border border-yellow-200">CYCLE</button>` : '';
+
+                    card.innerHTML = `<span class="font-bold text-gray-700 flex-1">${t.txt}</span><div class="flex items-center gap-1">${cycBtn}${btns}<button onclick="remove(${t.id})" class="text-red-200 font-bold px-2 text-lg active:text-red-500">✕</button></div>`;
+                    L.appendChild(card);
+                });
+            }
+        }
+        loadSession();
+    </script>
+</body>
+</html>
