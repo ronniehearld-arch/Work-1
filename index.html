@@ -6,241 +6,41 @@
     <title>Task Tracker Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans text-gray-900 pb-24">
+<body class="bg-blue-900 font-sans text-gray-900">
 
     <div id="profileScreen" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
         <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase tracking-widest text-center">Select Person</h1>
-        <div id="profileList" class="w-full max-w-xs space-y-4 mb-8"></div>
+        
+        <div id="profileList" class="w-full max-w-xs space-y-4 mb-8">
+            </div>
+
         <div class="w-full max-w-xs border-t border-blue-800 pt-6 pb-10">
-            <input id="newProfileName" type="text" placeholder="Add new name..." class="w-full p-4 rounded-2xl mb-2 outline-none">
-            <button onclick="addProfile()" class="w-full bg-green-500 text-white font-black py-4 rounded-2xl shadow-lg">+ ADD NEW</button>
-            <button onclick="localStorage.clear(); location.reload();" class="w-full mt-4 text-blue-300 text-[10px] font-bold uppercase tracking-widest underline">Reset Entire App</button>
+            <input id="newProfileName" type="text" placeholder="Type name here..." class="w-full p-4 rounded-2xl mb-4 outline-none bg-white text-lg shadow-inner">
+            <button id="addBtn" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl active:bg-green-600">
+                + ADD NEW PERSON
+            </button>
+            
+            <button onclick="localStorage.clear(); location.reload();" class="w-full mt-8 text-blue-300 text-[10px] font-bold uppercase tracking-widest underline opacity-50">
+                Clear App Data
+            </button>
         </div>
     </div>
 
-    <div id="appUI" class="hidden">
+    <div id="appUI" class="hidden bg-gray-100 min-h-screen pb-24">
         <div class="bg-white border-b sticky top-0 z-50 shadow-sm">
             <div class="flex justify-between items-center p-2 bg-gray-50 border-b">
-                 <button onclick="exitToProfiles()" class="p-2 text-blue-600 font-black text-[10px]">⬅ NAMES</button>
-                 <span id="activeUserLabel" class="text-[10px] font-black text-gray-400 uppercase">...</span>
+                 <button onclick="location.reload()" class="p-2 text-blue-600 font-black text-[10px]">⬅ NAMES</button>
+                 <span id="activeUserLabel" class="text-[10px] font-black text-gray-400 uppercase"></span>
             </div>
             <div class="flex justify-around">
-                <button onclick="changeFol('baseline')" id="t-baseline" class="p-4 flex-1 text-[10px] font-black border-b-4 border-blue-600 text-blue-600 uppercase">Baseline</button>
-                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 flex-1 text-[10px] font-black border-b-4 border-transparent text-gray-400 uppercase">Treatment</button>
-                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 flex-1 text-[10px] font-black border-b-4 border-transparent text-gray-400 uppercase">Maint.</button>
+                <button onclick="changeFol('baseline')" id="t-baseline" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Baseline</button>
+                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Treatment</button>
+                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Maint.</button>
             </div>
         </div>
 
         <div class="p-4 max-w-md mx-auto">
             <div class="flex justify-between items-center mb-4">
-                <h1 id="headerTitle" class="font-black text-xl uppercase tracking-tighter text-blue-800 italic underline decoration-blue-200">BASELINE</h1>
-                <button onclick="toggleCycle()" id="cycleBtn" class="bg-yellow-400 text-blue-900 px-3 py-1 rounded-lg font-bold text-xs shadow-md">CYCLE MODE</button>
-            </div>
-            <div id="inputSection" class="flex gap-2 mb-6">
-                <input id="newInput" type="text" placeholder="Add task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none shadow-inner bg-white">
-                <button onclick="handleAddTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-2xl shadow-lg">+</button>
-            </div>
-            <div id="mainList" class="space-y-3"></div>
-            <div id="cycleScreen" class="hidden text-center py-4">
-                <div id="cycleCounter" class="text-blue-500 font-black text-xs mb-2"></div>
-                <div class="bg-white p-12 rounded-[40px] shadow-2xl border-4 border-blue-500 mb-8">
-                    <h2 id="displayTask" class="text-4xl font-black text-gray-800 break-words leading-tight">...</h2>
-                </div>
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <button onclick="record('No')" class="bg-red-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg">✕ NO</button>
-                    <button onclick="record('Yes')" class="bg-green-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg">✓ YES</button>
-                </div>
-                <button onclick="toggleCycle()" class="block w-full text-gray-400 font-bold underline p-2">Exit Cycle Mode</button>
-            </div>
-        </div>
-
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-lg z-50">
-            <button onclick="changeFol('trials')" id="t-trials" class="flex flex-col items-center py-2 px-1 rounded-xl w-1/3">
-                <span class="text-[14px] mb-1">📊</span><span class="text-[8px] font-black uppercase">Trial Sheet</span>
-            </button>
-            <button onclick="changeFol('mastered')" id="t-mastered" class="flex flex-col items-center py-2 px-1 rounded-xl w-1/3">
-                <span class="text-[14px] mb-1">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span>
-            </button>
-            <button onclick="changeFol('recall')" id="t-recall" class="flex flex-col items-center py-2 px-1 rounded-xl w-1/3">
-                <span class="text-[14px] mb-1">📋</span><span class="text-[8px] font-black uppercase">History</span>
-            </button>
-        </div>
-    </div>
-
-    <script>
-        // --- DATA FIXER ---
-        var profiles = JSON.parse(localStorage.getItem('tt_profiles') || '[]');
-        var currentProfile = localStorage.getItem('tt_active_profile') || null;
-        var state = { tasks: [], activeFol: 'baseline', isCyc: false, positions: {} };
-
-        function saveAll() {
-            localStorage.setItem('tt_profiles', JSON.stringify(profiles));
-            localStorage.setItem('tt_active_profile', currentProfile || "");
-            if (currentProfile) localStorage.setItem('tt_data_' + currentProfile, JSON.stringify(state));
-        }
-
-        function addProfile() {
-            var input = document.getElementById('newProfileName');
-            var name = input.value.trim();
-            if (!name) return alert("Enter a name!");
-            if (profiles.includes(name)) return alert("Exists!");
-            profiles.push(name); input.value = '';
-            saveAll(); renderProfiles();
-        }
-
-        function deleteProfile(name, e) {
-            e.stopPropagation();
-            if (confirm("Delete " + name + "?")) {
-                profiles = profiles.filter(p => p !== name);
-                localStorage.removeItem('tt_data_' + name);
-                if (currentProfile === name) currentProfile = null;
-                saveAll(); renderProfiles();
-            }
-        }
-
-        function selectProfile(name) {
-            console.log("Selecting:", name);
-            currentProfile = name;
-            var saved = localStorage.getItem('tt_data_' + name);
-            try {
-                state = saved ? JSON.parse(saved) : { tasks: [], activeFol: 'baseline', isCyc: false, positions: {} };
-                if (!state.positions) state.positions = {};
-            } catch(e) {
-                state = { tasks: [], activeFol: 'baseline', isCyc: false, positions: {} };
-            }
-            document.getElementById('profileScreen').classList.add('hidden');
-            document.getElementById('appUI').classList.remove('hidden');
-            document.getElementById('activeUserLabel').innerText = name.toUpperCase();
-            saveAll(); refresh();
-        }
-
-        function exitToProfiles() {
-            currentProfile = null; saveAll();
-            document.getElementById('profileScreen').classList.remove('hidden');
-            document.getElementById('appUI').classList.add('hidden');
-            renderProfiles();
-        }
-
-        function renderProfiles() {
-            var list = document.getElementById('profileList'); list.innerHTML = '';
-            profiles.forEach(p => {
-                var btn = document.createElement('div');
-                btn.className = "bg-white p-5 rounded-2xl font-black text-center shadow-md flex justify-between items-center active:scale-95 transition-transform";
-                // CRITICAL FIX: Direct function call
-                btn.onclick = function() { selectProfile(p); };
-                btn.innerHTML = `<span>${p.toUpperCase()}</span><button onclick="deleteProfile('${p}', event)" class="text-red-300 text-[10px] border px-2 py-1 rounded-lg">DEL</button>`;
-                list.appendChild(btn);
-            });
-        }
-
-        function handleAddTask() {
-            var el = document.getElementById('newInput');
-            if (!el.value.trim()) return;
-            state.tasks.push({ id: Date.now(), txt: el.value, fol: state.activeFol, res: '', date: new Date().toLocaleDateString() });
-            el.value = ''; saveAll(); refresh();
-        }
-
-        function changeFol(f) { state.activeFol = f; state.isCyc = false; saveAll(); refresh(); }
-        function toggleCycle() { state.isCyc = !state.isCyc; saveAll(); refresh(); }
-        
-        function record(val) {
-            var filt = state.tasks.filter(t => t.fol === state.activeFol);
-            var pos = state.positions[state.activeFol] || 0;
-            var cur = filt[pos];
-            state.tasks.push({ id: Date.now() + 1, txt: cur.txt, fol: 'recall', res: val, date: new Date().toLocaleDateString() });
-            state.positions[state.activeFol] = (pos + 1) % filt.length;
-            saveAll(); refresh();
-        }
-
-        function move(id, target) {
-            state.tasks.forEach(t => { if(t.id === id) t.fol = target; });
-            saveAll(); refresh();
-        }
-
-        function remove(id) {
-            state.tasks = state.tasks.filter(t => t.id !== id);
-            saveAll(); refresh();
-        }
-
-        function refresh() {
-            var L = document.getElementById('mainList');
-            var CS = document.getElementById('cycleScreen');
-            var IS = document.getElementById('inputSection');
-            var HT = document.getElementById('headerTitle');
-            var CB = document.getElementById('cycleBtn');
-
-            HT.innerText = state.activeFol.toUpperCase();
-            
-            ['baseline', 'treatment', 'maintenance'].forEach(f => {
-                var btn = document.getElementById('t-' + f);
-                btn.className = "p-4 flex-1 text-[10px] font-black border-b-4 " + (state.activeFol === f ? "border-blue-600 text-blue-600 bg-blue-50" : "border-transparent text-gray-400 bg-white");
-            });
-
-            ['trials', 'mastered', 'recall'].forEach(f => {
-                var btn = document.getElementById('t-' + f);
-                var active = state.activeFol === f;
-                btn.className = active ? "flex flex-col items-center py-2 px-1 rounded-xl w-1/3 bg-blue-600 text-white" : "flex flex-col items-center py-2 px-1 rounded-xl w-1/3 bg-white text-gray-400";
-                if(f==='trials' && active) btn.classList.replace('bg-blue-600', 'bg-orange-500');
-            });
-
-            if (state.activeFol === 'trials') { renderTrialSheet(); return; }
-
-            var filtC = state.tasks.filter(t => t.fol === state.activeFol);
-            if (state.isCyc && filtC.length > 0) {
-                L.style.display = 'none'; IS.style.display = 'none'; CS.style.display = 'block'; CB.style.display = 'none';
-                var pos = state.positions[state.activeFol] || 0;
-                document.getElementById('displayTask').innerText = filtC[pos].txt;
-                document.getElementById('cycleCounter').innerText = (pos + 1) + " / " + filtC.length;
-            } else {
-                state.isCyc = false; L.style.display = 'block'; CS.style.display = 'none'; 
-                CB.style.display = (filtC.length === 0 || ['recall', 'mastered'].includes(state.activeFol) ? 'none' : 'block');
-                IS.style.display = (['recall', 'mastered'].includes(state.activeFol) ? 'none' : 'flex');
-                L.innerHTML = '';
-                filtC.forEach(t => {
-                    var card = document.createElement('div');
-                    card.className = "bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center gap-1";
-                    var btns = '';
-                    if (state.activeFol === 'baseline') btns = `<button onclick="move(${t.id},'treatment')" class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[8px] font-black border">TO TREATMENT</button>`;
-                    else if (state.activeFol === 'treatment') btns = `<button onclick="move(${t.id},'maintenance')" class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[8px] font-black border">TO MAINT.</button>`;
-                    else if (state.activeFol === 'maintenance') btns = `<button onclick="move(${t.id},'mastered')" class="bg-green-50 text-green-600 px-3 py-1 rounded-lg text-[8px] font-black border uppercase">Master</button>`;
-                    else if (state.activeFol === 'mastered') btns = `<button onclick="move(${t.id},'maintenance')" class="bg-gray-50 text-gray-400 px-3 py-1 rounded-lg text-[8px] font-black border">REVERT</button>`;
-                    else if (state.activeFol === 'recall') btns = `<span class="font-black text-[10px] ${t.res === 'Yes' ? 'text-green-500' : 'text-red-500'}">${t.res}</span>`;
+                <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic"></h1>
+                <button onclick="toggleCycle()" id="cycleBtn" class="bg-yellow-400 text-blue-900 px-3 py-1 rounded-lg font-bold text-
                     
-                    card.innerHTML = `<span class="font-bold text-gray-700 flex-1 text-sm">${t.txt}</span><div class="flex items-center gap-1">${btns}<button onclick="remove(${t.id})" class="text-red-200 font-bold px-2">✕</button></div>`;
-                    L.appendChild(card);
-                });
-            }
-        }
-
-        function renderTrialSheet() {
-            var L = document.getElementById('mainList');
-            document.getElementById('inputSection').style.display = 'none';
-            document.getElementById('cycleBtn').style.display = 'none';
-            L.style.display = 'block';
-            var history = state.tasks.filter(t => t.fol === 'recall');
-            var groups = {};
-            history.forEach(t => {
-                if (!groups[t.txt]) groups[t.txt] = { yes: 0, total: 0 };
-                groups[t.txt].total++;
-                if (t.res === 'Yes') groups[t.txt].yes++;
-            });
-            L.innerHTML = '';
-            for (var task in groups) {
-                var pct = Math.round((groups[task].yes / groups[task].total) * 100);
-                var div = document.createElement('div');
-                div.className = "bg-white p-4 rounded-3xl shadow-sm border-2 border-white mb-3 flex justify-between items-center";
-                div.innerHTML = `<div><p class="font-black text-gray-800 text-lg uppercase">${task}</p><p class="text-[10px] font-bold text-gray-400 uppercase">${groups[task].yes}/${groups[task].total} Success</p></div><div class="text-right"><p class="text-3xl font-black ${pct >= 80 ? 'text-green-600' : 'text-red-600'}">${pct}%</p></div>`;
-                L.appendChild(div);
-            }
-        }
-
-        // --- STARTUP ---
-        window.onload = function() {
-            renderProfiles();
-            if (currentProfile && profiles.includes(currentProfile)) {
-                selectProfile(currentProfile);
-            }
-        };
-    </script>
-</body>
-</html>
