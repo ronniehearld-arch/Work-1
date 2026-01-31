@@ -3,125 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Original</title>
+    <title>Tracker Pro v6.5.7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .hide { display: none !important; }
-        /* The Original High-Contrast Folder Look */
-        .folder-btn { 
-            background: white; 
-            border: 2px solid #000; 
-            border-radius: 12px; 
-            height: 120px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            box-shadow: 4px 4px 0px #000;
-        }
-        .folder-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #000; }
-        .label { font-weight: 900; text-transform: uppercase; font-size: 11px; margin-top: 8px; }
+        .active-tab { border-bottom: 4px solid #2563eb; color: #2563eb; }
     </style>
 </head>
-<body class="bg-gray-200 font-mono text-black">
+<body class="bg-gray-100 font-sans text-gray-900 pb-10">
 
-    <div id="s-prof" class="fixed inset-0 bg-white z-[100] p-6 flex flex-col items-center hide">
-        <h1 class="font-black text-4xl mb-10 border-b-4 border-black">PROFILES</h1>
-        <div id="p-list" class="w-full max-w-xs mb-8"></div>
-        <input id="p-in" type="text" placeholder="NEW NAME" class="w-full max-w-xs p-4 border-4 border-black mb-4 font-black uppercase outline-none">
-        <button onclick="addP()" class="w-full max-w-xs bg-black text-white font-black py-4 border-2 border-black">ADD+</button>
+    <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide">
+        <h1 class="text-white font-black text-3xl mb-8 mt-12 uppercase italic">Profiles</h1>
+        <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
+        <input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-xl mb-4 font-bold uppercase outline-none">
+        <button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-4 rounded-xl shadow-lg">+ ADD PERSON</button>
     </div>
 
-    <div id="s-loc" class="fixed inset-0 bg-white z-[90] p-6 flex flex-col items-center hide">
-        <h1 class="font-black text-3xl mb-10 border-b-4 border-black uppercase">Locations</h1>
+    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] p-6 flex flex-col items-center hide">
+        <h1 class="font-black text-2xl mb-8 mt-12 text-blue-900 uppercase italic">Select Room</h1>
         <div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md"></div>
     </div>
 
-    <div id="app" class="hide p-4">
-        <div class="flex justify-between items-center mb-6 border-b-4 border-black pb-2">
+    <div id="app" class="hide min-h-screen">
+        <div class="bg-white p-4 border-b flex justify-between items-center sticky top-0 z-40">
             <div>
-                <div id="u-display" class="font-black text-2xl uppercase"></div>
-                <div id="l-display" class="font-bold text-xs uppercase bg-black text-white px-2 inline-block"></div>
+                <h2 id="u-display" class="font-black text-lg uppercase italic"></h2>
+                <button onclick="exitL()" id="l-display" class="text-blue-600 font-black text-[10px] uppercase"></button>
             </div>
-            <button onclick="exitL()" class="font-black text-xs border-2 border-black px-2 py-1">EXIT</button>
+            <button onclick="location.reload()" class="text-gray-300 font-black text-[10px] uppercase">Sync</button>
         </div>
 
-        <div class="grid grid-cols-3 gap-4 mb-4">
-            <div onclick="openF('baseline')" class="folder-btn"><span class="text-4xl">📁</span><span class="label">Baseline</span></div>
-            <div onclick="openF('treatment')" class="folder-btn"><span class="text-4xl">📁</span><span class="label">Treatment</span></div>
-            <div onclick="openF('maintenance')" class="folder-btn"><span class="text-4xl">📁</span><span class="label">Maint</span></div>
+        <div class="bg-white border-b flex overflow-x-auto no-scrollbar sticky top-[61px] z-30">
+            <button onclick="switchTab('baseline')" id="btn-baseline" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Baseline</button>
+            <button onclick="switchTab('treatment')" id="btn-treatment" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Treatment</button>
+            <button onclick="switchTab('maintenance')" id="btn-maintenance" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Maint</button>
+            <button onclick="switchTab('trials')" id="btn-trials" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Sheet</button>
+            <button onclick="switchTab('recall')" id="btn-recall" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Log</button>
         </div>
 
-        <div class="grid grid-cols-3 gap-4">
-            <div onclick="openF('recall')" class="folder-btn"><span class="text-4xl">📋</span><span class="label">Recall</span></div>
-            <div onclick="openF('trials')" class="folder-btn bg-yellow-300"><span class="text-4xl">📊</span><span class="label">Trial Sheet</span></div>
-            <div onclick="openF('ta')" class="folder-btn"><span class="text-4xl">📝</span><span class="label">TA Log</span></div>
+        <div class="p-4 max-w-md mx-auto">
+            <div id="task-container">
+                </div>
         </div>
-    </div>
-
-    <div id="f-screen" class="fixed inset-0 bg-white z-[150] hide overflow-y-auto p-6">
-        <div class="flex justify-between items-center mb-6 border-b-2 border-black pb-2">
-            <h2 id="f-title" class="font-black text-3xl uppercase"></h2>
-            <button onclick="closeF()" class="font-black text-sm bg-black text-white px-4 py-2">BACK</button>
-        </div>
-        <div id="f-content"></div>
     </div>
 
     <div id="cyc" class="fixed inset-0 bg-white z-[200] hide flex flex-col p-6">
-        <div id="c-task" class="text-3xl font-black text-center border-4 border-black p-4 mb-6 uppercase"></div>
-        <div class="flex-1 flex items-center justify-center text-9xl font-black" id="c-count">0</div>
-        <div class="grid grid-cols-2 gap-4 mb-10">
-            <button onclick="log('No')" class="bg-red-500 border-4 border-black py-12 text-6xl font-black">✕</button>
-            <button onclick="log('Yes')" class="bg-green-500 border-4 border-black py-12 text-6xl font-black">✓</button>
+        <div id="c-task" class="text-2xl font-black text-center border-b-4 border-black pb-4 mb-6 uppercase"></div>
+        <div id="c-count" class="flex-1 flex items-center justify-center text-9xl font-black">0</div>
+        <div class="grid grid-cols-2 gap-6 mb-10">
+            <button onclick="log('No')" class="bg-red-500 text-white py-14 rounded-3xl text-6xl font-black shadow-lg">✕</button>
+            <button onclick="log('Yes')" class="bg-green-500 text-white py-14 rounded-3xl text-6xl font-black shadow-lg">✓</button>
         </div>
-        <button onclick="hide('cyc')" class="font-black uppercase underline">Close Session</button>
+        <button onclick="hide('cyc')" class="font-black text-gray-400 uppercase text-xs tracking-widest">Exit Session</button>
     </div>
 
     <script>
-        let u, l, curF, curTask;
+        let u, l, curTab;
         const show = (id) => document.getElementById(id).classList.remove('hide');
         const hide = (id) => document.getElementById(id).classList.add('hide');
 
         function init(){
             u = localStorage.getItem('u'); l = localStorage.getItem('l');
-            let savedF = localStorage.getItem('active_f');
+            let savedTab = localStorage.getItem('active_tab') || 'baseline';
             if(u && l) { 
-                show('app'); document.getElementById('u-display').innerText=u; document.getElementById('l-display').innerText=l; 
-                if(savedF) openF(savedF);
+                show('app'); document.getElementById('u-display').innerText=u; 
+                document.getElementById('l-display').innerText=l + " ▼"; 
+                switchTab(savedTab);
             } 
             else if(u) renderL(); else renderP();
         }
 
-        function openF(f){
-            curF = f; localStorage.setItem('active_f', f);
-            document.getElementById('f-title').innerText = f;
-            const cont = document.getElementById('f-content'); cont.innerHTML = '';
+        function switchTab(tab){
+            curTab = tab;
+            localStorage.setItem('active_tab', tab);
+            
+            // UI Toggle
+            document.querySelectorAll('button[id^="btn-"]').forEach(b => b.classList.remove('active-tab', 'text-blue-600'));
+            document.getElementById(`btn-${tab}`).classList.add('active-tab', 'text-blue-600');
+
+            const cont = document.getElementById('task-container');
+            cont.innerHTML = '';
             let d = JSON.parse(localStorage.getItem(`d_${u}_${l}`)||'[]');
 
-            if(f === 'trials'){
-                let table = `<table class="w-full text-left border-2 border-black">
-                    <tr class="bg-black text-white text-[10px] uppercase"><th class="p-2">TASK</th><th class="p-2 text-center">N</th><th class="p-2 text-right">%</th></tr>`;
+            if(tab === 'trials'){
+                // PROGRESS SHEET VIEW
+                let table = `<h3 class="font-black text-[10px] text-gray-400 uppercase mb-4 tracking-widest">Summary Progress</h3><table class="w-full text-left bg-white rounded-xl shadow-sm">
+                    <tr class="text-[9px] text-gray-400 uppercase border-b"><th class="p-3">Goal</th><th class="p-3 text-center">N</th><th class="p-3 text-right">%</th></tr>`;
                 let goals = [...new Set(d.filter(x => ['baseline','treatment','maintenance'].includes(x.f)).map(x => x.text))];
                 goals.forEach(g => {
                     let hist = d.filter(x => x.f === 'recall' && x.text === g);
                     let pct = hist.length ? Math.round((hist.filter(x=>x.res==='Yes').length / hist.length)*100) : 0;
-                    table += `<tr class="border-b-2 border-black"><td class="p-3 font-black uppercase text-sm">${g}</td><td class="text-center font-bold">${hist.length}</td><td class="text-right font-black text-xl">${pct}%</td></tr>`;
+                    table += `<tr class="border-b"><td class="p-3 font-black uppercase text-sm">${g}</td><td class="text-center font-bold text-gray-400">${hist.length}</td><td class="p-3 text-right font-black text-blue-600 text-lg">${pct}%</td></tr>`;
                 });
                 cont.innerHTML = table + `</table>`;
-            } else if(['baseline','treatment','maintenance','ta'].includes(f)){
-                cont.innerHTML = `<div class="mb-4"><input id="t-in" type="text" placeholder="ENTER GOAL" class="w-full p-4 border-4 border-black mb-2 font-black uppercase outline-none"><button onclick="addT()" class="w-full bg-black text-white py-3 font-black uppercase">ADD TO FOLDER</button></div>`;
-                d.filter(x => x.f === f).reverse().forEach(t => {
-                    cont.innerHTML += `<div class="p-4 border-2 border-black mb-2 flex justify-between items-center"><div onclick="startT('${t.text}')" class="flex-1 font-black uppercase text-lg cursor-pointer">${t.text}</div><button onclick="delT(${t.id})" class="font-black ml-4">DEL</button></div>`;
+            } else if(['baseline','treatment','maintenance'].includes(tab)){
+                cont.innerHTML = `<div class="mb-6"><input id="t-in" type="text" placeholder="NEW GOAL..." class="w-full p-4 bg-white rounded-xl mb-2 font-black uppercase outline-none shadow-sm border border-gray-100"><button onclick="addT()" class="w-full bg-black text-white py-3 rounded-xl font-black uppercase text-[10px]">+ Add to ${tab}</button></div>`;
+                d.filter(x => x.f === tab).reverse().forEach(t => {
+                    cont.innerHTML += `<div class="bg-white p-5 rounded-xl border shadow-sm mb-3 flex justify-between items-center"><div onclick="startT('${t.text}')" class="flex-1 font-black uppercase text-base">${t.text}</div><button onclick="delT(${t.id})" class="text-red-100 font-black px-2">✕</button></div>`;
                 });
-            } else if(f === 'recall'){
+            } else if(tab === 'recall'){
                 d.filter(x => x.f === 'recall').reverse().forEach(t => {
-                    cont.innerHTML += `<div class="p-3 border-2 border-black mb-2 flex justify-between items-center font-bold uppercase text-xs"><span>${t.text}</span><span>${t.res}</span></div>`;
+                    cont.innerHTML += `<div class="bg-white p-4 rounded-xl mb-2 flex justify-between items-center shadow-sm border-l-4 ${t.res==='Yes'?'border-green-500':'border-red-500'}"><div class="font-black uppercase text-xs">${t.text}</div><div class="font-black text-xs uppercase">${t.res}</div></div>`;
                 });
             }
-            show('f-screen');
         }
 
-        function closeF(){ localStorage.removeItem('active_f'); hide('f-screen'); }
         function startT(name){ curTask = {name: name, count: 0}; document.getElementById('c-task').innerText=name; document.getElementById('c-count').innerText="0"; show('cyc'); }
         function log(v){
             let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)||'[]');
@@ -132,24 +118,24 @@
         function addT(){
             let v = document.getElementById('t-in').value.trim().toUpperCase(); if(!v) return;
             let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)||'[]');
-            d.push({id: Date.now(), text: v, f: curF});
-            localStorage.setItem(k, JSON.stringify(d)); openF(curF);
+            d.push({id: Date.now(), text: v, f: curTab});
+            localStorage.setItem(k, JSON.stringify(d)); switchTab(curTab);
         }
-        function delT(id){ if(confirm('Delete?')){ let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)).filter(x=>x.id!==id); localStorage.setItem(k, JSON.stringify(d)); openF(curF); } }
+        function delT(id){ if(confirm('Delete?')){ let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)).filter(x=>x.id!==id); localStorage.setItem(k, JSON.stringify(d)); switchTab(curTab); } }
         function renderP(){
             const list = document.getElementById('p-list'); list.innerHTML = '';
             let p = JSON.parse(localStorage.getItem('profiles')||'[]');
-            p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full border-4 border-black p-4 font-black uppercase mb-2 text-left">${x}</button>`; });
+            p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white p-5 rounded-xl font-black uppercase mb-3 text-left shadow-lg border-b-4 border-blue-200">${x}</button>`; });
             show('s-prof');
         }
         function selP(x){ u=x; localStorage.setItem('u',x); renderL(); }
         function renderL(){
             hide('s-prof'); show('s-loc'); const list = document.getElementById('l-list'); list.innerHTML = '';
-            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x => { list.innerHTML += `<button onclick="selL('${x}')" class="border-4 border-black p-4 font-black uppercase text-xs h-24">${x}</button>`; });
+            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x => { list.innerHTML += `<button onclick="selL('${x}')" class="bg-white p-4 rounded-xl shadow-sm border font-black uppercase text-[10px] h-24">${x}</button>`; });
         }
         function selL(x){ l=x; localStorage.setItem('l',x); location.reload(); }
         function addP(){ let v = document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); p.push(v); localStorage.setItem('profiles', JSON.stringify(p)); document.getElementById('p-in').value=''; renderP(); }
-        function exitL(){ localStorage.removeItem('l'); localStorage.removeItem('active_f'); location.reload(); }
+        function exitL(){ localStorage.removeItem('l'); localStorage.removeItem('active_tab'); location.reload(); }
         init();
     </script>
 </body>
