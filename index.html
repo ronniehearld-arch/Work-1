@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.3.1</title>
+    <title>Tracker Pro v6.3.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase">v6.3.1 | Stability First Mode</div>
+    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer">v6.3.2 | Session Locked (Tap to Switch User)</div>
 
-    <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
+    <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto hide">
         <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
         <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
         <div class="w-full max-w-xs border-t border-blue-800 pt-6">
@@ -20,7 +20,6 @@
     </div>
 
     <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center">
-        <button onclick="exitN()" class="absolute top-6 left-6 text-blue-600 font-bold text-xs uppercase">⬅ Names</button>
         <h1 class="font-black text-2xl mb-6 mt-10 uppercase text-blue-900 italic underline">Location</h1>
         <div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md"></div>
     </div>
@@ -38,7 +37,6 @@
             </div>
         </div>
         <div id="m-list" class="p-4 space-y-3 pb-20 max-w-md mx-auto"></div>
-        
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-lg z-50">
             <button onclick="tab('baseline')" id="f-home" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trials</span></button>
             <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span></button>
@@ -52,10 +50,7 @@
         <div id="ta-s-list" class="space-y-4 mb-8"></div>
         <div class="flex flex-col gap-3">
             <button onclick="subTA()" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black shadow-lg uppercase">Submit Data</button>
-            <div class="flex gap-2">
-                <button onclick="exitTA()" class="flex-1 bg-gray-200 py-3 rounded-xl font-black uppercase text-[10px]">Save & Exit</button>
-                <button onclick="resetTA()" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl font-black uppercase text-[10px]">Clear Session</button>
-            </div>
+            <button onclick="exitTA()" class="w-full bg-gray-200 py-3 rounded-xl font-black uppercase text-[10px]">Save & Exit</button>
         </div>
     </div>
 
@@ -70,23 +65,44 @@
     </div>
 
     <script>
-        let u=localStorage.getItem('u'), l=localStorage.getItem('l'), f=localStorage.getItem('f')||'baseline', activeC=null, taS=null;
+        // Use Global state for everything
+        let u, l, f;
 
         function show(id){document.getElementById(id).classList.remove('hide')}
         function hide(id){document.getElementById(id).classList.add('hide')}
-        function init(){ renderP(); if(u){ if(l) restore(); else selP(u); } }
-        
-        function renderP(){
-            const list=document.getElementById('p-list'); let p=JSON.parse(localStorage.getItem('profiles')||'[]');
-            list.innerHTML=''; p.forEach(x=>{ list.innerHTML+=`<div class="bg-white p-4 rounded-2xl font-black shadow-md flex justify-between uppercase"><span onclick="selP('${x}')" class="flex-1 cursor-pointer">${x}</span><button onclick="remP('${x}')" class="text-red-300 ml-4">✕</button></div>`; });
-            show('s-prof');
+
+        function init(){
+            // Check session
+            u = localStorage.getItem('u');
+            l = localStorage.getItem('l');
+            f = localStorage.getItem('f') || 'baseline';
+
+            if(u && l){
+                restore(); // Jump straight to app
+            } else if(u){
+                renderL(); // Jump straight to locations
+            } else {
+                renderP(); // Standard login
+            }
         }
-        function addP(){ let v=document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); if(!p.includes(v)) p.push(v); localStorage.setItem('profiles',JSON.stringify(p)); document.getElementById('p-in').value=''; renderP(); }
-        function remP(x){ if(confirm('Delete Profile?')){ let p=JSON.parse(localStorage.getItem('profiles')).filter(n=>n!==x); localStorage.setItem('profiles',JSON.stringify(p)); if(u===x) exitN(); renderP(); } }
-        function selP(x){ u=x; localStorage.setItem('u',x); hide('s-prof'); renderL(); }
-        function renderL(){ const list=document.getElementById('l-list'); list.innerHTML=''; show('s-loc'); hide('app'); ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x=>{ list.innerHTML+=`<button onclick="selL('${x}')" class="bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900 h-20">${x}</button>`; }); }
+
+        function renderP(){
+            u = null; localStorage.removeItem('u');
+            const list=document.getElementById('p-list'); let p=JSON.parse(localStorage.getItem('profiles')||'[]');
+            list.innerHTML=''; p.forEach(x=>{ list.innerHTML+=`<div class="bg-white p-4 rounded-2xl font-black shadow-md flex justify-between uppercase"><span onclick="selP('${x}')" class="flex-1 cursor-pointer font-bold">${x}</span><button onclick="remP('${x}')" class="text-red-300 ml-4 font-black">✕</button></div>`; });
+            show('s-prof'); hide('s-loc'); hide('app');
+        }
+
+        function selP(x){ u=x; localStorage.setItem('u',x); renderL(); }
+        function renderL(){
+            hide('s-prof'); show('s-loc'); hide('app');
+            const list=document.getElementById('l-list'); list.innerHTML='';
+            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x=>{ list.innerHTML+=`<button onclick="selL('${x}')" class="bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900 h-20">${x}</button>`; });
+        }
+
         function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
-        function restore(){ hide('s-loc'); show('app'); document.getElementById('u-lab').innerText=`${u} | ${l}`; refresh(); }
+        function restore(){ hide('s-loc'); hide('s-prof'); show('app'); document.getElementById('u-lab').innerText=`${u} | ${l}`; refresh(); }
+        
         function tab(x){ f=x; localStorage.setItem('f',x); refresh(); }
 
         function refresh(){
@@ -96,8 +112,6 @@
             if(activeTabBtn) activeTabBtn.classList.add('act-t');
             
             let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)||'[]');
-            
-            // Add Input Row if in active folders
             if(['baseline','treatment','maintenance'].includes(f)){
                 list.innerHTML = `<div class="bg-white p-4 rounded-3xl shadow-md border mb-4">
                     <input id="t-in" type="text" placeholder="Goal Name..." class="w-full p-3 border-2 rounded-xl mb-2 uppercase font-bold outline-none">
@@ -132,29 +146,23 @@
         function delT(id){ if(confirm('Delete?')){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)).filter(t=>t.id!==id); localStorage.setItem(k,JSON.stringify(d)); refresh(); } }
         function mov(id){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)); d.forEach(t=>{ if(t.id===id) t.f=t.f==='baseline'?'treatment':t.f==='treatment'?'maintenance':t.f==='maintenance'?'mastered':'baseline'; }); localStorage.setItem(k,JSON.stringify(d)); refresh(); }
 
-        function runC(id){ 
-            let saved = JSON.parse(localStorage.getItem(`ac_${id}`));
-            if(saved) activeC = saved; 
-            else { let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); activeC={id:id,name:d.text,cnt:0,res:[]}; }
-            resC(); 
-        }
+        let activeC, taS;
+        function runC(id){ let saved = JSON.parse(localStorage.getItem(`ac_${id}`)); if(saved) activeC = saved; else { let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); activeC={id:id,name:d.text,cnt:0,res:[]}; } resC(); }
         function resC(){ hide('app'); show('cyc'); document.getElementById('c-task').innerText=activeC.name; document.getElementById('c-cnt').innerText=`TRIAL ${activeC.cnt+1} OF 10`; }
         function rec(v){ activeC.res.push(v); activeC.cnt++; localStorage.setItem(`ac_${activeC.id}`, JSON.stringify(activeC)); if(activeC.cnt>=10){ let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)); d.push({id:Date.now(),text:activeC.name,res:activeC.res,f:'recall',date:new Date().toLocaleDateString()}); localStorage.setItem(`d_${u}_${l}`,JSON.stringify(d)); localStorage.removeItem(`ac_${activeC.id}`); exitC(); } else resC(); }
         function exitC(){ activeC=null; hide('cyc'); show('app'); refresh(); }
 
-        function runTA(id){ 
-            let saved = JSON.parse(localStorage.getItem(`ts_${id}`));
-            if(saved) taS = saved;
-            else { let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); taS={id:id,name:d.text,steps:d.steps,res:{}}; }
-            resTA(); 
-        }
+        function runTA(id){ let saved = JSON.parse(localStorage.getItem(`ts_${id}`)); if(saved) taS = saved; else { let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); taS={id:id,name:d.text,steps:d.steps,res:{}}; } resTA(); }
         function resTA(){ hide('app'); show('ta-run'); document.getElementById('ta-h').innerText=taS.name; const list=document.getElementById('ta-s-list'); list.innerHTML=''; taS.steps.forEach((s,i)=>{ let v=taS.res[i]; list.innerHTML+=`<div class="flex justify-between items-center p-3 border rounded-xl font-bold uppercase text-[10px]"><span>${s}</span><div class="flex gap-2"><button onclick="mS(${i},'No')" class="w-10 h-10 rounded-full border-2 ${v==='No'?'bg-red-500 text-white':'border-gray-300'}">-</button><button onclick="mS(${i},'Yes')" class="w-10 h-10 rounded-full border-2 ${v==='Yes'?'bg-blue-900 text-white':'border-blue-900'}">+</button></div></div>`; }); }
         function mS(i,v){ taS.res[i]=v; localStorage.setItem(`ts_${taS.id}`, JSON.stringify(taS)); resTA(); }
-        function resetTA(){ if(confirm("Clear current scores?")){ taS.res={}; localStorage.removeItem(`ts_${taS.id}`); resTA(); }}
         function subTA(){ let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)); d.push({id:Date.now(),text:taS.name,res:taS.res,f:'ta_history',date:new Date().toLocaleDateString()}); localStorage.setItem(`d_${u}_${l}`,JSON.stringify(d)); localStorage.removeItem(`ts_${taS.id}`); exitTA(); }
         function exitTA(){ taS=null; hide('ta-run'); show('app'); refresh(); }
-        function exitN(){ localStorage.clear(); location.reload(); }
+
+        function addP(){ let v=document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); if(!p.includes(v)) p.push(v); localStorage.setItem('profiles',JSON.stringify(p)); document.getElementById('p-in').value=''; renderP(); }
+        function remP(x){ if(confirm('Delete Profile?')){ let p=JSON.parse(localStorage.getItem('profiles')).filter(n=>n!==x); localStorage.setItem('profiles',JSON.stringify(p)); if(u===x) exitN(); renderP(); } }
+        function exitN(){ localStorage.removeItem('u'); localStorage.removeItem('l'); location.reload(); }
         function exitL(){ localStorage.removeItem('l'); location.reload(); }
+        
         init();
     </script>
 </body>
