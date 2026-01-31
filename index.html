@@ -8,8 +8,8 @@
 </head>
 <body class="bg-gray-100 font-sans text-gray-900 pb-24">
 
-    <div class="bg-green-600 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">
-        App Status: Version 6.0 (Name Protection Active)
+    <div class="bg-orange-600 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">
+        App Status: Version 6.1 (Task Analysis Mode Active)
     </div>
 
     <div id="profileScreen" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
@@ -23,7 +23,7 @@
 
     <div id="locationScreen" class="fixed inset-0 bg-gray-100 z-[90] hidden p-6 flex flex-col items-center overflow-y-auto">
         <div class="flex justify-between w-full mb-6">
-            <button onclick="exitToNames()" class="text-blue-600 font-black text-xs uppercase bg-blue-50 px-3 py-1 rounded-lg">⬅ Back to Names</button>
+            <button onclick="exitToNames()" class="text-blue-600 font-black text-xs uppercase bg-blue-50 px-3 py-1 rounded-lg">⬅ Names</button>
             <span id="locUserLabel" class="font-black text-gray-400 uppercase text-xs tracking-widest"></span>
         </div>
         <h1 class="font-black text-2xl mb-6 uppercase text-blue-900 italic underline">Select Location</h1>
@@ -45,69 +45,72 @@
 
         <div class="p-4 max-w-md mx-auto">
             <div class="flex justify-between items-center mb-4">
-                <h1 id="headerTitle" class="font-black text-lg uppercase text-blue-800 italic underline decoration-blue-200">...</h1>
-                <div>
-                    <button onclick="toggleCycle()" id="cycleBtn" class="hidden bg-yellow-400 text-blue-900 px-4 py-2 rounded-xl font-black text-xs shadow-md">CYCLE ALL</button>
-                    <button onclick="clearHistory()" id="clearHistBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded-xl font-black text-xs shadow-md">CLEAR HISTORY</button>
+                <h1 id="headerTitle" class="font-black text-lg uppercase text-blue-800 italic">...</h1>
+                <button onclick="clearHistory()" id="clearHistBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded-xl font-black text-xs shadow-md">CLEAR HISTORY</button>
+            </div>
+
+            <div id="inputSection" class="bg-white p-4 rounded-3xl shadow-md border mb-6">
+                <input id="taskInput" type="text" placeholder="Task Name (e.g. Hand Washing)" class="w-full p-4 rounded-xl border-2 mb-2 outline-none">
+                <div class="flex gap-2">
+                    <button onclick="addTask('standard')" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-xs">+ STANDARD TRIAL</button>
+                    <button onclick="addTask('ta')" class="flex-1 bg-orange-500 text-white py-3 rounded-xl font-bold text-xs">+ TASK ANALYSIS</button>
                 </div>
             </div>
 
-            <div id="inputSection" class="flex gap-2 mb-6">
-                <input id="taskInput" type="text" placeholder="Add task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none">
-                <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg">+</button>
+            <div id="mainList" class="space-y-3"></div>
+
+            <div id="taModal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-[200] p-6 flex items-center justify-center">
+                <div class="bg-white w-full max-w-md rounded-[40px] p-6">
+                    <h2 class="font-black text-xl mb-4 uppercase text-orange-600 italic">Setup TA Steps</h2>
+                    <p class="text-[10px] text-gray-400 mb-4 uppercase font-bold">Add steps in order (e.g. 1. Turn on water)</p>
+                    <div id="taStepInputs" class="space-y-2 mb-4 max-h-60 overflow-y-auto"></div>
+                    <button onclick="addStepRow()" class="w-full border-2 border-dashed border-gray-300 py-2 rounded-xl text-gray-400 font-bold text-xs mb-4">+ ADD STEP</button>
+                    <button onclick="saveTA()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black shadow-lg">FINISH & SAVE</button>
+                </div>
             </div>
 
-            <div id="mainList" class="space-y-3"></div>
+            <div id="taDataView" class="hidden text-center py-4">
+                <h2 id="taTitle" class="text-2xl font-black text-gray-800 uppercase mb-6 italic underline"></h2>
+                <div id="taStepList" class="space-y-3 mb-8"></div>
+                <button onclick="exitTA()" class="w-full text-gray-400 font-bold underline">Cancel / Back</button>
+            </div>
 
             <div id="cycleScreen" class="hidden text-center py-4">
                 <div id="cycleCounter" class="text-blue-500 font-black text-xs mb-2"></div>
                 <div class="bg-white p-12 rounded-[40px] shadow-2xl border-4 border-blue-500 mb-8">
                     <h2 id="displayTask" class="text-4xl font-black text-gray-800 break-words uppercase">...</h2>
                 </div>
-                <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="grid grid-cols-2 gap-4">
                     <button onclick="record('No')" class="bg-red-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✕ NO</button>
                     <button onclick="record('Yes')" class="bg-green-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✓ YES</button>
                 </div>
-                <button onclick="exitCycle()" class="block w-full text-gray-400 font-bold underline p-2">Exit Cycle</button>
+                <button onclick="exitCycle()" class="block w-full text-gray-400 font-bold underline p-4">Exit</button>
             </div>
         </div>
 
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-lg z-50">
             <button onclick="changeFol('trials')" id="t-trials" class="flex flex-col items-center py-2 w-1/3">
-                <span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trials</span>
+                <span class="text-xl">📊</span><span class="text-[8px] font-black uppercase text-gray-400">Trials</span>
             </button>
             <button onclick="changeFol('mastered')" id="t-mastered" class="flex flex-col items-center py-2 w-1/3">
-                <span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span>
+                <span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase text-gray-400">Mastered</span>
             </button>
             <button onclick="changeFol('recall')" id="t-recall" class="flex flex-col items-center py-2 w-1/3">
-                <span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">History</span>
+                <span class="text-xl">📋</span><span class="text-[8px] font-black uppercase text-gray-400">History</span>
             </button>
         </div>
     </div>
 
     <script>
         const LOCS = ["DTT", "motor room", "centers", "arts and crafts", "dark sensory", "outside", "bathroom", "midday"];
-        
         let currentName = localStorage.getItem('last_user') || '';
         let currentLoc = localStorage.getItem('last_loc') || '';
         let currentFol = localStorage.getItem('last_folder') || 'baseline';
-        let isCyc = localStorage.getItem('is_cycling') === 'true';
-        let positions = JSON.parse(localStorage.getItem('saved_positions') || '{}');
+        let isCyc = false;
+        let positions = {};
+        let taTarget = null; // Temporary storage for building TA
 
-        // NAME LOGIC
-        function addPerson() {
-            const input = document.getElementById('newProfileName');
-            const name = input.value.trim();
-            if(!name) return;
-            let profiles = JSON.parse(localStorage.getItem('tt_profiles') || '[]');
-            if(!profiles.includes(name)) {
-                profiles.push(name);
-                localStorage.setItem('tt_profiles', JSON.stringify(profiles));
-            }
-            input.value = '';
-            renderProfiles();
-        }
-
+        // --- NAME / LOC HELPERS ---
         function renderProfiles() {
             const list = document.getElementById('profileList');
             const profiles = JSON.parse(localStorage.getItem('tt_profiles') || '[]');
@@ -121,15 +124,24 @@
             });
         }
 
+        function addPerson() {
+            const input = document.getElementById('newProfileName');
+            const name = input.value.trim();
+            if(!name) return;
+            let profiles = JSON.parse(localStorage.getItem('tt_profiles') || '[]');
+            if(!profiles.includes(name)) profiles.push(name);
+            localStorage.setItem('tt_profiles', JSON.stringify(profiles));
+            input.value = '';
+            renderProfiles();
+        }
+
         function selectProfile(name) {
             currentName = name;
             localStorage.setItem('last_user', name);
             document.getElementById('profileScreen').classList.add('hidden');
-            document.getElementById('locUserLabel').innerText = name;
             renderLocations();
         }
 
-        // LOCATION LOGIC
         function renderLocations() {
             document.getElementById('locationScreen').classList.remove('hidden');
             document.getElementById('appUI').classList.add('hidden');
@@ -137,7 +149,7 @@
             list.innerHTML = '';
             LOCS.forEach(loc => {
                 const btn = document.createElement('button');
-                btn.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 font-black uppercase text-[10px] text-blue-900 active:bg-blue-600 active:text-white h-20";
+                btn.className = "bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900 active:bg-blue-600 active:text-white h-20";
                 btn.innerText = loc;
                 btn.onclick = () => selectLocation(loc);
                 list.appendChild(btn);
@@ -153,12 +165,9 @@
             refresh();
         }
 
-        // NAVIGATION LOGIC (THE FIX)
         function exitToNames() {
-            // Only clear the active user/loc, NOT the profiles
             currentName = ''; currentLoc = '';
-            localStorage.removeItem('last_user');
-            localStorage.removeItem('last_loc');
+            localStorage.removeItem('last_user'); localStorage.removeItem('last_loc');
             document.getElementById('locationScreen').classList.add('hidden');
             document.getElementById('profileScreen').classList.remove('hidden');
             renderProfiles();
@@ -170,129 +179,158 @@
             renderLocations();
         }
 
-        // TASK LOGIC
-        function addTask() {
+        // --- TASK / TA LOGIC ---
+        function addTask(type) {
             const input = document.getElementById('taskInput');
             if(!input.value.trim()) return;
-            const key = `data_${currentName}_${currentLoc}`;
-            let data = JSON.parse(localStorage.getItem(key) || '[]');
-            data.push({ id: Date.now(), text: input.value.trim(), folder: currentFol });
-            localStorage.setItem(key, JSON.stringify(data));
+            if(type === 'ta') {
+                taTarget = { text: input.value.trim(), type: 'ta', steps: [] };
+                document.getElementById('taModal').classList.remove('hidden');
+                document.getElementById('taStepInputs').innerHTML = '';
+                addStepRow();
+            } else {
+                saveNewTask({ id: Date.now(), text: input.value.trim(), type: 'standard', folder: currentFol });
+            }
             input.value = '';
-            refresh();
         }
 
-        function clearHistory() {
-            if(confirm("Wipe history for this location?")) {
-                const key = `data_${currentName}_${currentLoc}`;
-                let data = JSON.parse(localStorage.getItem(key) || '[]');
-                localStorage.setItem(key, JSON.stringify(data.filter(t => t.folder !== 'recall')));
-                refresh();
+        function addStepRow() {
+            const container = document.getElementById('taStepInputs');
+            const input = document.createElement('input');
+            input.className = "w-full p-3 rounded-xl border bg-gray-50 text-sm mb-1 ta-step-entry";
+            input.placeholder = "Next step...";
+            container.appendChild(input);
+            input.focus();
+        }
+
+        function saveTA() {
+            const inputs = document.querySelectorAll('.ta-step-entry');
+            inputs.forEach(i => { if(i.value.trim()) taTarget.steps.push(i.value.trim()); });
+            if(taTarget.steps.length > 0) {
+                saveNewTask({ id: Date.now(), text: taTarget.text, type: 'ta', steps: taTarget.steps, folder: currentFol });
             }
+            document.getElementById('taModal').classList.add('hidden');
         }
 
-        function changeFol(f) {
-            currentFol = f;
-            localStorage.setItem('last_folder', f);
-            isCyc = false;
-            refresh();
-        }
-
-        function toggleCycle() {
-            isCyc = true;
-            if(positions[currentFol] === undefined) positions[currentFol] = 0;
-            saveState();
-            refresh();
-        }
-
-        function exitCycle() { isCyc = false; saveState(); refresh(); }
-
-        function saveState() {
-            localStorage.setItem('is_cycling', isCyc);
-            localStorage.setItem('saved_positions', JSON.stringify(positions));
-        }
-
-        function record(val) {
+        function saveNewTask(obj) {
             const key = `data_${currentName}_${currentLoc}`;
             let data = JSON.parse(localStorage.getItem(key) || '[]');
-            let filtered = data.filter(t => t.folder === currentFol);
-            let pos = positions[currentFol] || 0;
-            if (filtered[pos]) {
-                data.push({ id: Date.now() + Math.random(), text: filtered[pos].text, folder: 'recall', res: val, date: new Date().toLocaleDateString() });
-                positions[currentFol] = (pos + 1) % filtered.length;
-                localStorage.setItem(key, JSON.stringify(data));
-                saveState();
-                refresh();
-            }
-        }
-
-        function moveTask(id, target) {
-            const key = `data_${currentName}_${currentLoc}`;
-            let data = JSON.parse(localStorage.getItem(key) || '[]');
-            data.forEach(t => { if(t.id === id) t.folder = target; });
+            data.push(obj);
             localStorage.setItem(key, JSON.stringify(data));
             refresh();
         }
 
-        function deleteTask(id) {
+        function openTA(id) {
             const key = `data_${currentName}_${currentLoc}`;
             let data = JSON.parse(localStorage.getItem(key) || '[]');
-            localStorage.setItem(key, JSON.stringify(data.filter(t => t.id !== id)));
+            let task = data.find(t => t.id === id);
+            
+            document.getElementById('mainList').classList.add('hidden');
+            document.getElementById('taDataView').classList.remove('hidden');
+            document.getElementById('taTitle').innerText = task.text;
+            
+            const stepList = document.getElementById('taStepList');
+            stepList.innerHTML = '';
+            task.steps.forEach((step, idx) => {
+                const row = document.createElement('div');
+                row.className = "bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border";
+                row.innerHTML = `
+                    <span class="text-sm font-bold text-gray-700 uppercase">${idx+1}. ${step}</span>
+                    <div class="flex gap-2">
+                        <button onclick="recordTAStep(${task.id}, '${step}', 'No')" class="w-10 h-10 rounded-full border-2 border-gray-300 text-gray-400 font-bold">-</button>
+                        <button onclick="recordTAStep(${task.id}, '${step}', 'Yes')" class="w-10 h-10 rounded-full border-2 border-blue-900 text-blue-900 font-bold">+</button>
+                    </div>
+                `;
+                stepList.appendChild(row);
+            });
+        }
+
+        function recordTAStep(taskId, stepText, val) {
+            const key = `data_${currentName}_${currentLoc}`;
+            let data = JSON.parse(localStorage.getItem(key) || '[]');
+            data.push({ 
+                id: Date.now() + Math.random(), 
+                text: `${stepText} (Part of ${document.getElementById('taTitle').innerText})`, 
+                folder: 'recall', 
+                res: val, 
+                date: new Date().toLocaleDateString() 
+            });
+            localStorage.setItem(key, JSON.stringify(data));
+            // Visual feedback
+            event.target.classList.add(val === 'Yes' ? 'bg-blue-900' : 'bg-red-500');
+            event.target.classList.add('text-white');
+        }
+
+        function exitTA() {
+            document.getElementById('taDataView').classList.add('hidden');
             refresh();
         }
 
+        // --- CORE REFRESH ---
         function refresh() {
             const list = document.getElementById('mainList');
             const cycleView = document.getElementById('cycleScreen');
-            const inputSect = document.getElementById('inputSection');
-            const cycBtn = document.getElementById('cycleBtn');
-            const clearBtn = document.getElementById('clearHistBtn');
+            list.classList.remove('hidden');
             list.innerHTML = '';
             document.getElementById('headerTitle').innerText = currentFol.toUpperCase();
+            document.getElementById('clearHistBtn').style.display = (currentFol === 'recall') ? 'block' : 'none';
 
             let data = JSON.parse(localStorage.getItem(`data_${currentName}_${currentLoc}`) || '[]');
             let filtered = data.filter(t => t.folder === currentFol);
 
-            cycBtn.style.display = (filtered.length > 0 && ['baseline', 'treatment', 'maintenance'].includes(currentFol)) ? 'block' : 'none';
-            clearBtn.style.display = (currentFol === 'recall') ? 'block' : 'none';
-            inputSect.style.display = (['baseline', 'treatment', 'maintenance'].includes(currentFol)) ? 'flex' : 'none';
+            if (currentFol === 'trials') { renderTrials(data); return; }
 
-            if (isCyc && filtered.length > 0) {
-                list.style.display = 'none'; inputSect.style.display = 'none';
-                cycleView.classList.remove('hidden');
-                let pos = positions[currentFol] || 0;
-                if(pos >= filtered.length) pos = 0;
-                document.getElementById('displayTask').innerText = filtered[pos].text;
-                document.getElementById('cycleCounter').innerText = (pos + 1) + " / " + filtered.length;
-            } else {
-                list.style.display = 'block'; cycleView.classList.add('hidden');
-                if (currentFol === 'trials') { renderTrials(data); return; }
-                filtered.forEach((t, index) => {
-                    const card = document.createElement('div');
-                    card.className = "bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center mb-2";
-                    let move = (currentFol === 'baseline') ? `<button onclick="moveTask(${t.id},'treatment')" class="bg-blue-600 text-white px-2 py-1 rounded-lg text-[10px] uppercase font-bold">Start Tx</button>` : '';
-                    card.innerHTML = `<span onclick="startCycleAt(${index})" class="font-bold text-gray-700 text-sm flex-1 cursor-pointer uppercase">${t.text}</span><div class="flex gap-2 items-center">${move}<button onclick="deleteTask(${t.id})" class="text-red-200 font-bold">✕</button></div>`;
-                    list.appendChild(card);
-                });
-            }
+            filtered.forEach((t, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center mb-2";
+                
+                let clickAction = t.type === 'ta' ? `onclick="openTA(${t.id})"` : `onclick="startStandardCycle(${index})"`;
+                let typeBadge = t.type === 'ta' ? `<span class="text-[8px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded ml-2">TA</span>` : '';
+                
+                card.innerHTML = `
+                    <div ${clickAction} class="flex-1 cursor-pointer py-2">
+                        <span class="font-black text-gray-700 text-sm uppercase italic">${t.text}</span>
+                        ${typeBadge}
+                    </div>
+                    <button onclick="deleteTask(${t.id})" class="text-red-200 px-2 font-bold">✕</button>
+                `;
+                list.appendChild(card);
+            });
         }
 
-        function renderTrials(data) {
-            const history = data.filter(t => t.folder === 'recall');
-            const stats = {};
-            history.forEach(t => {
-                if(!stats[t.text]) stats[t.text] = { yes: 0, total: 0 };
-                stats[t.text].total++;
-                if(t.res === 'Yes') stats[t.text].yes++;
-            });
-            const list = document.getElementById('mainList');
-            for(let task in stats) {
-                let pct = Math.round((stats[task].yes / stats[task].total) * 100);
-                const div = document.createElement('div');
-                div.className = "bg-white p-4 rounded-2xl shadow-sm mb-2 flex justify-between items-center";
-                div.innerHTML = `<div><p class="font-black uppercase text-xs">${task}</p><p class="text-[10px] font-bold text-gray-400">${stats[task].yes}/${stats[task].total} SUCCESS</p></div><p class="text-2xl font-black ${pct >= 80 ? 'text-green-600' : 'text-red-500'}">${pct}%</p>`;
-                list.appendChild(div);
-            }
+        function startStandardCycle(idx) {
+            isCyc = true;
+            positions[currentFol] = idx;
+            document.getElementById('mainList').classList.add('hidden');
+            document.getElementById('cycleScreen').classList.remove('hidden');
+            updateCycleDisplay();
+        }
+
+        function updateCycleDisplay() {
+            let data = JSON.parse(localStorage.getItem(`data_${currentName}_${currentLoc}`) || '[]');
+            let filtered = data.filter(t => t.folder === currentFol);
+            let pos = positions[currentFol] || 0;
+            document.getElementById('displayTask').innerText = filtered[pos].text;
+            document.getElementById('cycleCounter').innerText = `${pos+1} / ${filtered.length}`;
+        }
+
+        function record(val) {
+            let key = `data_${currentName}_${currentLoc}`;
+            let data = JSON.parse(localStorage.getItem(key) || '[]');
+            let filtered = data.filter(t => t.folder === currentFol);
+            let pos = positions[currentFol] || 0;
+            
+            data.push({ id: Date.now(), text: filtered[pos].text, folder: 'recall', res: val, date: new Date().toLocaleDateString() });
+            localStorage.setItem(key, JSON.stringify(data));
+            
+            positions[currentFol] = (pos + 1) % filtered.length;
+            updateCycleDisplay();
+        }
+
+        function exitCycle() {
+            isCyc = false;
+            document.getElementById('cycleScreen').classList.add('hidden');
+            refresh();
         }
 
         function removePerson(name, e) {
@@ -306,14 +344,22 @@
             }
         }
 
-        function startCycleAt(index) {
-            isCyc = true; positions[currentFol] = index; saveState(); refresh();
+        function deleteTask(id) {
+            const key = `data_${currentName}_${currentLoc}`;
+            let data = JSON.parse(localStorage.getItem(key) || '[]');
+            localStorage.setItem(key, JSON.stringify(data.filter(t => t.id !== id)));
+            refresh();
         }
 
-        // BOOT-UP SCRIPT
+        function changeFol(f) {
+            currentFol = f;
+            localStorage.setItem('last_folder', f);
+            exitCycle(); exitTA();
+        }
+
+        // Initialize
         if(currentName) {
-            if(currentLoc) selectLocation(currentLoc); 
-            else selectProfile(currentName);
+            if(currentLoc) selectLocation(currentLoc); else selectProfile(currentName);
         } else {
             renderProfiles();
         }
