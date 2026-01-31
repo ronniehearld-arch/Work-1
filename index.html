@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.2.9</title>
+    <title>Tracker Pro v6.3.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div class="bg-indigo-600 text-white text-[10px] font-bold text-center py-1 uppercase">v6.2.9 | Auto-Resume Active</div>
+    <div onclick="emergencyReset()" class="bg-red-600 text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer">v6.3.0 | Fix: Resume Logic (Tap to Reset App)</div>
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
         <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
@@ -80,11 +80,12 @@
     </div>
 
     <script>
-        let u=localStorage.getItem('u'), l=localStorage.getItem('l'), f=localStorage.getItem('f')||'baseline', activeT=null, 
-            activeC=JSON.parse(localStorage.getItem('ac')), taS=JSON.parse(localStorage.getItem('ts'));
+        let u=localStorage.getItem('u'), l=localStorage.getItem('l'), f=localStorage.getItem('f')||'baseline', 
+            activeT=null, activeC=JSON.parse(localStorage.getItem('ac')), taS=JSON.parse(localStorage.getItem('ts'));
 
         function show(id){document.getElementById(id).classList.remove('hide')}
         function hide(id){document.getElementById(id).classList.add('hide')}
+        function emergencyReset(){ if(confirm("Clear stuck session? (Data remains)")){ localStorage.removeItem('ac'); localStorage.removeItem('ts'); location.reload(); }}
         function init(){ renderP(); if(u){ if(l) restore(); else selP(u); } }
         function renderP(){
             const list=document.getElementById('p-list'); let p=JSON.parse(localStorage.getItem('profiles')||'[]');
@@ -102,7 +103,7 @@
         function refresh(){
             const list=document.getElementById('m-list'); list.innerHTML='';
             document.querySelectorAll('button[id^="b-"], button[id^="f-"]').forEach(b=>b.classList.remove('act-t'));
-            const activeTabBtn = document.getElementById('b-'+f) || document.getElementById('f-home'); 
+            const activeTabBtn = document.getElementById('b-'+f) || (f==='baseline'?document.getElementById('f-home'):null); 
             if(activeTabBtn) activeTabBtn.classList.add('act-t');
             let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)||'[]');
             document.getElementById('in-sect').style.display = ['baseline','treatment','maintenance'].includes(f) ? 'block' : 'none';
@@ -142,7 +143,6 @@
         function mS(i,v){ taS.res[i]=v; localStorage.setItem('ts', JSON.stringify(taS)); resTA(); }
         function subTA(){ let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)); d.push({id:Date.now(),text:taS.name,res:taS.res,f:'ta_history',date:new Date().toLocaleDateString()}); localStorage.setItem(`d_${u}_${l}`,JSON.stringify(d)); exitTA(); }
         function exitTA(){ taS=null; localStorage.removeItem('ts'); hide('ta-run'); refresh(); }
-        
         function exitN(){ localStorage.clear(); location.reload(); }
         function exitL(){ localStorage.removeItem('l'); location.reload(); }
         init();
