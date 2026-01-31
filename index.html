@@ -18,12 +18,13 @@
     </div>
 
     <div id="appUI" class="hidden">
-        <div class="bg-white border-b flex justify-between items-center sticky top-0 z-50 shadow-sm px-2">
+        <div class="bg-white border-b flex justify-between items-center sticky top-0 z-50 shadow-sm px-2 overflow-x-auto">
             <button onclick="exitToProfiles()" class="p-2 text-blue-600 font-black text-[10px]">⬅ BACK</button>
-            <div class="flex flex-1 justify-around">
-                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 text-[10px] font-black border-b-4 border-blue-600 text-blue-600">TREATMENT</button>
-                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 text-[10px] font-black border-b-4 border-transparent text-gray-400">MAINTENANCE</button>
-                <button onclick="changeFol('recall')" id="t-recall" class="p-4 text-[10px] font-black border-b-4 border-transparent text-gray-400">RECALL</button>
+            <div class="flex flex-1 justify-around min-w-[300px]">
+                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 text-[9px] font-black border-b-4 border-blue-600 text-blue-600">TREATMENT</button>
+                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 text-[9px] font-black border-b-4 border-transparent text-gray-400">MAINT.</button>
+                <button onclick="changeFol('mastered')" id="t-mastered" class="p-4 text-[9px] font-black border-b-4 border-transparent text-gray-400">MASTERED</button>
+                <button onclick="changeFol('recall')" id="t-recall" class="p-4 text-[9px] font-black border-b-4 border-transparent text-gray-400">RECALL</button>
             </div>
         </div>
 
@@ -41,7 +42,7 @@
 
             <div id="inputSection" class="flex gap-2 mb-6">
                 <input id="newInput" type="text" placeholder="Type task here..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none shadow-inner bg-white">
-                <button onclick="handleAddTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-2xl shadow-lg active:bg-blue-800">+</button>
+                <button onclick="handleAddTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-2xl shadow-lg">+</button>
             </div>
 
             <div id="mainList" class="space-y-3 pb-20"></div>
@@ -51,11 +52,11 @@
                     <h2 id="displayTask" class="text-4xl font-black text-gray-800 break-words leading-tight">...</h2>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <button onclick="record('No')" class="bg-red-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg active:bg-red-700">✕ NO</button>
-                    <button onclick="record('Yes')" class="bg-green-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg active:bg-green-700">✓ YES</button>
+                    <button onclick="record('No')" class="bg-red-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg">✕ NO</button>
+                    <button onclick="record('Yes')" class="bg-green-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg">✓ YES</button>
                 </div>
                 <div class="flex flex-col gap-2 items-center">
-                    <button onclick="resetFolderCycle()" class="text-blue-500 text-[10px] font-bold uppercase tracking-widest">Restart this Folder</button>
+                    <button onclick="resetFolderCycle()" class="text-blue-500 text-[10px] font-bold uppercase tracking-widest">Restart Folder</button>
                     <button onclick="toggleCycle()" class="text-gray-400 font-bold underline p-2">Exit Cycle Mode</button>
                 </div>
             </div>
@@ -65,37 +66,28 @@
     <script>
         var profiles = JSON.parse(localStorage.getItem('tt_profiles') || '[]');
         var currentProfile = localStorage.getItem('tt_active_profile') || null;
-        var state = { tasks: [], activeFol: 'treatment', isCyc: false, positions: { treatment: 0, maintenance: 0, recall: 0 } };
+        var state = { tasks: [], activeFol: 'treatment', isCyc: false, positions: { treatment: 0, maintenance: 0, mastered: 0, recall: 0 } };
 
         function saveAll() {
             localStorage.setItem('tt_profiles', JSON.stringify(profiles));
             localStorage.setItem('tt_active_profile', currentProfile || "");
-            if (currentProfile) {
-                localStorage.setItem('tt_data_' + currentProfile, JSON.stringify(state));
-            }
-        }
-
-        function loadSession() {
-            if (currentProfile && profiles.includes(currentProfile)) {
-                selectProfile(currentProfile);
-            } else {
-                renderProfiles();
-            }
+            if (currentProfile) localStorage.setItem('tt_data_' + currentProfile, JSON.stringify(state));
         }
 
         function addProfile() {
-            var name = document.getElementById('newProfileName').value.trim();
-            if (name && !profiles.includes(name)) {
-                profiles.push(name);
-                document.getElementById('newProfileName').value = '';
-                saveAll();
-                renderProfiles();
-            }
+            var input = document.getElementById('newProfileName');
+            var name = input.value.trim();
+            if (!name) return alert("Please type a name!");
+            if (profiles.includes(name)) return alert("Name exists!");
+            profiles.push(name);
+            input.value = '';
+            saveAll();
+            renderProfiles();
         }
 
         function deleteProfile(name, e) {
             e.stopPropagation();
-            if (confirm("Delete all data for " + name + "?")) {
+            if (confirm("Delete " + name + "?")) {
                 profiles = profiles.filter(p => p !== name);
                 localStorage.removeItem('tt_data_' + name);
                 if (currentProfile === name) currentProfile = null;
@@ -107,8 +99,8 @@
         function selectProfile(name) {
             currentProfile = name;
             var saved = localStorage.getItem('tt_data_' + name);
-            state = saved ? JSON.parse(saved) : { tasks: [], activeFol: 'treatment', isCyc: false, positions: { treatment: 0, maintenance: 0, recall: 0 } };
-            if (!state.positions) state.positions = { treatment: 0, maintenance: 0, recall: 0 };
+            state = saved ? JSON.parse(saved) : { tasks: [], activeFol: 'treatment', isCyc: false, positions: { treatment: 0, maintenance: 0, mastered: 0, recall: 0 } };
+            if (!state.positions.mastered) state.positions.mastered = 0; // Update old saves
             document.getElementById('profileScreen').classList.add('hidden');
             document.getElementById('appUI').classList.remove('hidden');
             document.getElementById('activeUserLabel').innerText = "PATIENT: " + name;
@@ -129,9 +121,9 @@
             list.innerHTML = '';
             profiles.forEach(p => {
                 var btn = document.createElement('div');
-                btn.className = "bg-white p-5 rounded-2xl font-black text-center shadow-md flex justify-between items-center active:bg-gray-100";
+                btn.className = "bg-white p-5 rounded-2xl font-black text-center shadow-md flex justify-between items-center";
                 btn.onclick = () => selectProfile(p);
-                btn.innerHTML = `<span>${p.toUpperCase()}</span><button onclick="deleteProfile('${p}', event)" class="text-red-300 text-[10px] font-bold border border-red-500 px-2 py-1 rounded-lg">DEL</button>`;
+                btn.innerHTML = `<span>${p.toUpperCase()}</span><button onclick="deleteProfile('${p}', event)" class="text-red-300 text-[10px] border px-2 py-1 rounded-lg">DEL</button>`;
                 list.appendChild(btn);
             });
         }
@@ -141,61 +133,44 @@
             if (!el.value.trim()) return;
             state.tasks.push({ id: Date.now(), txt: el.value, fol: state.activeFol, res: '' });
             el.value = '';
-            saveAll();
-            refresh();
+            saveAll(); refresh();
         }
 
         function startAtTask(id) {
             var filt = state.tasks.filter(t => t.fol === state.activeFol);
-            var index = filt.findIndex(t => t.id === id);
-            if (index !== -1) {
-                state.positions[state.activeFol] = index;
-                state.isCyc = true;
-                saveAll();
-                refresh();
-            }
+            var idx = filt.findIndex(t => t.id === id);
+            if (idx !== -1) { state.positions[state.activeFol] = idx; state.isCyc = true; saveAll(); refresh(); }
         }
 
         function changeFol(f) {
-            state.activeFol = f;
-            state.isCyc = false;
-            saveAll();
-            refresh();
+            state.activeFol = f; state.isCyc = false;
+            saveAll(); refresh();
         }
 
         function toggleCycle() {
             var filt = state.tasks.filter(t => t.fol === state.activeFol);
             if (filt.length === 0) return alert("Folder is empty!");
-            state.isCyc = !state.isCyc;
-            saveAll();
-            refresh();
+            state.isCyc = !state.isCyc; saveAll(); refresh();
         }
 
-        function resetFolderCycle() {
-            state.positions[state.activeFol] = 0;
-            saveAll();
-            refresh();
-        }
+        function resetFolderCycle() { state.positions[state.activeFol] = 0; saveAll(); refresh(); }
 
         function record(val) {
             var filt = state.tasks.filter(t => t.fol === state.activeFol);
             var cur = filt[state.positions[state.activeFol]];
             state.tasks.push({ id: Date.now() + 1, txt: cur.txt, fol: 'recall', res: val });
             state.positions[state.activeFol] = (state.positions[state.activeFol] + 1) % filt.length;
-            saveAll();
-            refresh();
+            saveAll(); refresh();
         }
 
         function move(id, target) {
             state.tasks.forEach(t => { if(t.id === id) t.fol = target; });
-            saveAll();
-            refresh();
+            saveAll(); refresh();
         }
 
         function remove(id) {
             state.tasks = state.tasks.filter(t => t.id !== id);
-            saveAll();
-            refresh();
+            saveAll(); refresh();
         }
 
         function refresh() {
@@ -207,9 +182,9 @@
             var CC = document.getElementById('cycleCount');
 
             HT.innerText = state.activeFol.toUpperCase();
-            ['treatment', 'maintenance', 'recall'].forEach(f => {
+            ['treatment', 'maintenance', 'mastered', 'recall'].forEach(f => {
                 var btn = document.getElementById('t-' + f);
-                btn.className = "p-4 text-[10px] font-black border-b-4 " + (state.activeFol === f ? "border-blue-600 text-blue-600" : "border-transparent text-gray-400");
+                if(btn) btn.className = "p-4 text-[9px] font-black border-b-4 " + (state.activeFol === f ? "border-blue-600 text-blue-600" : "border-transparent text-gray-400");
             });
 
             var filtC = state.tasks.filter(t => t.fol === state.activeFol);
@@ -219,27 +194,26 @@
                 document.getElementById('displayTask').innerText = filtC[state.positions[state.activeFol]].txt;
                 CC.style.display = 'block'; CC.innerText = (state.positions[state.activeFol] + 1) + " / " + filtC.length;
             } else {
-                state.isCyc = false;
-                L.style.display = 'block'; CS.style.display = 'none'; CC.style.display = 'none';
-                CB.style.display = (state.activeFol === 'recall' && filtC.length === 0 ? 'none' : 'block');
-                IS.style.display = (state.activeFol === 'recall' ? 'none' : 'flex');
+                state.isCyc = false; L.style.display = 'block'; CS.style.display = 'none'; CC.style.display = 'none';
+                CB.style.display = (filtC.length === 0 ? 'none' : 'block');
+                IS.style.display = (['recall', 'mastered'].includes(state.activeFol) ? 'none' : 'flex');
                 L.innerHTML = '';
                 filtC.forEach(t => {
                     var card = document.createElement('div');
-                    card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center gap-2";
+                    card.className = "bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center gap-1";
                     var btns = '';
-                    if (state.activeFol === 'treatment') btns = `<button onclick="move(${t.id},'maintenance')" class="bg-blue-50 text-blue-600 px-3 py-2 rounded-xl text-[8px] font-black border border-blue-100">MAINT.</button>`;
-                    else if (state.activeFol === 'maintenance') btns = `<button onclick="move(${t.id},'treatment')" class="bg-gray-50 text-gray-500 px-3 py-2 rounded-xl text-[8px] font-black border border-gray-100">BACK</button>`;
-                    else if (state.activeFol === 'recall') btns = `<span class="font-black text-xs mr-2 ${t.res === 'Yes' ? 'text-green-500' : 'text-red-500'}">${t.res.toUpperCase()}</span>`;
+                    if (state.activeFol === 'treatment') btns = `<button onclick="move(${t.id},'maintenance')" class="bg-blue-50 text-blue-600 px-2 py-2 rounded-xl text-[8px] font-black border">MAINT.</button>`;
+                    else if (state.activeFol === 'maintenance') btns = `<button onclick="move(${t.id},'treatment')" class="bg-gray-50 text-gray-500 px-2 py-2 rounded-xl text-[8px] font-black border">BACK</button><button onclick="move(${t.id},'mastered')" class="bg-green-50 text-green-600 px-2 py-2 rounded-xl text-[8px] font-black border">MASTER</button>`;
+                    else if (state.activeFol === 'mastered') btns = `<button onclick="move(${t.id},'maintenance')" class="bg-gray-50 text-gray-500 px-2 py-2 rounded-xl text-[8px] font-black border">UNMASTER</button>`;
+                    else if (state.activeFol === 'recall') btns = `<span class="font-black text-[10px] ${t.res === 'Yes' ? 'text-green-500' : 'text-red-500'}">${t.res.toUpperCase()}</span>`;
                     
-                    var cycBtn = state.activeFol !== 'recall' ? `<button onclick="startAtTask(${t.id})" class="bg-yellow-100 text-yellow-700 px-3 py-2 rounded-xl text-[8px] font-black border border-yellow-200">CYCLE</button>` : '';
-
-                    card.innerHTML = `<span class="font-bold text-gray-700 flex-1">${t.txt}</span><div class="flex items-center gap-1">${cycBtn}${btns}<button onclick="remove(${t.id})" class="text-red-200 font-bold px-2 text-lg active:text-red-500">✕</button></div>`;
+                    var cycBtn = !['recall', 'mastered'].includes(state.activeFol) ? `<button onclick="startAtTask(${t.id})" class="bg-yellow-50 text-yellow-700 px-2 py-2 rounded-xl text-[8px] font-black border">CYCLE</button>` : '';
+                    card.innerHTML = `<span class="font-bold text-gray-700 flex-1 text-sm">${t.txt}</span><div class="flex items-center gap-1">${cycBtn}${btns}<button onclick="remove(${t.id})" class="text-red-200 font-bold px-2">✕</button></div>`;
                     L.appendChild(card);
                 });
             }
         }
-        loadSession();
+        if (currentProfile && profiles.includes(currentProfile)) selectProfile(currentProfile); else renderProfiles();
     </script>
 </body>
 </html>
