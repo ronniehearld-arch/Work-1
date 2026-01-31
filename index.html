@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.3.2</title>
+    <title>Tracker Pro v6.3.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer">v6.3.2 | Session Locked (Tap to Switch User)</div>
+    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer">v6.3.3 | Fixed History Rendering</div>
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto hide">
         <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
@@ -65,25 +65,13 @@
     </div>
 
     <script>
-        // Use Global state for everything
         let u, l, f;
-
         function show(id){document.getElementById(id).classList.remove('hide')}
         function hide(id){document.getElementById(id).classList.add('hide')}
 
         function init(){
-            // Check session
-            u = localStorage.getItem('u');
-            l = localStorage.getItem('l');
-            f = localStorage.getItem('f') || 'baseline';
-
-            if(u && l){
-                restore(); // Jump straight to app
-            } else if(u){
-                renderL(); // Jump straight to locations
-            } else {
-                renderP(); // Standard login
-            }
+            u = localStorage.getItem('u'); l = localStorage.getItem('l'); f = localStorage.getItem('f') || 'baseline';
+            if(u && l) restore(); else if(u) renderL(); else renderP();
         }
 
         function renderP(){
@@ -102,7 +90,6 @@
 
         function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
         function restore(){ hide('s-loc'); hide('s-prof'); show('app'); document.getElementById('u-lab').innerText=`${u} | ${l}`; refresh(); }
-        
         function tab(x){ f=x; localStorage.setItem('f',x); refresh(); }
 
         function refresh(){
@@ -125,8 +112,12 @@
                     let steps = Object.values(t.res); let pct = Math.round((steps.filter(s=>s==='Yes').length/steps.length)*100);
                     content = `<div class="bg-white p-4 rounded-3xl shadow-sm border mb-2"><div class="flex justify-between text-[10px] text-orange-600 mb-1 font-black"><span>${t.date}</span><button onclick="delT(${t.id})">✕</button></div><div class="font-black uppercase text-sm mb-2">${t.text} (${pct}%)</div><div class="grid grid-cols-5 gap-1">${steps.map(s=>`<div class="h-2 rounded ${s==='Yes'?'bg-green-500':'bg-red-500'}"></div>`).join('')}</div></div>`;
                 } else if(f === 'recall'){
-                    let correct = t.res.filter(r=>r==='Yes').length;
-                    content = `<div class="bg-white p-4 rounded-3xl shadow-sm border mb-2 flex justify-between items-center"><div><div class="text-[10px] font-black text-blue-600 uppercase">${t.date}</div><div class="font-black uppercase text-sm">${t.text} (${correct}/10)</div></div><button onclick="delT(${t.id})" class="text-red-200 px-2 font-black">✕</button></div>`;
+                    let results = Array.isArray(t.res) ? t.res : [];
+                    let correct = results.filter(r=>r==='Yes').length;
+                    let pct = Math.round((correct/10)*100);
+                    content = `<div class="bg-white p-4 rounded-3xl shadow-sm border mb-2 flex justify-between items-center">
+                        <div><div class="text-[10px] font-black text-blue-600 uppercase">${t.date}</div><div class="font-black uppercase text-sm">${t.text} (${pct}%)</div></div>
+                        <button onclick="delT(${t.id})" class="text-red-200 px-2 font-black">✕</button></div>`;
                 } else {
                     content = `<div class="bg-white p-4 rounded-3xl shadow-sm border flex justify-between items-center mb-2"><div onclick="${t.type==='ta'?'runTA':'runC'}(${t.id})" class="flex-1 font-black uppercase text-sm cursor-pointer">${t.text} ${t.type==='ta'?'<span class="text-orange-500 text-[8px]">[TA]</span>':''}</div><div class="flex gap-2"><button onclick="mov(${t.id})" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[8px] font-bold">Move</button><button onclick="delT(${t.id})" class="text-red-200 px-2 font-black">✕</button></div></div>`;
                 }
@@ -162,7 +153,6 @@
         function remP(x){ if(confirm('Delete Profile?')){ let p=JSON.parse(localStorage.getItem('profiles')).filter(n=>n!==x); localStorage.setItem('profiles',JSON.stringify(p)); if(u===x) exitN(); renderP(); } }
         function exitN(){ localStorage.removeItem('u'); localStorage.removeItem('l'); location.reload(); }
         function exitL(){ localStorage.removeItem('l'); location.reload(); }
-        
         init();
     </script>
 </body>
