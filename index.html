@@ -3,194 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.5.0</title>
+    <title>Tracker Pro v6.5.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .hide{display:none !important}
-        .folder-card { background: white; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #f3f4f6; }
-        .folder-card:active { transform: scale(0.95); }
+        .hide { display: none !important; }
+        .folder-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; }
+        .folder { 
+            background: white; border-radius: 24px; height: 140px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;
+        }
+        .folder:active { transform: scale(0.95); }
+        .phase-label { font-size: 10px; font-weight: 900; text-transform: uppercase; margin-top: 8px; letter-spacing: 0.05em; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans pb-10 text-gray-900 text-sm">
-    <div class="bg-black text-white text-[10px] font-black text-center py-1 uppercase tracking-[0.2em]">v6.5.0 | Professional Workspace</div>
+<body class="bg-gray-50 font-sans text-gray-900">
 
-    <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto hide">
-        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
+    <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide">
+        <h1 class="text-white font-black text-3xl mb-8 mt-12 italic uppercase tracking-tighter">Profiles</h1>
         <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
-        <input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none">
+        <input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 font-bold uppercase outline-none">
         <button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg">+ ADD PERSON</button>
     </div>
 
-    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center">
-        <h1 class="font-black text-2xl mb-6 mt-10 uppercase text-blue-900 italic underline">Location</h1>
+    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] p-6 flex flex-col items-center hide">
+        <button onclick="logout()" class="absolute top-6 right-6 text-[10px] font-black uppercase text-gray-400">Logout</button>
+        <h1 class="font-black text-2xl mb-8 mt-12 text-blue-900 uppercase italic">Select Location</h1>
         <div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md"></div>
     </div>
 
     <div id="app" class="hide min-h-screen">
-        <div class="bg-white p-4 shadow-sm flex justify-between items-center border-b">
-             <button onclick="exitL()" class="text-blue-600 font-black text-[10px] uppercase">⬅ LOC</button>
-             <div id="u-lab" class="text-[10px] font-black text-gray-400 uppercase"></div>
-             <button onclick="exitN()" class="text-red-400 font-black text-[10px] uppercase">Logout</button>
+        <div class="p-6 flex justify-between items-center">
+            <div>
+                <h2 id="u-display" class="font-black text-2xl uppercase leading-tight text-gray-800"></h2>
+                <button onclick="exitL()" class="text-blue-500 font-black text-[10px] uppercase tracking-widest flex items-center">
+                    <span id="l-display"></span> <span class="ml-2 text-gray-300">▼</span>
+                </button>
+            </div>
+            <div class="text-right">
+                <div class="text-[8px] font-black text-green-500 uppercase">System Active</div>
+            </div>
         </div>
 
-        <div class="p-6 max-w-md mx-auto">
-            <div class="grid grid-cols-3 gap-3 mb-6">
-                <button onclick="openFolder('baseline')" class="folder-card bg-blue-50">
-                    <span class="text-2xl mb-1">📁</span>
-                    <span class="text-[9px] font-black uppercase text-blue-800">Baseline</span>
-                </button>
-                <button onclick="openFolder('treatment')" class="folder-card bg-orange-50">
-                    <span class="text-2xl mb-1">📁</span>
-                    <span class="text-[9px] font-black uppercase text-orange-800">Treatment</span>
-                </button>
-                <button onclick="openFolder('maintenance')" class="folder-card bg-green-50">
-                    <span class="text-2xl mb-1">📁</span>
-                    <span class="text-[9px] font-black uppercase text-green-800">Maint</span>
-                </button>
-            </div>
-
-            <div class="grid grid-cols-3 gap-3">
-                <button onclick="openFolder('recall')" class="folder-card bg-gray-50">
-                    <span class="text-2xl mb-1">📋</span>
-                    <span class="text-[9px] font-black uppercase text-gray-800">Recall</span>
-                </button>
-                <button onclick="openFolder('trials')" class="folder-card bg-indigo-600 shadow-indigo-200">
-                    <span class="text-2xl mb-1 text-white">📊</span>
-                    <span class="text-[9px] font-black uppercase text-white">Trial Sheet</span>
-                </button>
-                <button onclick="openFolder('ta')" class="folder-card bg-gray-50">
-                    <span class="text-2xl mb-1">📝</span>
-                    <span class="text-[9px] font-black uppercase text-gray-800">TA Log</span>
-                </button>
-            </div>
+        <div class="folder-grid">
+            <div onclick="openF('baseline')" class="folder"><span class="text-4xl">📁</span><span class="phase-label text-blue-600">Baseline</span></div>
+            <div onclick="openF('treatment')" class="folder"><span class="text-4xl">📁</span><span class="phase-label text-orange-600">Treatment</span></div>
+            <div onclick="openF('maintenance')" class="folder"><span class="text-4xl">📁</span><span class="phase-label text-green-600">Maintenance</span></div>
+            <div onclick="openF('recall')" class="folder"><span class="text-4xl">📋</span><span class="phase-label text-gray-400">Recall</span></div>
+            <div onclick="openF('trials')" class="folder bg-indigo-600 shadow-indigo-100 border-none"><span class="text-4xl">📊</span><span class="phase-label text-white">Trial Sheet</span></div>
+            <div onclick="openF('ta')" class="folder"><span class="text-4xl">📝</span><span class="phase-label text-gray-400">TA Log</span></div>
         </div>
     </div>
 
-    <div id="folder-view" class="hide fixed inset-0 bg-white z-[150] p-6 overflow-y-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h2 id="folder-title" class="font-black text-2xl uppercase italic">Folder</h2>
-            <button onclick="hide('folder-view')" class="text-gray-400 font-black text-xs border px-4 py-2 rounded-full uppercase">Back</button>
+    <div id="f-screen" class="fixed inset-0 bg-white z-[150] hide overflow-y-auto p-6">
+        <div class="flex justify-between items-center mb-8 border-b pb-4">
+            <h2 id="f-title" class="font-black text-3xl uppercase italic text-gray-800"></h2>
+            <button onclick="closeF()" class="font-black text-[10px] uppercase bg-gray-100 text-gray-500 px-5 py-2 rounded-full">Close</button>
         </div>
-        <div id="folder-content"></div>
+        <div id="f-content"></div>
     </div>
 
-    <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-6 flex flex-col">
-        <div class="flex justify-between items-center mb-4"><span id="c-task-title" class="text-blue-600 font-black text-[10px] uppercase tracking-widest"></span><button onclick="exitC()" class="text-gray-400 font-bold uppercase text-[10px] border px-3 py-1 rounded-full">Save & Exit</button></div>
-        <div class="bg-blue-900 p-8 rounded-[30px] shadow-xl mb-6 text-center"><h2 id="c-task" class="text-2xl font-black uppercase text-white"></h2></div>
-        <div class="flex flex-col items-center justify-center flex-1 bg-blue-50 rounded-[40px] border-4 border-blue-100 my-4">
-            <div id="live-ratio" class="text-8xl font-black text-blue-900">0</div>
-            <div class="text-[14px] font-black text-blue-400 uppercase tracking-widest mt-2">Trials Recorded</div>
+    <div id="cyc" class="fixed inset-0 bg-white z-[200] hide flex flex-col p-6">
+        <div class="flex justify-between items-center mb-4">
+            <span class="text-blue-600 font-black text-[10px] uppercase tracking-widest">● Active Trial</span>
+            <button onclick="hide('cyc')" class="text-gray-400 font-bold text-[10px] uppercase border px-4 py-1 rounded-full">Finish</button>
         </div>
-        <div class="grid grid-cols-2 gap-6 mt-auto mb-8">
-            <button onclick="rec('No')" class="bg-red-500 text-white py-14 rounded-[40px] font-black text-6xl shadow-xl active:scale-95 transition-transform">✕</button>
-            <button onclick="rec('Yes')" class="bg-green-500 text-white py-14 rounded-[40px] font-black text-6xl shadow-xl active:scale-95 transition-transform">✓</button>
+        <div class="bg-blue-900 p-8 rounded-[40px] shadow-2xl mb-6 text-center">
+            <h2 id="c-task" class="text-2xl font-black text-white uppercase leading-tight"></h2>
+        </div>
+        <div class="flex-1 flex flex-col items-center justify-center bg-blue-50 rounded-[40px] border-4 border-blue-100 my-4">
+            <div id="c-count" class="text-9xl font-black text-blue-900">0</div>
+            <div class="text-blue-400 font-black uppercase text-xs mt-2">Trials This Session</div>
+        </div>
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <button onclick="log('No')" class="bg-red-500 text-white py-14 rounded-[40px] text-6xl font-black shadow-xl active:scale-95 transition-transform">✕</button>
+            <button onclick="log('Yes')" class="bg-green-500 text-white py-14 rounded-[40px] text-6xl font-black shadow-xl active:scale-95 transition-transform">✓</button>
         </div>
     </div>
 
     <script>
-        let u, l, activeC, currentFolder;
+        let u, l, curF, curTask;
         const show = (id) => document.getElementById(id).classList.remove('hide');
         const hide = (id) => document.getElementById(id).classList.add('hide');
 
         function init(){
             u = localStorage.getItem('u'); l = localStorage.getItem('l');
-            if(u && l) restore(); else if(u) renderL(); else renderP();
+            let savedFolder = localStorage.getItem('active_folder');
+
+            if(u && l) { 
+                show('app'); 
+                document.getElementById('u-display').innerText=u; 
+                document.getElementById('l-display').innerText=l; 
+                if(savedFolder) openF(savedFolder);
+            } 
+            else if(u) renderL(); 
+            else renderP();
         }
 
-        function restore(){ hide('s-loc'); hide('s-prof'); show('app'); document.getElementById('u-lab').innerText=`${u} | ${l}`; }
-
-        function openFolder(f){
-            currentFolder = f;
-            document.getElementById('folder-title').innerText = f;
-            renderFolder();
-            show('folder-view');
-        }
-
-        function renderFolder(){
-            const div = document.getElementById('folder-content');
-            div.innerHTML = '';
+        function openF(f){
+            curF = f; 
+            localStorage.setItem('active_folder', f);
+            document.getElementById('f-title').innerText = f;
+            const cont = document.getElementById('f-content'); cont.innerHTML = '';
             let d = JSON.parse(localStorage.getItem(`d_${u}_${l}`)||'[]');
 
-            if(currentFolder === 'trials'){
-                // PROGRESS SHEET VIEW
-                let table = `<table class="w-full text-left border-collapse mb-8 bg-gray-50 rounded-2xl overflow-hidden">
-                    <tr class="bg-gray-200"><th class="p-3 text-[10px] font-black uppercase">Goal</th><th class="p-3 text-center text-[10px] font-black uppercase">Total</th><th class="p-3 text-right text-[10px] font-black uppercase">Success</th></tr>`;
-                
-                // Get list of unique goal names from baseline/treatment/maintenance
-                let programs = d.filter(x => ['baseline','treatment','maintenance'].includes(x.f));
-                let names = [...new Set(programs.map(x => x.text))];
-
-                names.forEach(name => {
-                    let history = d.filter(x => x.f === 'recall' && x.text === name);
-                    let total = history.length;
-                    let yes = history.filter(x => x.res === 'Yes').length;
-                    let pct = total > 0 ? Math.round((yes / total) * 100) : 0;
-                    table += `<tr class="border-b"><td class="p-3 font-bold uppercase text-[11px]">${name}</td><td class="p-3 text-center font-bold text-gray-500">${total}</td><td class="p-3 text-right font-black text-blue-600">${pct}%</td></tr>`;
+            if(f === 'trials'){
+                let table = `<table class="w-full text-left border-separate border-spacing-y-2">
+                    <tr class="text-[10px] text-gray-400 uppercase"><th class="px-2">Program</th><th class="text-center">Trials</th><th class="text-right px-2">Success</th></tr>`;
+                let goals = [...new Set(d.filter(x => ['baseline','treatment','maintenance'].includes(x.f)).map(x => x.text))];
+                goals.forEach(g => {
+                    let hist = d.filter(x => x.f === 'recall' && x.text === g);
+                    let pct = hist.length ? Math.round((hist.filter(x=>x.res==='Yes').length / hist.length)*100) : 0;
+                    table += `<tr class="bg-gray-50"><td class="py-4 px-3 rounded-l-xl font-black uppercase text-sm">${g}</td><td class="text-center font-bold text-gray-400">${hist.length}</td><td class="text-right px-3 rounded-r-xl font-black text-indigo-600 text-lg">${pct}%</td></tr>`;
                 });
-                div.innerHTML = table + `</table>`;
-            } else if(['baseline','treatment','maintenance'].includes(currentFolder)){
-                div.innerHTML = `<div class="bg-gray-50 p-4 rounded-2xl mb-4">
-                    <input id="t-in" type="text" placeholder="New Goal Name..." class="w-full p-3 rounded-xl mb-2 uppercase font-black outline-none border">
-                    <button onclick="addT()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black uppercase text-[10px]">Add to Folder</button>
-                </div>`;
-                let items = d.filter(t => t.f === currentFolder).reverse();
-                items.forEach(t => {
-                    div.innerHTML += `<div class="bg-white p-5 rounded-2xl border shadow-sm flex justify-between items-center mb-3">
-                        <div onclick="runC('${t.text}')" class="flex-1 font-black uppercase text-sm">${t.text}</div>
-                        <button onclick="delT(${t.id})" class="text-red-100 px-2 font-black">✕</button>
-                    </div>`;
+                cont.innerHTML = table + `</table>`;
+            } else if(['baseline','treatment','maintenance'].includes(f)){
+                cont.innerHTML = `<div class="mb-6 bg-gray-50 p-4 rounded-3xl"><input id="t-in" type="text" placeholder="NEW PROGRAM..." class="w-full p-4 rounded-2xl mb-2 font-black uppercase outline-none border-2 border-gray-100 focus:border-blue-500"><button onclick="addT()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase text-xs">+ Create Goal</button></div>`;
+                d.filter(x => x.f === f).reverse().forEach(t => {
+                    cont.innerHTML += `<div class="bg-white p-5 rounded-2xl border-2 border-gray-50 shadow-sm mb-3 flex justify-between items-center"><div onclick="startT('${t.text}')" class="flex-1 font-black uppercase text-base">${t.text}</div><button onclick="delT(${t.id})" class="text-red-100 font-black text-xl px-2">✕</button></div>`;
                 });
-            } else if(currentFolder === 'recall'){
-                let items = d.filter(t => t.f === 'recall').reverse();
-                items.forEach(t => {
-                    div.innerHTML += `<div class="bg-gray-50 p-3 rounded-xl mb-2 flex justify-between border-l-4 ${t.res==='Yes'?'border-green-500':'border-red-500'}">
-                        <div><div class="text-[8px] font-bold text-gray-400">${t.date}</div><div class="font-black uppercase text-[11px]">${t.text}</div></div>
-                        <div class="font-black text-[11px]">${t.res}</div>
-                    </div>`;
+            } else if(f === 'recall'){
+                d.filter(x => x.f === 'recall').reverse().forEach(t => {
+                    cont.innerHTML += `<div class="bg-white p-4 rounded-2xl mb-2 flex justify-between items-center border shadow-sm border-l-8 ${t.res==='Yes'?'border-green-500':'border-red-500'}"><div><div class="text-[8px] font-black text-gray-300 uppercase">${t.date}</div><div class="font-black uppercase text-sm">${t.text}</div></div><div class="font-black text-lg">${t.res === 'Yes' ? '✓' : '✕'}</div></div>`;
                 });
             }
+            show('f-screen');
         }
 
-        function runC(name){ 
-            activeC={name:name,sessionCount:0}; 
-            show('cyc'); 
-            document.getElementById('c-task').innerText=name; 
-            document.getElementById('c-task-title').innerText=name; 
-            document.getElementById('live-ratio').innerText = "0";
+        function closeF(){ localStorage.removeItem('active_folder'); hide('f-screen'); }
+        function startT(name){ curTask = {name: name, count: 0}; document.getElementById('c-task').innerText=name; document.getElementById('c-count').innerText="0"; show('cyc'); }
+
+        function log(v){
+            let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)||'[]');
+            d.push({id: Date.now(), text: curTask.name, res: v, f: 'recall', date: new Date().toLocaleString()});
+            localStorage.setItem(k, JSON.stringify(d));
+            curTask.count++; document.getElementById('c-count').innerText = curTask.count;
         }
 
-        function rec(v){ 
-            let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)||'[]'); 
-            d.push({ id: Date.now(), text: activeC.name, res: v, f: 'recall', date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString() }); 
-            localStorage.setItem(k,JSON.stringify(d)); 
-            activeC.sessionCount++;
-            document.getElementById('live-ratio').innerText = activeC.sessionCount;
-        }
-
-        function exitC(){ activeC=null; hide('cyc'); renderFolder(); }
         function addT(){
-            let v=document.getElementById('t-in').value.trim().toUpperCase(); if(!v) return;
-            let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)||'[]');
-            d.push({id:Date.now(),text:v,f:currentFolder});
-            localStorage.setItem(k,JSON.stringify(d)); renderFolder();
+            let v = document.getElementById('t-in').value.trim().toUpperCase(); if(!v) return;
+            let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)||'[]');
+            d.push({id: Date.now(), text: v, f: curF});
+            localStorage.setItem(k, JSON.stringify(d)); openF(curF);
         }
 
-        function delT(id){ if(confirm('Delete?')){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)).filter(t=>t.id!==id); localStorage.setItem(k,JSON.stringify(d)); renderFolder(); } }
+        function delT(id){ if(confirm('Delete Program?')){ let k = `d_${u}_${l}`, d = JSON.parse(localStorage.getItem(k)).filter(x=>x.id!==id); localStorage.setItem(k, JSON.stringify(d)); openF(curF); } }
+
         function renderP(){
-            const list=document.getElementById('p-list'); let p=JSON.parse(localStorage.getItem('profiles')||'[]');
-            list.innerHTML=''; p.forEach(x=>{ list.innerHTML+=`<button onclick="selP('${x}')" class="w-full bg-white p-5 rounded-2xl font-black shadow-md uppercase mb-3 text-left border-b-4 border-blue-200">${x}</button>`; });
-            show('s-prof'); hide('s-loc'); hide('app');
+            const list = document.getElementById('p-list'); list.innerHTML = '';
+            let p = JSON.parse(localStorage.getItem('profiles')||'[]');
+            p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white p-5 rounded-2xl font-black shadow-md uppercase mb-3 text-left border-b-4 border-blue-200">${x}</button>`; });
+            show('s-prof');
         }
         function selP(x){ u=x; localStorage.setItem('u',x); renderL(); }
         function renderL(){
-            hide('s-prof'); show('s-loc'); hide('app');
-            const list=document.getElementById('l-list'); list.innerHTML='';
-            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x=>{ list.innerHTML+=`<button onclick="selL('${x}')" class="bg-white p-4 rounded-2xl shadow-sm border-2 border-gray-100 font-black uppercase text-[10px] text-blue-900 h-24">${x}</button>`; });
+            hide('s-prof'); show('s-loc'); const list = document.getElementById('l-list'); list.innerHTML = '';
+            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x => { list.innerHTML += `<button onclick="selL('${x}')" class="bg-white p-4 rounded-2xl shadow-sm border-2 border-gray-100 font-black uppercase text-[10px] text-blue-900 h-28">${x}</button>`; });
         }
-        function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
-        function addP(){ let v=document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); p.push(v); localStorage.setItem('profiles',JSON.stringify(p)); document.getElementById('p-in').value=''; renderP(); }
-        function exitN(){ localStorage.removeItem('u'); localStorage.removeItem('l'); location.reload(); }
-        function exitL(){ localStorage.removeItem('l'); renderL(); }
+        function selL(x){ l=x; localStorage.setItem('l',x); location.reload(); }
+        function addP(){ let v = document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); p.push(v); localStorage.setItem('profiles', JSON.stringify(p)); document.getElementById('p-in').value=''; renderP(); }
+        function logout(){ localStorage.clear(); location.reload(); }
+        function exitL(){ localStorage.removeItem('l'); localStorage.removeItem('active_folder'); location.reload(); }
         init();
     </script>
 </body>
