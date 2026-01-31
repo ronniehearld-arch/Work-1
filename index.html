@@ -8,8 +8,8 @@
 </head>
 <body class="bg-gray-100 font-sans text-gray-900 pb-24">
 
-    <div class="bg-indigo-700 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">
-        App Status: Version 5.7 (Task-Position Memory)
+    <div class="bg-purple-700 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">
+        App Status: Version 5.9 (Location Folders Active)
     </div>
 
     <div id="profileScreen" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
@@ -21,10 +21,20 @@
         </div>
     </div>
 
+    <div id="locationScreen" class="fixed inset-0 bg-gray-100 z-[90] p-6 hidden flex flex-col items-center overflow-y-auto">
+        <div class="flex justify-between w-full mb-6">
+            <button onclick="goBackToNames()" class="text-blue-600 font-black text-xs uppercase">⬅ Names</button>
+            <span id="locUserLabel" class="font-black text-gray-400 uppercase text-xs tracking-widest"></span>
+        </div>
+        <h1 class="font-black text-2xl mb-6 uppercase text-blue-900 italic underline">Select Location</h1>
+        <div id="locationList" class="grid grid-cols-2 gap-4 w-full max-w-md">
+            </div>
+    </div>
+
     <div id="appUI" class="hidden min-h-screen">
         <div class="bg-white border-b sticky top-0 z-50 shadow-sm">
             <div class="flex justify-between items-center p-2 bg-gray-50 border-b">
-                 <button onclick="logout()" class="p-2 text-blue-600 font-black text-[10px]">⬅ NAMES</button>
+                 <button onclick="goBackToLocations()" class="p-2 text-blue-600 font-black text-[10px]">⬅ LOCATIONS</button>
                  <span id="activeUserLabel" class="text-[10px] font-black text-gray-400 uppercase tracking-widest"></span>
             </div>
             <div class="flex justify-around">
@@ -36,7 +46,7 @@
 
         <div class="p-4 max-w-md mx-auto">
             <div id="folderHeader" class="flex justify-between items-center mb-4">
-                <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic underline decoration-blue-200">...</h1>
+                <h1 id="headerTitle" class="font-black text-lg uppercase text-blue-800 italic underline decoration-blue-200">...</h1>
                 <div id="headerActions">
                     <button onclick="toggleCycle()" id="cycleBtn" class="hidden bg-yellow-400 text-blue-900 px-4 py-2 rounded-xl font-black text-xs shadow-md">CYCLE ALL</button>
                     <button onclick="clearHistory()" id="clearHistBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded-xl font-black text-xs shadow-md">CLEAR HISTORY</button>
@@ -44,8 +54,8 @@
             </div>
 
             <div id="inputSection" class="flex gap-2 mb-6">
-                <input id="taskInput" type="text" placeholder="Add task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none bg-white shadow-inner">
-                <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg active:scale-90">+</button>
+                <input id="taskInput" type="text" placeholder="Add task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none bg-white">
+                <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg">+</button>
             </div>
 
             <div id="mainList" class="space-y-3"></div>
@@ -59,7 +69,7 @@
                     <button onclick="record('No')" class="bg-red-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✕ NO</button>
                     <button onclick="record('Yes')" class="bg-green-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✓ YES</button>
                 </div>
-                <button onclick="exitCycle()" class="block w-full text-gray-400 font-bold underline p-2">Exit Cycle Mode</button>
+                <button onclick="exitCycle()" class="block w-full text-gray-400 font-bold underline p-2">Exit</button>
             </div>
         </div>
 
@@ -77,12 +87,12 @@
     </div>
 
     <script>
-        // LOAD GLOBAL STATE
+        const LOCATIONS = ["DTT", "motor room", "centers", "arts and crafts", "dark sensory", "outside", "bathroom", "midday"];
+        
         let profiles = JSON.parse(localStorage.getItem('tt_profiles') || '[]');
         let currentName = localStorage.getItem('last_user') || '';
+        let currentLoc = localStorage.getItem('last_loc') || '';
         let currentFol = localStorage.getItem('last_folder') || 'baseline';
-        
-        // Load Cycle State
         let isCyc = localStorage.getItem('is_cycling') === 'true';
         let positions = JSON.parse(localStorage.getItem('saved_positions') || '{}');
 
@@ -114,31 +124,59 @@
             currentName = name;
             localStorage.setItem('last_user', name);
             document.getElementById('profileScreen').classList.add('hidden');
+            document.getElementById('locUserLabel').innerText = name;
+            renderLocations();
+        }
+
+        function renderLocations() {
+            document.getElementById('locationScreen').classList.remove('hidden');
+            document.getElementById('appUI').classList.add('hidden');
+            const list = document.getElementById('locationList');
+            list.innerHTML = '';
+            LOCATIONS.forEach(loc => {
+                const btn = document.createElement('button');
+                btn.className = "bg-white p-6 rounded-3xl shadow-sm border-2 border-white font-black uppercase text-[10px] text-blue-800 active:bg-blue-600 active:text-white active:scale-95 transition-all h-24 flex items-center justify-center text-center";
+                btn.innerText = loc;
+                btn.onclick = () => selectLocation(loc);
+                list.appendChild(btn);
+            });
+        }
+
+        function selectLocation(loc) {
+            currentLoc = loc;
+            localStorage.setItem('last_loc', loc);
+            document.getElementById('locationScreen').classList.add('hidden');
             document.getElementById('appUI').classList.remove('hidden');
-            document.getElementById('activeUserLabel').innerText = name;
+            document.getElementById('activeUserLabel').innerText = `${currentName} | ${loc}`;
             refresh();
         }
 
-        function logout() {
-            localStorage.clear(); // Total wipe to fix naming issues if any
+        function goBackToNames() {
+            localStorage.clear();
             location.reload();
+        }
+
+        function goBackToLocations() {
+            currentLoc = '';
+            localStorage.removeItem('last_loc');
+            renderLocations();
         }
 
         function addTask() {
             const input = document.getElementById('taskInput');
             if(!input.value.trim()) return;
-            let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
+            let data = JSON.parse(localStorage.getItem(`data_${currentName}_${currentLoc}`) || '[]');
             data.push({ id: Date.now(), text: input.value.trim(), folder: currentFol });
-            localStorage.setItem('data_' + currentName, JSON.stringify(data));
+            localStorage.setItem(`data_${currentName}_${currentLoc}`, JSON.stringify(data));
             input.value = '';
             refresh();
         }
 
         function clearHistory() {
-            if(confirm("Delete all history?")) {
-                let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
+            if(confirm("Delete all history for this location?")) {
+                let data = JSON.parse(localStorage.getItem(`data_${currentName}_${currentLoc}`) || '[]');
                 let filtered = data.filter(t => t.folder !== 'recall');
-                localStorage.setItem('data_' + currentName, JSON.stringify(filtered));
+                localStorage.setItem(`data_${currentName}_${currentLoc}`, JSON.stringify(filtered));
                 refresh();
             }
         }
@@ -146,13 +184,7 @@
         function changeFol(f) {
             currentFol = f;
             localStorage.setItem('last_folder', f);
-            exitCycle();
-        }
-
-        function startCycleAt(index) {
-            isCyc = true;
-            positions[currentFol] = index;
-            saveCycleState();
+            isCyc = false;
             refresh();
         }
 
@@ -175,30 +207,29 @@
         }
 
         function record(val) {
-            let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
+            let data = JSON.parse(localStorage.getItem(`data_${currentName}_${currentLoc}`) || '[]');
             let filtered = data.filter(t => t.folder === currentFol);
             let pos = positions[currentFol] || 0;
-            
             if (filtered[pos]) {
                 data.push({ id: Date.now() + Math.random(), text: filtered[pos].text, folder: 'recall', res: val, date: new Date().toLocaleDateString() });
                 positions[currentFol] = (pos + 1) % filtered.length;
-                localStorage.setItem('data_' + currentName, JSON.stringify(data));
+                localStorage.setItem(`data_${currentName}_${currentLoc}`, JSON.stringify(data));
                 saveCycleState();
                 refresh();
             }
         }
 
         function moveTask(id, target) {
-            let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
+            let data = JSON.parse(localStorage.getItem(`data_${currentName}_${currentLoc}`) || '[]');
             data.forEach(t => { if(t.id === id) t.folder = target; });
-            localStorage.setItem('data_' + currentName, JSON.stringify(data));
+            localStorage.setItem(`data_${currentName}_${currentLoc}`, JSON.stringify(data));
             refresh();
         }
 
         function deleteTask(id) {
-            let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
+            let data = JSON.parse(localStorage.getItem(`data_${currentName}_${currentLoc}`) || '[]');
             data = data.filter(t => t.id !== id);
-            localStorage.setItem('data_' + currentName, JSON.stringify(data));
+            localStorage.setItem(`data_${currentName}_${currentLoc}`, JSON.stringify(data));
             refresh();
         }
 
@@ -208,24 +239,10 @@
             const inputSect = document.getElementById('inputSection');
             const cycBtn = document.getElementById('cycleBtn');
             const clearBtn = document.getElementById('clearHistBtn');
-            const headerTitle = document.getElementById('headerTitle');
             list.innerHTML = '';
-            
-            headerTitle.innerText = currentFol.toUpperCase();
+            document.getElementById('headerTitle').innerText = `${currentFol.toUpperCase()}`;
 
-            // Nav Highlight
-            ['baseline', 'treatment', 'maintenance', 'trials', 'mastered', 'recall'].forEach(t => {
-                const b = document.getElementById('t-' + t);
-                if(!b) return;
-                const active = currentFol === t;
-                if(['baseline', 'treatment', 'maintenance'].includes(t)) {
-                    b.className = `p-4 flex-1 text-[10px] font-black border-b-4 uppercase ${active ? 'border-blue-600 text-blue-600 bg-blue-50' : 'border-transparent text-gray-400 bg-white'}`;
-                } else {
-                    b.className = `flex flex-col items-center py-2 w-1/3 ${active ? 'bg-blue-600 text-white' : 'bg-white text-gray-400'}`;
-                }
-            });
-
-            let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
+            let data = JSON.parse(localStorage.getItem(`data_${currentName}_${currentLoc}`) || '[]');
             let filtered = data.filter(t => t.folder === currentFol);
 
             cycBtn.style.display = (filtered.length > 0 && ['baseline', 'treatment', 'maintenance'].includes(currentFol)) ? 'block' : 'none';
@@ -236,25 +253,17 @@
                 list.style.display = 'none'; inputSect.style.display = 'none'; cycBtn.style.display = 'none';
                 cycleView.classList.remove('hidden');
                 let pos = positions[currentFol] || 0;
-                if(pos >= filtered.length) pos = 0; // Guard against deleted items
+                if(pos >= filtered.length) pos = 0;
                 document.getElementById('displayTask').innerText = filtered[pos].text;
                 document.getElementById('cycleCounter').innerText = (pos + 1) + " / " + filtered.length;
             } else {
                 list.style.display = 'block';
                 cycleView.classList.add('hidden');
-
                 if (currentFol === 'trials') { renderTrialSheet(data); return; }
-
                 filtered.forEach((t, index) => {
                     const card = document.createElement('div');
                     card.className = "bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center mb-2";
-                    let moveBtns = '';
-                    if (currentFol === 'baseline') moveBtns = `<button onclick="moveTask(${t.id},'treatment')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">START TX</button>`;
-                    else if (currentFol === 'treatment') moveBtns = `<div class="flex gap-1"><button onclick="moveTask(${t.id},'baseline')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK</button><button onclick="moveTask(${t.id},'maintenance')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">TO MAINT</button></div>`;
-                    else if (currentFol === 'maintenance') moveBtns = `<div class="flex gap-1"><button onclick="moveTask(${t.id},'treatment')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK TO TX</button><button onclick="moveTask(${t.id},'mastered')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">MASTER</button></div>`;
-                    else if (currentFol === 'mastered') moveBtns = `<button onclick="moveTask(${t.id},'maintenance')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK TO MAINT</button>`;
-                    else if (currentFol === 'recall') moveBtns = `<span class="text-xs font-black ${t.res === 'Yes' ? 'text-green-500' : 'text-red-500'}">${t.res}</span>`;
-
+                    let moveBtns = (currentFol === 'baseline') ? `<button onclick="moveTask(${t.id},'treatment')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase">Start Tx</button>` : '';
                     card.innerHTML = `<span onclick="startCycleAt(${index})" class="font-bold text-gray-700 text-sm flex-1 cursor-pointer py-2 uppercase italic">${t.text}</span><div class="flex gap-2 items-center">${moveBtns}<button onclick="deleteTask(${t.id})" class="text-red-200 px-2 font-bold">✕</button></div>`;
                     list.appendChild(card);
                 });
@@ -280,8 +289,29 @@
             }
         }
 
-        // Initialize
-        if(currentName) selectProfile(currentName); else renderProfiles();
+        function removePerson(name, e) {
+            e.stopPropagation();
+            if(confirm("Delete " + name + "?")) {
+                profiles = profiles.filter(p => p !== name);
+                localStorage.setItem('tt_profiles', JSON.stringify(profiles));
+                LOCATIONS.forEach(l => localStorage.removeItem(`data_${name}_${l}`));
+                renderProfiles();
+            }
+        }
+
+        function startCycleAt(index) {
+            isCyc = true;
+            positions[currentFol] = index;
+            saveCycleState();
+            refresh();
+        }
+
+        // INIT
+        if(currentName) {
+            if(currentLoc) selectLocation(currentLoc); else selectProfile(currentName);
+        } else {
+            renderProfiles();
+        }
     </script>
 </body>
 </html>
