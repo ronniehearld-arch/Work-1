@@ -31,10 +31,12 @@
         </div>
 
         <div class="p-4 max-w-md mx-auto">
-            <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic mb-4">BASELINE</h1>
+            <div class="flex justify-between items-center mb-4">
+                <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic">BASELINE</h1>
+            </div>
             
-            <div class="flex gap-2 mb-6">
-                <input id="taskInput" type="text" placeholder="Enter new task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-300 outline-none bg-white">
+            <div id="inputSection" class="flex gap-2 mb-6">
+                <input id="taskInput" type="text" placeholder="Enter new task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-300 outline-none bg-white shadow-inner">
                 <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg active:scale-90 transition-transform">+</button>
             </div>
 
@@ -95,66 +97,45 @@
             const input = document.getElementById('taskInput');
             const taskText = input.value.trim();
             if(!taskText) return;
-
-            // Load existing tasks for this person
             let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
-            
-            // Create new task object
-            const newTask = {
-                id: Date.now(),
-                text: taskText,
-                folder: currentFol,
-                status: 'active'
-            };
-
-            data.push(newTask);
+            data.push({ id: Date.now(), text: taskText, folder: currentFol });
             localStorage.setItem('data_' + currentName, JSON.stringify(data));
-            
             input.value = '';
             refresh();
         }
 
-        function changeFol(f) {
-            currentFol = f;
-            document.getElementById('headerTitle').innerText = f.toUpperCase();
-            
-            // Update Tab UI
-            ['baseline', 'treatment', 'maintenance'].forEach(tab => {
-                const btn = document.getElementById('t-' + tab);
-                if(btn) btn.className = `p-4 flex-1 text-[10px] font-black border-b-4 uppercase ${currentFol === tab ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-400'}`;
-            });
-
+        function moveTask(id, target) {
+            let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
+            data.forEach(t => { if(t.id === id) t.folder = target; });
+            localStorage.setItem('data_' + currentName, JSON.stringify(data));
             refresh();
         }
 
-        function refresh() {
-            const list = document.getElementById('mainList');
-            list.innerHTML = '';
-            
-            let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
-            let filtered = data.filter(t => t.folder === currentFol);
-
-            if(filtered.length === 0) {
-                list.innerHTML = '<div class="text-center py-10 text-gray-400 italic">No tasks in this folder.</div>';
-                return;
-            }
-
-            filtered.forEach(t => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center";
-                card.innerHTML = `<span class="font-bold text-gray-700">${t.text}</span><button onclick="deleteTask(${t.id})" class="text-red-200 font-bold px-2">✕</button>`;
-                list.appendChild(card);
-            });
-        }
-
         function deleteTask(id) {
+            if(!confirm("Delete this task?")) return;
             let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
             data = data.filter(t => t.id !== id);
             localStorage.setItem('data_' + currentName, JSON.stringify(data));
             refresh();
         }
 
-        renderProfiles();
-    </script>
-</body>
-</html>
+        function changeFol(f) {
+            currentFol = f;
+            document.getElementById('headerTitle').innerText = f.toUpperCase();
+            refresh();
+        }
+
+        function refresh() {
+            const list = document.getElementById('mainList');
+            const inputSect = document.getElementById('inputSection');
+            list.innerHTML = '';
+            
+            // UI Tab Highlighting
+            const allTabs = ['baseline', 'treatment', 'maintenance', 'mastered', 'recall', 'trials'];
+            allTabs.forEach(t => {
+                const btn = document.getElementById('t-' + t);
+                if(!btn) return;
+                const active = currentFol === t;
+                if(['baseline', 'treatment', 'maintenance'].includes(t)) {
+                    btn.className =
+                        
