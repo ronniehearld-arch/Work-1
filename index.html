@@ -3,25 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.4.3</title>
+    <title>Tracker Pro v6.4.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .act-t{border-bottom:4px solid #4f46e5;color:#4f46e5;font-weight:900} 
         .hide{display:none !important}
+        @keyframes save-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); color: #16a34a; }
+            100% { transform: scale(1); }
+        }
+        .pulse-text { animation: save-pulse 0.3s ease-out; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans pb-32 text-gray-900 text-sm">
-    <div class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase">v6.4.3 | Real-Time Trial Stats</div>
+    <div class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">v6.4.6 | Live Instant-Save Mode</div>
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto hide">
-        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic text-center">Profiles</h1>
+        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
         <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
         <input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none">
         <button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg">+ ADD PERSON</button>
     </div>
 
     <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center">
-        <h1 class="font-black text-2xl mb-6 mt-10 uppercase text-blue-900 italic underline">Location</h1>
+        <h1 class="font-black text-2xl mb-6 mt-10 uppercase text-blue-900 italic underline text-center">Select Location</h1>
         <div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md"></div>
     </div>
 
@@ -38,6 +44,7 @@
             </div>
         </div>
         <div id="m-list" class="p-4 space-y-3 pb-20 max-w-md mx-auto"></div>
+        
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex flex-col z-50 shadow-2xl">
             <div class="flex justify-around items-center p-2 border-b">
                 <button onclick="tab('baseline')" id="f-home" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trials</span></button>
@@ -51,24 +58,23 @@
 
     <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-6 flex flex-col">
         <div class="flex justify-between items-center mb-4">
-            <span id="c-cnt" class="text-gray-400 font-black text-xs uppercase"></span>
-            <button onclick="exitC()" class="text-red-400 font-black uppercase text-[10px]">Exit Sheet</button>
+            <span class="text-green-600 font-black text-[10px] uppercase tracking-widest">● LIVE SYNC ACTIVE</span>
+            <button onclick="exitC()" class="text-gray-400 font-bold uppercase text-[10px] border px-2 py-1 rounded">Finish Session</button>
         </div>
         
-        <div class="bg-gray-50 p-8 rounded-[30px] border-2 border-gray-200 mb-6">
-            <h2 id="c-task" class="text-2xl font-black uppercase leading-tight text-gray-800 text-center"></h2>
+        <div class="bg-blue-600 p-8 rounded-[30px] shadow-lg mb-6">
+            <h2 id="c-task" class="text-3xl font-black uppercase leading-tight text-white text-center"></h2>
         </div>
 
-        <div class="flex flex-col items-center justify-center flex-1 space-y-2">
-            <div class="text-[12px] font-black text-blue-500 uppercase tracking-widest">Current Session Progress</div>
-            <div id="live-ratio" class="text-6xl font-black text-gray-900">0 / 0</div>
-            <div id="live-pct" class="text-3xl font-black text-blue-600">0%</div>
-            <div class="text-[10px] font-bold text-gray-400 uppercase italic mt-4">Taps remain until auto-save: <span id="tap-left">10</span></div>
+        <div id="stats-area" class="flex flex-col items-center justify-center flex-1 bg-gray-50 rounded-[40px] border-2 border-gray-200 my-4">
+            <div id="save-indicator" class="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-2">Total Trials Today</div>
+            <div id="live-total" class="text-7xl font-black text-gray-900">0</div>
+            <div id="live-pct" class="text-4xl font-black text-blue-600 mt-2">0% Correct</div>
         </div>
 
         <div class="grid grid-cols-2 gap-6 mt-auto mb-8">
-            <button onclick="rec('No')" class="bg-red-500 text-white py-12 rounded-[40px] font-black text-5xl shadow-xl active:scale-90 transition-transform">✕</button>
-            <button onclick="rec('Yes')" class="bg-green-500 text-white py-12 rounded-[40px] font-black text-5xl shadow-xl active:scale-90 transition-transform">✓</button>
+            <button onclick="rec('No')" class="bg-red-500 text-white py-14 rounded-[40px] font-black text-6xl shadow-xl active:scale-90 transition-transform">✕</button>
+            <button onclick="rec('Yes')" class="bg-green-500 text-white py-14 rounded-[40px] font-black text-6xl shadow-xl active:scale-90 transition-transform">✓</button>
         </div>
     </div>
 
@@ -110,27 +116,25 @@
             if(['baseline','treatment','maintenance'].includes(f)){
                 list.innerHTML = `<div class="bg-white p-4 rounded-3xl shadow-md border mb-4">
                     <input id="t-in" type="text" placeholder="Goal Name..." class="w-full p-3 border rounded-xl mb-2 uppercase font-black outline-none">
-                    <button onclick="addT()" class="w-full bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black uppercase">+ New Trial Sheet</button></div>`;
+                    <button onclick="addT()" class="w-full bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black uppercase">+ Start Live Cycle</button></div>`;
             }
 
             let items = d.filter(t=>t.f===f).reverse();
             items.forEach((t)=>{
                 if(f === 'recall'){
-                    let res = Array.isArray(t.res) ? t.res : [];
-                    let y = res.filter(r => r === 'Yes').length;
-                    let pct = Math.round((y / 10) * 100);
-                    list.innerHTML += `<div class="bg-white p-5 rounded-3xl shadow-sm border-l-8 ${pct >= 80 ? 'border-green-500':'border-red-500'} mb-3">
-                        <div class="flex justify-between items-center mb-1">
-                            <div><div class="text-[10px] font-black text-gray-400 uppercase">${t.date} @ ${t.time}</div><div class="font-black uppercase text-base">${t.text}</div></div>
-                            <div class="text-3xl font-black ${pct >= 80 ? 'text-green-600' : 'text-red-500'}">${pct}%</div>
+                    const isYes = t.res === 'Yes';
+                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 ${isYes ? 'border-green-500':'border-red-500'} mb-2 flex justify-between items-center">
+                        <div>
+                            <div class="text-[9px] font-black text-gray-400 uppercase">${t.date} @ ${t.time}</div>
+                            <div class="font-black uppercase text-sm">${t.text}</div>
                         </div>
-                        <div class="text-[11px] font-bold text-gray-500">${y}/10 Correct</div>
-                        <button onclick="delT(${t.id})" class="mt-3 text-[9px] font-black text-red-200 uppercase underline">Delete Sheet</button>
+                        <div class="font-black ${isYes ? 'text-green-600':'text-red-500'} uppercase text-xs">${t.res}</div>
+                        <button onclick="delT(${t.id})" class="text-gray-200 ml-4 font-black">✕</button>
                     </div>`;
                 } else {
                     list.innerHTML += `<div class="bg-white p-4 rounded-3xl shadow-sm border flex justify-between items-center mb-2">
                         <div onclick="runC(${t.id})" class="flex-1 font-black uppercase text-sm cursor-pointer">${t.text}</div>
-                        <div class="flex gap-1"><button onclick="mov(${t.id})" class="bg-gray-100 text-gray-500 px-3 py-1 rounded-lg text-[8px] font-black">MOVE</button><button onclick="delT(${t.id})" class="text-red-100 px-2 font-black text-xl">✕</button></div>
+                        <div class="flex gap-1"><button onclick="mov(${t.id})" class="bg-gray-100 text-gray-500 px-3 py-1 rounded-lg text-[8px] font-black uppercase">Move</button><button onclick="delT(${t.id})" class="text-red-100 px-2 font-black text-xl">✕</button></div>
                     </div>`;
                 }
             });
@@ -138,34 +142,43 @@
 
         function runC(id){ 
             let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); 
-            activeC={id:id,name:d.text,cnt:0,yes:0,res:[]}; 
+            // Calculate existing stats for this session
+            let all = JSON.parse(localStorage.getItem(`d_${u}_${l}`)||'[]').filter(x => x.f === 'recall' && x.text === d.text);
+            activeC={id:id,name:d.text,total:all.length,yes:all.filter(x=>x.res==='Yes').length}; 
             resC(); 
         }
 
         function resC(){ 
             hide('app'); show('cyc'); 
             document.getElementById('c-task').innerText=activeC.name; 
-            document.getElementById('c-cnt').innerText=`Trial Sheet Entry`; 
-            
-            // UPDATE LIVE STATS
-            document.getElementById('live-ratio').innerText = `${activeC.yes} / ${activeC.cnt}`;
-            let pct = activeC.cnt > 0 ? Math.round((activeC.yes / activeC.cnt) * 100) : 0;
-            document.getElementById('live-pct').innerText = `${pct}%`;
-            document.getElementById('tap-left').innerText = 10 - activeC.cnt;
+            document.getElementById('live-total').innerText = activeC.total;
+            let pct = activeC.total > 0 ? Math.round((activeC.yes / activeC.total) * 100) : 0;
+            document.getElementById('live-pct').innerText = `${pct}% Correct`;
         }
 
         function rec(v){ 
+            // 1. SAVE INSTANTLY TO RECALL
+            let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)||'[]'); 
+            let now = new Date();
+            d.push({
+                id: Date.now(),
+                text: activeC.name,
+                res: v, // Storing the single result
+                f: 'recall',
+                date: now.toLocaleDateString(),
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+            }); 
+            localStorage.setItem(k,JSON.stringify(d)); 
+
+            // 2. UPDATE ACTIVE STATS
+            activeC.total++;
             if(v==='Yes') activeC.yes++;
-            activeC.res.push(v); 
-            activeC.cnt++; 
             
-            if(activeC.cnt>=10){ 
-                let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)||'[]'); 
-                let now = new Date();
-                d.push({id:Date.now(),text:activeC.name,res:activeC.res,f:'recall',date:now.toLocaleDateString(),time:now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}); 
-                localStorage.setItem(k,JSON.stringify(d)); 
-                activeC = null; hide('cyc'); show('app'); tab('recall'); 
-            } else resC(); 
+            // 3. VISUAL FEEDBACK
+            document.getElementById('live-total').classList.add('pulse-text');
+            setTimeout(() => document.getElementById('live-total').classList.remove('pulse-text'), 300);
+            
+            resC();
         }
 
         function addT(){
