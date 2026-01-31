@@ -8,12 +8,23 @@
 </head>
 <body class="bg-gray-100 font-sans text-gray-900 pb-24">
 
+    <div class="bg-red-600 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">
+        App Status: Version 5.0 (All Buttons Active)
+    </div>
+
     <div id="profileScreen" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
-        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase tracking-widest text-center">Select Person</h1>
+        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase tracking-widest text-center italic">Select Person</h1>
         <div id="profileList" class="w-full max-w-xs space-y-4 mb-8"></div>
-        <div class="w-full max-w-xs border-t border-blue-800 pt-6 pb-10">
+        <div class="w-full max-w-xs border-t border-blue-800 pt-6 pb-10 text-center">
             <input id="newProfileName" type="text" placeholder="Type name..." class="w-full p-4 rounded-2xl mb-4 outline-none bg-white text-lg">
-            <button onclick="addPerson()" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl">+ ADD PERSON</button>
+            <button onclick="addPerson()" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl active:scale-95 transition-transform">+ ADD PERSON</button>
+            
+            <div class="mt-12 p-4 bg-blue-950 rounded-2xl border border-blue-700">
+                <p class="text-blue-300 text-[10px] font-bold mb-2 uppercase">Still no buttons?</p>
+                <button onclick="localStorage.clear(); location.reload();" class="bg-red-500 text-white px-4 py-2 rounded-lg text-xs font-black uppercase shadow-lg">
+                    Hard Reset Storage
+                </button>
+            </div>
         </div>
     </div>
 
@@ -24,21 +35,21 @@
                  <span id="activeUserLabel" class="text-[10px] font-black text-gray-400 uppercase"></span>
             </div>
             <div class="flex justify-around">
-                <button onclick="changeFol('baseline')" id="t-baseline" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Baseline</button>
-                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Treatment</button>
-                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Maint.</button>
+                <button onclick="changeFol('baseline')" id="t-baseline" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase transition-all">Baseline</button>
+                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase transition-all">Treatment</button>
+                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase transition-all">Maint.</button>
             </div>
         </div>
 
         <div class="p-4 max-w-md mx-auto">
             <div class="flex justify-between items-center mb-4">
-                <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic">BASELINE</h1>
-                <button onclick="toggleCycle()" id="cycleBtn" class="bg-yellow-400 text-blue-900 px-4 py-2 rounded-xl font-black text-xs shadow-md">CYCLE MODE</button>
+                <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic underline decoration-blue-200">BASELINE</h1>
+                <button onclick="toggleCycle()" id="cycleBtn" class="bg-yellow-400 text-blue-900 px-4 py-2 rounded-xl font-black text-xs shadow-md active:scale-90">CYCLE MODE</button>
             </div>
 
             <div id="inputSection" class="flex gap-2 mb-6">
-                <input id="taskInput" type="text" placeholder="Add new task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none">
-                <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg">+</button>
+                <input id="taskInput" type="text" placeholder="Add new task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none shadow-inner">
+                <button onclick="addTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl shadow-lg active:scale-90 transition-transform">+</button>
             </div>
 
             <div id="mainList" class="space-y-3"></div>
@@ -49,21 +60,21 @@
                     <h2 id="displayTask" class="text-4xl font-black text-gray-800 break-words leading-tight">...</h2>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <button onclick="record('No')" class="bg-red-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✕ NO</button>
-                    <button onclick="record('Yes')" class="bg-green-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✓ YES</button>
+                    <button onclick="record('No')" class="bg-red-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95 transition-all">✕ NO</button>
+                    <button onclick="record('Yes')" class="bg-green-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95 transition-all">✓ YES</button>
                 </div>
                 <button onclick="toggleCycle()" class="block w-full text-gray-400 font-bold underline p-2">Exit Cycle Mode</button>
             </div>
         </div>
 
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-lg z-50">
-            <button onclick="changeFol('trials')" id="t-trials" class="flex flex-col items-center py-2 w-1/3">
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-[60]">
+            <button onclick="changeFol('trials')" id="t-trials" class="flex flex-col items-center py-2 w-1/3 rounded-xl">
                 <span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trial Sheet</span>
             </button>
-            <button onclick="changeFol('mastered')" id="t-mastered" class="flex flex-col items-center py-2 w-1/3">
+            <button onclick="changeFol('mastered')" id="t-mastered" class="flex flex-col items-center py-2 w-1/3 rounded-xl">
                 <span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span>
             </button>
-            <button onclick="changeFol('recall')" id="t-recall" class="flex flex-col items-center py-2 w-1/3">
+            <button onclick="changeFol('recall')" id="t-recall" class="flex flex-col items-center py-2 w-1/3 rounded-xl">
                 <span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">History</span>
             </button>
         </div>
@@ -103,9 +114,9 @@
             list.innerHTML = '';
             profiles.forEach(p => {
                 const div = document.createElement('div');
-                div.className = "bg-white p-5 rounded-2xl font-black shadow-md flex justify-between items-center mb-2";
+                div.className = "bg-white p-5 rounded-2xl font-black shadow-md flex justify-between items-center mb-2 active:scale-95 transition-transform";
                 div.innerHTML = `<span onclick="selectProfile('${p}')" class="flex-1 cursor-pointer">${p.toUpperCase()}</span> 
-                                 <button onclick="removePerson('${p}', event)" class="text-red-300 font-bold text-[10px] border px-2 py-1 rounded">DEL</button>`;
+                                 <button onclick="removePerson('${p}', event)" class="bg-red-50 text-red-500 px-3 py-1 rounded-lg text-[10px] font-black border border-red-100">DELETE</button>`;
                 list.appendChild(div);
             });
         }
@@ -131,10 +142,7 @@
         function toggleCycle() {
             let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
             let filtered = data.filter(t => t.folder === currentFol);
-            if (!isCyc && filtered.length === 0) {
-                alert("Add a task first!");
-                return;
-            }
+            if (!isCyc && filtered.length === 0) { alert("Add a task first!"); return; }
             isCyc = !isCyc;
             if (isCyc) positions[currentFol] = 0; 
             refresh();
@@ -145,7 +153,6 @@
             let filtered = data.filter(t => t.folder === currentFol);
             let pos = positions[currentFol] || 0;
             let curTask = filtered[pos];
-
             data.push({ id: Date.now() + Math.random(), text: curTask.text, folder: 'recall', res: val, date: new Date().toLocaleDateString() });
             positions[currentFol] = (pos + 1) % filtered.length;
             localStorage.setItem('data_' + currentName, JSON.stringify(data));
@@ -216,19 +223,11 @@
                     if (currentFol === 'baseline') {
                         moveBtns = `<button onclick="moveTask(${t.id},'treatment')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">START TX</button>`;
                     } else if (currentFol === 'treatment') {
-                        moveBtns = `<div class="flex gap-1">
-                                      <button onclick="moveTask(${t.id},'baseline')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK</button>
-                                      <button onclick="moveTask(${t.id},'maintenance')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">TO MAINT</button>
-                                    </div>`;
+                        moveBtns = `<div class="flex gap-1"><button onclick="moveTask(${t.id},'baseline')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK</button><button onclick="moveTask(${t.id},'maintenance')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">TO MAINT</button></div>`;
                     } else if (currentFol === 'maintenance') {
-                        moveBtns = `<div class="flex gap-1">
-                                      <button onclick="moveTask(${t.id},'treatment')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK TO TX</button>
-                                      <button onclick="moveTask(${t.id},'mastered')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">MASTER</button>
-                                    </div>`;
+                        moveBtns = `<div class="flex gap-1"><button onclick="moveTask(${t.id},'treatment')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK TO TX</button><button onclick="moveTask(${t.id},'mastered')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase">Master</button></div>`;
                     } else if (currentFol === 'mastered') {
                         moveBtns = `<button onclick="moveTask(${t.id},'maintenance')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK TO MAINT</button>`;
-                    } else if (currentFol === 'recall') {
-                        moveBtns = `<span class="text-xs font-black ${t.res === 'Yes' ? 'text-green-500' : 'text-red-500'}">${t.res}</span>`;
                     }
 
                     card.innerHTML = `<span class="font-bold text-gray-700 text-sm">${t.text}</span><div class="flex gap-2 items-center">${moveBtns}<button onclick="deleteTask(${t.id})" class="text-red-200 px-2 font-bold">✕</button></div>`;
@@ -255,7 +254,6 @@
                 list.appendChild(div);
             }
         }
-
         renderProfiles();
     </script>
 </body>
