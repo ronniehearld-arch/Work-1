@@ -14,33 +14,21 @@
         <div id="profileList" class="w-full max-w-xs space-y-4 mb-8">
             </div>
 
-        <div class="w-full max-w-xs border-t border-blue-800 pt-6 pb-10">
+        <div class="w-full max-w-xs border-t border-blue-800 pt-6 pb-10 text-center">
             <input id="newProfileName" type="text" placeholder="Type name here..." class="w-full p-4 rounded-2xl mb-4 outline-none bg-white text-lg shadow-inner">
-            <button id="addBtn" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl active:bg-green-600">
+            <button id="addBtn" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl active:bg-green-600 transition-colors">
                 + ADD NEW PERSON
             </button>
             
-            <button onclick="localStorage.clear(); location.reload();" class="w-full mt-8 text-blue-300 text-[10px] font-bold uppercase tracking-widest underline opacity-50">
-                Clear App Data
-            </button>
+            <div class="mt-10 p-4 border border-blue-700 rounded-xl bg-blue-950/50">
+                <p class="text-blue-300 text-[10px] font-bold uppercase mb-2">Trouble adding names?</p>
+                <button onclick="localStorage.clear(); location.reload();" class="text-white bg-red-600 px-4 py-2 rounded-lg text-xs font-black uppercase">
+                    Repair Storage & Reset
+                </button>
+            </div>
         </div>
     </div>
 
     <div id="appUI" class="hidden bg-gray-100 min-h-screen pb-24">
-        <div class="bg-white border-b sticky top-0 z-50 shadow-sm">
-            <div class="flex justify-between items-center p-2 bg-gray-50 border-b">
-                 <button onclick="location.reload()" class="p-2 text-blue-600 font-black text-[10px]">⬅ NAMES</button>
-                 <span id="activeUserLabel" class="text-[10px] font-black text-gray-400 uppercase"></span>
-            </div>
-            <div class="flex justify-around">
-                <button onclick="changeFol('baseline')" id="t-baseline" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Baseline</button>
-                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Treatment</button>
-                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Maint.</button>
-            </div>
-        </div>
-
-        <div class="p-4 max-w-md mx-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic"></h1>
-                <button onclick="toggleCycle()" id="cycleBtn" class="bg-yellow-400 text-blue-900 px-3 py-1 rounded-lg font-bold text-
-                    
+        <div
+            
