@@ -8,27 +8,125 @@
 </head>
 <body class="bg-blue-900 font-sans text-gray-900">
 
-    <div id="profileScreen" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto">
+    <div id="profileScreen" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center">
         <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase tracking-widest text-center">Select Person</h1>
         
         <div id="profileList" class="w-full max-w-xs space-y-4 mb-8">
             </div>
 
-        <div class="w-full max-w-xs border-t border-blue-800 pt-6 pb-10 text-center">
-            <input id="newProfileName" type="text" placeholder="Type name here..." class="w-full p-4 rounded-2xl mb-4 outline-none bg-white text-lg shadow-inner">
-            <button id="addBtn" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl active:bg-green-600 transition-colors">
-                + ADD NEW PERSON
+        <div class="w-full max-w-xs border-t border-blue-800 pt-6">
+            <input id="newProfileName" type="text" placeholder="Type name..." class="w-full p-4 rounded-2xl mb-4 outline-none bg-white text-lg shadow-inner">
+            <button onclick="emergencyAdd()" class="w-full bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg text-xl active:bg-green-600">
+                + ADD PERSON
             </button>
             
-            <div class="mt-10 p-4 border border-blue-700 rounded-xl bg-blue-950/50">
-                <p class="text-blue-300 text-[10px] font-bold uppercase mb-2">Trouble adding names?</p>
-                <button onclick="localStorage.clear(); location.reload();" class="text-white bg-red-600 px-4 py-2 rounded-lg text-xs font-black uppercase">
-                    Repair Storage & Reset
-                </button>
-            </div>
+            <button onclick="localStorage.clear(); location.reload();" class="mt-10 text-blue-300 text-[10px] font-bold uppercase underline">
+                Clear Everything
+            </button>
         </div>
     </div>
 
     <div id="appUI" class="hidden bg-gray-100 min-h-screen pb-24">
-        <div
+        <div class="bg-white border-b sticky top-0 z-50 shadow-sm">
+            <div class="flex justify-between items-center p-2 bg-gray-50 border-b">
+                 <button onclick="location.reload()" class="p-2 text-blue-600 font-black text-[10px]">⬅ NAMES</button>
+                 <span id="activeUserLabel" class="text-[10px] font-black text-gray-400 uppercase"></span>
+            </div>
+            <div class="flex justify-around">
+                <button onclick="changeFol('baseline')" id="t-baseline" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Baseline</button>
+                <button onclick="changeFol('treatment')" id="t-treatment" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Treatment</button>
+                <button onclick="changeFol('maintenance')" id="t-maintenance" class="p-4 flex-1 text-[10px] font-black border-b-4 uppercase">Maint.</button>
+            </div>
+        </div>
+
+        <div class="p-4 max-w-md mx-auto">
+            <h1 id="headerTitle" class="font-black text-xl uppercase text-blue-800 italic mb-4"></h1>
+            <div id="inputSection" class="flex gap-2 mb-6">
+                <input id="newInput" type="text" placeholder="Add task..." class="flex-1 p-4 rounded-2xl border-2 border-gray-200 outline-none">
+                <button onclick="handleAddTask()" class="bg-blue-600 text-white px-8 rounded-2xl font-bold text-2xl shadow-lg">+</button>
+            </div>
+            <div id="mainList" class="space-y-3"></div>
+        </div>
+
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-lg z-50">
+            <button onclick="changeFol('trials')" id="t-trials" class="flex flex-col items-center py-2 w-1/3">
+                <span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trial Sheet</span>
+            </button>
+            <button onclick="changeFol('mastered')" id="t-mastered" class="flex flex-col items-center py-2 w-1/3">
+                <span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span>
+            </button>
+            <button onclick="changeFol('recall')" id="t-recall" class="flex flex-col items-center py-2 w-1/3">
+                <span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">History</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Start with a clean slate
+        let profiles = [];
+        try {
+            const saved = localStorage.getItem('tt_profiles');
+            if (saved) profiles = JSON.parse(saved);
+        } catch(e) { profiles = []; }
+
+        function emergencyAdd() {
+            const input = document.getElementById('newProfileName');
+            const name = input.value.trim();
             
+            if (!name) {
+                alert("Please enter a name first!");
+                return;
+            }
+
+            // Force add to the list
+            profiles.push(name);
+            
+            // Try to save
+            try {
+                localStorage.setItem('tt_profiles', JSON.stringify(profiles));
+            } catch(e) {
+                alert("Storage Error: Your browser is blocking saving. Try a different browser.");
+            }
+
+            input.value = '';
+            renderProfiles();
+        }
+
+        function renderProfiles() {
+            const list = document.getElementById('profileList');
+            list.innerHTML = '';
+            
+            profiles.forEach((p) => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-5 rounded-2xl font-black text-center shadow-md cursor-pointer";
+                div.innerText = p.toUpperCase();
+                div.onclick = () => selectProfile(p);
+                list.appendChild(div);
+            });
+        }
+
+        function selectProfile(name) {
+            document.getElementById('profileScreen').classList.add('hidden');
+            document.getElementById('appUI').classList.remove('hidden');
+            document.getElementById('activeUserLabel').innerText = name;
+            document.getElementById('headerTitle').innerText = "BASELINE";
+            // Initialize simple state
+            window.activeName = name;
+            refresh();
+        }
+
+        // Extremely simplified refresh for testing
+        function refresh() {
+            const L = document.getElementById('mainList');
+            L.innerHTML = '<div class="text-center p-10 text-gray-400">Folder system active. Add your first task above!</div>';
+        }
+
+        function changeFol(f) {
+            document.getElementById('headerTitle').innerText = f.toUpperCase();
+        }
+
+        // Initial render
+        renderProfiles();
+    </script>
+</body>
+</html>
