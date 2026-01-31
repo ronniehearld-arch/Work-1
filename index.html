@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.4.1</title>
+    <title>Tracker Pro v6.4.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .act-t{border-bottom:4px solid #4f46e5;color:#4f46e5;font-weight:900} 
@@ -11,12 +11,12 @@
     </style>
 </head>
 <body class="bg-gray-100 font-sans pb-32 text-gray-900 text-sm">
-    <div class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase tracking-tighter">v6.4.1 | Recall Sheets with Time Stamps</div>
+    <div class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase">v6.4.3 | Real-Time Trial Stats</div>
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center overflow-y-auto hide">
-        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
+        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic text-center">Profiles</h1>
         <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
-        <input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none border-4 border-blue-400">
+        <input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none">
         <button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg">+ ADD PERSON</button>
     </div>
 
@@ -37,42 +37,43 @@
                 <button onclick="tab('maintenance')" id="b-maintenance" class="p-4 flex-1 text-[10px] font-bold uppercase">Maint</button>
             </div>
         </div>
-
         <div id="m-list" class="p-4 space-y-3 pb-20 max-w-md mx-auto"></div>
-
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex flex-col z-50 shadow-2xl">
             <div class="flex justify-around items-center p-2 border-b">
-                <button onclick="tab('baseline')" id="f-home" class="flex flex-col items-center py-1 w-1/4">
-                    <span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trials</span>
-                </button>
-                <button onclick="tab('recall')" id="b-recall" class="flex flex-col items-center py-1 w-1/4">
-                    <span class="text-xl">📋</span><span class="text-[8px] font-black uppercase text-blue-600">RECALL</span>
-                </button>
-                <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center py-1 w-1/4">
-                    <span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span>
-                </button>
-                <button onclick="tab('ta_history')" id="b-ta_history" class="flex flex-col items-center py-1 w-1/4">
-                    <span class="text-xl">📝</span><span class="text-[8px] font-black uppercase">TA Logs</span>
-                </button>
+                <button onclick="tab('baseline')" id="f-home" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trials</span></button>
+                <button onclick="tab('recall')" id="b-recall" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">Recall</span></button>
+                <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span></button>
+                <button onclick="tab('ta_history')" id="b-ta_history" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📝</span><span class="text-[8px] font-black uppercase">TA Logs</span></button>
             </div>
             <button onclick="exitN()" class="bg-gray-100 text-gray-400 py-3 text-[9px] font-black uppercase tracking-widest border-t">Switch Profile / Logout</button>
         </div>
     </div>
 
-    <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-6 text-center">
-        <div id="c-cnt" class="text-blue-600 font-black text-xs mb-2 uppercase tracking-widest"></div>
-        <div class="bg-blue-50 p-10 rounded-[40px] border-4 border-blue-500 mb-8 mt-4">
-            <h2 id="c-task" class="text-3xl font-black uppercase leading-tight text-blue-900"></h2>
+    <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+            <span id="c-cnt" class="text-gray-400 font-black text-xs uppercase"></span>
+            <button onclick="exitC()" class="text-red-400 font-black uppercase text-[10px]">Exit Sheet</button>
         </div>
-        <div class="grid grid-cols-2 gap-6 mb-8">
-            <button onclick="rec('No')" class="bg-red-500 text-white py-12 rounded-[30px] font-black text-5xl shadow-xl active:scale-95 transition-transform">✕</button>
-            <button onclick="rec('Yes')" class="bg-green-500 text-white py-12 rounded-[30px] font-black text-5xl shadow-xl active:scale-95 transition-transform">✓</button>
+        
+        <div class="bg-gray-50 p-8 rounded-[30px] border-2 border-gray-200 mb-6">
+            <h2 id="c-task" class="text-2xl font-black uppercase leading-tight text-gray-800 text-center"></h2>
         </div>
-        <button onclick="exitC()" class="text-gray-400 font-bold uppercase text-xs p-4">Cancel & Discard</button>
+
+        <div class="flex flex-col items-center justify-center flex-1 space-y-2">
+            <div class="text-[12px] font-black text-blue-500 uppercase tracking-widest">Current Session Progress</div>
+            <div id="live-ratio" class="text-6xl font-black text-gray-900">0 / 0</div>
+            <div id="live-pct" class="text-3xl font-black text-blue-600">0%</div>
+            <div class="text-[10px] font-bold text-gray-400 uppercase italic mt-4">Taps remain until auto-save: <span id="tap-left">10</span></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 mt-auto mb-8">
+            <button onclick="rec('No')" class="bg-red-500 text-white py-12 rounded-[40px] font-black text-5xl shadow-xl active:scale-90 transition-transform">✕</button>
+            <button onclick="rec('Yes')" class="bg-green-500 text-white py-12 rounded-[40px] font-black text-5xl shadow-xl active:scale-90 transition-transform">✓</button>
+        </div>
     </div>
 
     <script>
-        let u, l, f;
+        let u, l, f, activeC;
         const show = (id) => document.getElementById(id).classList.remove('hide');
         const hide = (id) => document.getElementById(id).classList.add('hide');
 
@@ -83,7 +84,7 @@
 
         function renderP(){
             const list=document.getElementById('p-list'); let p=JSON.parse(localStorage.getItem('profiles')||'[]');
-            list.innerHTML=''; p.forEach(x=>{ list.innerHTML+=`<div class="bg-white p-4 rounded-2xl font-black shadow-md flex justify-between uppercase border-2 border-blue-100 mb-2"><span onclick="selP('${x}')" class="flex-1 cursor-pointer font-bold">${x}</span><button onclick="remP('${x}')" class="text-red-300 ml-4 font-black">✕</button></div>`; });
+            list.innerHTML=''; p.forEach(x=>{ list.innerHTML+=`<div class="bg-white p-4 rounded-2xl font-black shadow-md flex justify-between uppercase mb-2"><span onclick="selP('${x}')" class="flex-1 cursor-pointer">${x}</span><button onclick="remP('${x}')" class="text-red-300">✕</button></div>`; });
             show('s-prof'); hide('s-loc'); hide('app');
         }
 
@@ -91,7 +92,7 @@
         function renderL(){
             hide('s-prof'); show('s-loc'); hide('app');
             const list=document.getElementById('l-list'); list.innerHTML='';
-            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x=>{ list.innerHTML+=`<button onclick="selL('${x}')" class="bg-white p-4 rounded-2xl shadow-sm border-2 font-black uppercase text-[10px] text-blue-900 h-20">${x}</button>`; });
+            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x=>{ list.innerHTML+=`<button onclick="selL('${x}')" class="bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900 h-20">${x}</button>`; });
         }
 
         function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
@@ -101,17 +102,15 @@
         function refresh(){
             const list=document.getElementById('m-list'); list.innerHTML='';
             document.querySelectorAll('button[id^="b-"], button[id^="f-"]').forEach(b=>b.classList.remove('act-t'));
-            
             const activeTab = document.getElementById('b-'+f) || document.getElementById('f-home');
             if(activeTab) activeTab.classList.add('act-t');
             if(['baseline','treatment','maintenance'].includes(f)) document.getElementById('f-home').classList.add('act-t');
 
             let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)||'[]');
-            
             if(['baseline','treatment','maintenance'].includes(f)){
-                list.innerHTML = `<div class="bg-white p-4 rounded-3xl shadow-md border-2 border-blue-200 mb-4">
-                    <input id="t-in" type="text" placeholder="New Goal..." class="w-full p-3 border rounded-xl mb-2 uppercase font-black outline-none">
-                    <button onclick="addT()" class="w-full bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black uppercase">+ Create Trial Sheet</button></div>`;
+                list.innerHTML = `<div class="bg-white p-4 rounded-3xl shadow-md border mb-4">
+                    <input id="t-in" type="text" placeholder="Goal Name..." class="w-full p-3 border rounded-xl mb-2 uppercase font-black outline-none">
+                    <button onclick="addT()" class="w-full bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black uppercase">+ New Trial Sheet</button></div>`;
             }
 
             let items = d.filter(t=>t.f===f).reverse();
@@ -121,29 +120,52 @@
                     let y = res.filter(r => r === 'Yes').length;
                     let pct = Math.round((y / 10) * 100);
                     list.innerHTML += `<div class="bg-white p-5 rounded-3xl shadow-sm border-l-8 ${pct >= 80 ? 'border-green-500':'border-red-500'} mb-3">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <div class="text-[10px] font-black text-gray-400 uppercase tracking-tighter">${t.date} @ ${t.time || '--'}</div>
-                                <div class="font-black uppercase text-base text-gray-800">${t.text}</div>
-                                <div class="text-[11px] font-bold text-gray-500 mt-1">${y}/10 Correct</div>
-                            </div>
+                        <div class="flex justify-between items-center mb-1">
+                            <div><div class="text-[10px] font-black text-gray-400 uppercase">${t.date} @ ${t.time}</div><div class="font-black uppercase text-base">${t.text}</div></div>
                             <div class="text-3xl font-black ${pct >= 80 ? 'text-green-600' : 'text-red-500'}">${pct}%</div>
                         </div>
-                        <div class="flex gap-1 mt-3">
-                            ${res.map(r => `<div class="h-2 flex-1 rounded-full ${r === 'Yes' ? 'bg-green-500' : 'bg-red-400'}"></div>`).join('')}
-                        </div>
-                        <button onclick="delT(${t.id})" class="mt-4 text-[9px] font-black text-red-300 uppercase underline">Delete Sheet</button>
+                        <div class="text-[11px] font-bold text-gray-500">${y}/10 Correct</div>
+                        <button onclick="delT(${t.id})" class="mt-3 text-[9px] font-black text-red-200 uppercase underline">Delete Sheet</button>
                     </div>`;
                 } else {
                     list.innerHTML += `<div class="bg-white p-4 rounded-3xl shadow-sm border flex justify-between items-center mb-2">
                         <div onclick="runC(${t.id})" class="flex-1 font-black uppercase text-sm cursor-pointer">${t.text}</div>
-                        <div class="flex gap-1">
-                            <button onclick="mov(${t.id})" class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-[8px] font-black uppercase">MOVE</button>
-                            <button onclick="delT(${t.id})" class="text-red-100 px-2 font-black text-xl">✕</button>
-                        </div>
+                        <div class="flex gap-1"><button onclick="mov(${t.id})" class="bg-gray-100 text-gray-500 px-3 py-1 rounded-lg text-[8px] font-black">MOVE</button><button onclick="delT(${t.id})" class="text-red-100 px-2 font-black text-xl">✕</button></div>
                     </div>`;
                 }
             });
+        }
+
+        function runC(id){ 
+            let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); 
+            activeC={id:id,name:d.text,cnt:0,yes:0,res:[]}; 
+            resC(); 
+        }
+
+        function resC(){ 
+            hide('app'); show('cyc'); 
+            document.getElementById('c-task').innerText=activeC.name; 
+            document.getElementById('c-cnt').innerText=`Trial Sheet Entry`; 
+            
+            // UPDATE LIVE STATS
+            document.getElementById('live-ratio').innerText = `${activeC.yes} / ${activeC.cnt}`;
+            let pct = activeC.cnt > 0 ? Math.round((activeC.yes / activeC.cnt) * 100) : 0;
+            document.getElementById('live-pct').innerText = `${pct}%`;
+            document.getElementById('tap-left').innerText = 10 - activeC.cnt;
+        }
+
+        function rec(v){ 
+            if(v==='Yes') activeC.yes++;
+            activeC.res.push(v); 
+            activeC.cnt++; 
+            
+            if(activeC.cnt>=10){ 
+                let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)||'[]'); 
+                let now = new Date();
+                d.push({id:Date.now(),text:activeC.name,res:activeC.res,f:'recall',date:now.toLocaleDateString(),time:now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}); 
+                localStorage.setItem(k,JSON.stringify(d)); 
+                activeC = null; hide('cyc'); show('app'); tab('recall'); 
+            } else resC(); 
         }
 
         function addT(){
@@ -153,33 +175,8 @@
             localStorage.setItem(k,JSON.stringify(d)); refresh();
         }
 
-        function delT(id){ if(confirm('Delete permanently?')){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)).filter(t=>t.id!==id); localStorage.setItem(k,JSON.stringify(d)); refresh(); } }
+        function delT(id){ if(confirm('Delete?')){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)).filter(t=>t.id!==id); localStorage.setItem(k,JSON.stringify(d)); refresh(); } }
         function mov(id){ let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)); d.forEach(t=>{ if(t.id===id) t.f=t.f==='baseline'?'treatment':t.f==='treatment'?'maintenance':t.f==='maintenance'?'mastered':'baseline'; }); localStorage.setItem(k,JSON.stringify(d)); refresh(); }
-
-        let activeC;
-        function runC(id){ 
-            let d=JSON.parse(localStorage.getItem(`d_${u}_${l}`)).find(t=>t.id===id); 
-            activeC={id:id,name:d.text,cnt:0,res:[]}; 
-            resC(); 
-        }
-        function resC(){ hide('app'); show('cyc'); document.getElementById('c-task').innerText=activeC.name; document.getElementById('c-cnt').innerText=`TRIAL ${activeC.cnt+1} OF 10`; }
-        function rec(v){ 
-            activeC.res.push(v); activeC.cnt++; 
-            if(activeC.cnt>=10){ 
-                let k=`d_${u}_${l}`, d=JSON.parse(localStorage.getItem(k)||'[]'); 
-                let now = new Date();
-                d.push({
-                    id: Date.now(),
-                    text: activeC.name,
-                    res: activeC.res,
-                    f: 'recall',
-                    date: now.toLocaleDateString(),
-                    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                }); 
-                localStorage.setItem(k,JSON.stringify(d)); 
-                activeC = null; hide('cyc'); show('app'); tab('recall'); 
-            } else resC(); 
-        }
         function exitC(){ activeC=null; hide('cyc'); show('app'); refresh(); }
         function addP(){ let v=document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); p.push(v); localStorage.setItem('profiles',JSON.stringify(p)); document.getElementById('p-in').value=''; renderP(); }
         function remP(x){ if(confirm('Delete Profile?')){ let p=JSON.parse(localStorage.getItem('profiles')).filter(n=>n!==x); localStorage.setItem('profiles',JSON.stringify(p)); renderP(); } }
