@@ -49,8 +49,8 @@
                     <h2 id="displayTask" class="text-4xl font-black text-gray-800 break-words leading-tight">...</h2>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <button onclick="record('No')" class="bg-red-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg">✕ NO</button>
-                    <button onclick="record('Yes')" class="bg-green-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg">✓ YES</button>
+                    <button onclick="record('No')" class="bg-red-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✕ NO</button>
+                    <button onclick="record('Yes')" class="bg-green-500 text-white py-8 rounded-3xl font-black text-2xl shadow-lg active:scale-95">✓ YES</button>
                 </div>
                 <button onclick="toggleCycle()" class="block w-full text-gray-400 font-bold underline p-2">Exit Cycle Mode</button>
             </div>
@@ -128,18 +128,14 @@
             refresh();
         }
 
-        // --- FIXED CYCLE LOGIC ---
         function toggleCycle() {
             let data = JSON.parse(localStorage.getItem('data_' + currentName) || '[]');
             let filtered = data.filter(t => t.folder === currentFol);
-
             if (!isCyc && filtered.length === 0) {
-                alert("Add at least one task to this folder before starting Cycle Mode!");
+                alert("Add a task first!");
                 return;
             }
-
             isCyc = !isCyc;
-            // Ensure position starts at 0 if we are entering Cycle Mode
             if (isCyc) positions[currentFol] = 0; 
             refresh();
         }
@@ -150,14 +146,7 @@
             let pos = positions[currentFol] || 0;
             let curTask = filtered[pos];
 
-            data.push({ 
-                id: Date.now() + Math.random(), 
-                text: curTask.text, 
-                folder: 'recall', 
-                res: val, 
-                date: new Date().toLocaleDateString() 
-            });
-
+            data.push({ id: Date.now() + Math.random(), text: curTask.text, folder: 'recall', res: val, date: new Date().toLocaleDateString() });
             positions[currentFol] = (pos + 1) % filtered.length;
             localStorage.setItem('data_' + currentName, JSON.stringify(data));
             refresh();
@@ -189,10 +178,8 @@
             const cycleView = document.getElementById('cycleScreen');
             const inputSect = document.getElementById('inputSection');
             const cycBtn = document.getElementById('cycleBtn');
-            
             list.innerHTML = '';
             
-            // Tab Highlighting
             ['baseline', 'treatment', 'maintenance'].forEach(t => {
                 const b = document.getElementById('t-' + t);
                 b.className = `p-4 flex-1 text-[10px] font-black border-b-4 uppercase ${currentFol === t ? 'border-blue-600 text-blue-600 bg-blue-50' : 'border-transparent text-gray-400 bg-white'}`;
@@ -224,13 +211,27 @@
                 filtered.forEach(t => {
                     const card = document.createElement('div');
                     card.className = "bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center mb-2";
-                    let moveBtn = '';
-                    if (currentFol === 'baseline') moveBtn = `<button onclick="moveTask(${t.id},'treatment')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">START TX</button>`;
-                    else if (currentFol === 'treatment') moveBtn = `<button onclick="moveTask(${t.id},'maintenance')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">TO MAINT</button>`;
-                    else if (currentFol === 'maintenance') moveBtn = `<button onclick="moveTask(${t.id},'mastered')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">MASTER</button>`;
-                    else if (currentFol === 'recall') moveBtn = `<span class="text-xs font-black ${t.res === 'Yes' ? 'text-green-500' : 'text-red-500'}">${t.res}</span>`;
+                    let moveBtns = '';
+                    
+                    if (currentFol === 'baseline') {
+                        moveBtns = `<button onclick="moveTask(${t.id},'treatment')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">START TX</button>`;
+                    } else if (currentFol === 'treatment') {
+                        moveBtns = `<div class="flex gap-1">
+                                      <button onclick="moveTask(${t.id},'baseline')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK</button>
+                                      <button onclick="moveTask(${t.id},'maintenance')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">TO MAINT</button>
+                                    </div>`;
+                    } else if (currentFol === 'maintenance') {
+                        moveBtns = `<div class="flex gap-1">
+                                      <button onclick="moveTask(${t.id},'treatment')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK TO TX</button>
+                                      <button onclick="moveTask(${t.id},'mastered')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">MASTER</button>
+                                    </div>`;
+                    } else if (currentFol === 'mastered') {
+                        moveBtns = `<button onclick="moveTask(${t.id},'maintenance')" class="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg text-[10px] font-bold">BACK TO MAINT</button>`;
+                    } else if (currentFol === 'recall') {
+                        moveBtns = `<span class="text-xs font-black ${t.res === 'Yes' ? 'text-green-500' : 'text-red-500'}">${t.res}</span>`;
+                    }
 
-                    card.innerHTML = `<span class="font-bold text-gray-700 text-sm">${t.text}</span><div class="flex gap-2 items-center">${moveBtn}<button onclick="deleteTask(${t.id})" class="text-red-200 px-2 font-bold">✕</button></div>`;
+                    card.innerHTML = `<span class="font-bold text-gray-700 text-sm">${t.text}</span><div class="flex gap-2 items-center">${moveBtns}<button onclick="deleteTask(${t.id})" class="text-red-200 px-2 font-bold">✕</button></div>`;
                     list.appendChild(card);
                 });
             }
