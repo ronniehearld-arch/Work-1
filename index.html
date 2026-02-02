@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.5.4</title>
+    <title>Tracker Pro v6.5.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.5.4 | (Tap to Switch User)</div>
+    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.5.5 | (Tap to Switch User)</div>
 
     <div id="app" class="hide min-h-screen">
         <div class="bg-white sticky top-7 z-50 shadow-sm">
@@ -32,13 +32,21 @@
         </div>
     </div>
 
-    <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-6 text-center flex flex-col">
-        <div class="text-blue-500 font-black text-[10px] mb-4 uppercase pt-10">Running: <span id="c-f-name"></span> (Random)</div>
-        <div class="bg-gray-50 p-12 rounded-[40px] border-4 border-blue-500 mb-8"><h2 id="c-task" class="text-3xl font-black uppercase"></h2></div>
-        <div class="grid grid-cols-2 gap-4 flex-1 items-center pb-10">
-            <button onclick="rec('No')" class="bg-red-500 text-white h-48 rounded-3xl font-black text-5xl shadow-lg">✕</button>
-            <button onclick="rec('Yes')" class="bg-green-500 text-white h-48 rounded-3xl font-black text-5xl shadow-lg">✓</button>
+    <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-4 text-center flex flex-col">
+        <div class="text-blue-500 font-black text-[10px] mb-2 uppercase pt-8">Running: <span id="c-f-name"></span> (Random)</div>
+        <div class="bg-gray-50 p-8 rounded-[30px] border-4 border-blue-500 mb-4 flex items-center justify-center min-h-[120px]">
+            <h2 id="c-task" class="text-2xl font-black uppercase"></h2>
         </div>
+        
+        <div class="grid grid-cols-2 gap-3 flex-1 pb-4">
+            <button onclick="rec('IND')" class="bg-green-600 text-white rounded-2xl font-black text-xs uppercase shadow-md">Independent</button>
+            <button onclick="rec('INC')" class="bg-red-600 text-white rounded-2xl font-black text-xs uppercase shadow-md">Incorrect</button>
+            <button onclick="rec('PP')" class="bg-orange-400 text-white rounded-2xl font-black text-xs uppercase shadow-md">Partial Physical</button>
+            <button onclick="rec('FP')" class="bg-orange-600 text-white rounded-2xl font-black text-xs uppercase shadow-md">Full Physical</button>
+            <button onclick="rec('VB')" class="bg-blue-500 text-white rounded-2xl font-black text-xs uppercase shadow-md">Verbal</button>
+            <button onclick="rec('PB')" class="bg-purple-700 text-white rounded-2xl font-black text-xs uppercase shadow-md">Problem Behavior</button>
+        </div>
+        
         <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-4 underline">Pause & Return</button>
     </div>
 
@@ -113,12 +121,18 @@
             if(f === 'trials'){
                 list.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-black uppercase italic underline">Trial Sheet</h2><button onclick="clearHistory()" class="bg-red-600 text-white px-3 py-1 rounded-lg font-bold text-[8px] uppercase">Reset All Data</button></div>`;
                 let goals = [...new Set(d.filter(x => !x.res).map(x => x.text))];
-                let table = `<div class="bg-white rounded-3xl border shadow-sm overflow-hidden"><table class="w-full text-left"><tr class="bg-gray-50 text-[9px] font-black uppercase border-b"><th class="p-4">Program</th><th class="p-4 text-center">Total</th><th class="p-4 text-right">Success</th></tr>`;
+                let table = `<div class="bg-white rounded-3xl border shadow-sm overflow-hidden"><table class="w-full text-left"><tr class="bg-gray-50 text-[9px] font-black uppercase border-b"><th class="p-4">Program</th><th class="p-4 text-center">Total</th><th class="p-4 text-right">Ind%</th></tr>`;
                 goals.forEach(g => {
                     let history = d.filter(x => x.res && x.text === g);
-                    let total = 0, yes = 0;
-                    history.forEach(h => { if(typeof h.res === 'object'){ let s = Object.values(h.res); total += s.length; yes += s.filter(v=>v==='Yes').length; } else { total++; if(h.res==='Yes') yes++; } });
-                    let pct = total > 0 ? Math.round((yes / total) * 100) : 0;
+                    let total = 0, ind = 0;
+                    history.forEach(h => { 
+                        if(typeof h.res === 'object'){ 
+                            let s = Object.values(h.res); total += s.length; ind += s.filter(v=>v==='Yes').length; 
+                        } else { 
+                            total++; if(h.res==='IND') ind++; 
+                        } 
+                    });
+                    let pct = total > 0 ? Math.round((ind / total) * 100) : 0;
                     table += `<tr class="border-b"><td class="p-4 font-black uppercase text-xs">${g}</td><td class="p-4 text-center font-bold text-gray-400 text-xs">${total}</td><td class="p-4 text-right font-black text-indigo-600">${pct}%</td></tr>`;
                 });
                 list.innerHTML += table + `</table></div>`;
@@ -136,9 +150,8 @@
                         });
                         resultDisplay += `</div>`;
                     } else {
-                        resultDisplay = `<span class="${t.res==='Yes'?'text-green-600':'text-red-600'}">${t.res}</span>`;
+                        resultDisplay = `<span class="font-black text-indigo-600">${t.res}</span>`;
                     }
-
                     list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2"><div class="flex justify-between font-bold uppercase text-[10px]"><span>${t.text}</span> ${f==='recall'?resultDisplay:''}</div> ${f==='ta_history'?resultDisplay:''}</div>`;
                 });
             }
