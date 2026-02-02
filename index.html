@@ -3,99 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.6.20</title>
+    <title>Tracker Pro v6.6.21</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Maintaining original CSS visual style */
         .act-t { border-bottom: 4px solid #4f46e5 !important; color: #4f46e5 !important; }
         .hide { display: none !important; }
         body { -webkit-tap-highlight-color: transparent; background-color: #f3f4f6; }
-        .shadow-custom { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        .shadow-custom { box-shadow: 0 15px 30px -5px rgba(0,0,0,0.1), 0 10px 15px -5px rgba(0,0,0,0.05); }
+        .rounded-xl-custom { border-radius: 2rem; }
     </style>
 </head>
 <body class="font-sans pb-24 text-gray-900">
 
-    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1.5 uppercase cursor-pointer sticky top-0 z-[150] tracking-[0.2em]">
-        v6.6.20 | (Tap to Switch User)
+    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1.5 uppercase cursor-pointer sticky top-0 z-[150] tracking-[0.2em] shadow-md">
+        v6.6.21 | AUTHENTICATED SESSION (Tap to Switch User)
     </div>
 
     <div id="app" class="hide min-h-screen">
-        <div class="bg-white sticky top-7 z-50 shadow-sm">
-            <div class="flex justify-between p-3 bg-gray-50 border-b text-[10px] font-black uppercase">
-                 <button onclick="exitL()" class="text-blue-600">⬅ LOCATIONS</button>
+        <div class="bg-white sticky top-7 z-50 shadow-sm border-b border-gray-100">
+            <div class="flex justify-between p-3 bg-gray-50 border-b text-[10px] font-black uppercase tracking-tight">
+                 <button onclick="exitL()" class="text-blue-600 flex items-center">⬅ CHANGE LOCATION</button>
                  <span id="u-lab" class="text-gray-400"></span>
             </div>
             <div class="flex">
-                <button onclick="tab('baseline')" id="b-baseline" class="p-5 flex-1 text-[11px] font-black uppercase">Baseline</button>
-                <button onclick="tab('treatment')" id="b-treatment" class="p-5 flex-1 text-[11px] font-black uppercase">Treatment</button>
-                <button onclick="tab('maintenance')" id="b-maintenance" class="p-5 flex-1 text-[11px] font-black uppercase">Maint</button>
+                <button onclick="tab('baseline')" id="b-baseline" class="p-5 flex-1 text-[11px] font-black uppercase transition-all duration-200">Baseline</button>
+                <button onclick="tab('treatment')" id="b-treatment" class="p-5 flex-1 text-[11px] font-black uppercase transition-all duration-200">Treatment</button>
+                <button onclick="tab('maintenance')" id="b-maintenance" class="p-5 flex-1 text-[11px] font-black uppercase transition-all duration-200">Maint</button>
             </div>
         </div>
 
-        <div id="m-list" class="p-5 space-y-4 max-w-lg mx-auto"></div>
+        <div id="m-list" class="p-5 space-y-4 pb-28 max-w-lg mx-auto"></div>
 
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3 shadow-lg z-50">
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-50">
             <button onclick="tab('trials')" id="b-trials" class="flex flex-col items-center w-1/4">
-                <span class="text-2xl">📊</span><span class="text-[9px] font-black uppercase">Trials</span>
+                <span class="text-2xl mb-1">📊</span><span class="text-[9px] font-black uppercase text-gray-500">Trials</span>
             </button>
             <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center w-1/4">
-                <span class="text-2xl">🏆</span><span class="text-[9px] font-black uppercase">Mastered</span>
+                <span class="text-2xl mb-1">🏆</span><span class="text-[9px] font-black uppercase text-gray-500">Mastered</span>
             </button>
             <button onclick="tab('ta_history')" id="b-ta_history" class="flex flex-col items-center w-1/4">
-                <span class="text-2xl">📝</span><span class="text-[9px] font-black uppercase">TA Logs</span>
+                <span class="text-2xl mb-1">📝</span><span class="text-[9px] font-black uppercase text-gray-500">TA Logs</span>
             </button>
             <button onclick="tab('recall')" id="b-recall" class="flex flex-col items-center w-1/4">
-                <span class="text-2xl">📋</span><span class="text-[9px] font-black uppercase">Recall</span>
+                <span class="text-2xl mb-1">📋</span><span class="text-[9px] font-black uppercase text-gray-500">Recall</span>
             </button>
         </div>
     </div>
 
     <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-6 text-center flex flex-col">
         <div class="flex justify-between items-center pt-10 mb-4">
-            <div class="text-blue-600 font-black text-[12px] uppercase">Running: <span id="c-f-name"></span></div>
-            <button onclick="show('skip-modal')" class="bg-red-600 text-white px-6 py-2 rounded-full font-black text-[11px] uppercase italic">Skip ⏭</button>
+            <div class="text-blue-600 font-black text-[12px] uppercase tracking-tighter">Current Session: <span id="c-f-name"></span></div>
+            <button onclick="show('skip-modal')" class="bg-red-600 text-white px-6 py-2 rounded-full font-black text-[11px] uppercase italic shadow-lg active:scale-90 transition-transform">Skip Next ⏭</button>
         </div>
         
         <div class="bg-white p-8 rounded-[45px] border-[5px] border-blue-600 mb-6 flex items-center justify-center min-h-[160px] shadow-2xl">
-            <h2 id="c-task" class="text-3xl font-black uppercase"></h2>
+            <h2 id="c-task" class="text-3xl font-black uppercase tracking-tighter leading-none text-blue-900"></h2>
         </div>
 
         <div class="grid grid-cols-2 gap-3 flex-1 pb-6">
-            <button onclick="rec('IND')" class="bg-green-600 text-white rounded-3xl font-black text-[11px] uppercase">Independent</button>
-            <button onclick="rec('POS')" class="bg-yellow-500 text-white rounded-3xl font-black text-[11px] uppercase">Positional</button>
-            <button onclick="rec('GES')" class="bg-teal-500 text-white rounded-3xl font-black text-[11px] uppercase">Gestural</button>
-            <button onclick="rec('VB')" class="bg-blue-500 text-white rounded-3xl font-black text-[11px] uppercase">Verbal</button>
-            <button onclick="rec('PP')" class="bg-orange-400 text-white rounded-3xl font-black text-[11px] uppercase">Partial Phys</button>
-            <button onclick="rec('FP')" class="bg-orange-600 text-white rounded-3xl font-black text-[11px] uppercase">Full Phys</button>
-            <button onclick="rec('INC')" class="bg-red-600 text-white rounded-3xl font-black text-[11px] uppercase">Incorrect</button>
-            <button onclick="rec('NR')" class="bg-gray-500 text-white rounded-3xl font-black text-[11px] uppercase">No Response</button>
-            <button onclick="rec('PB')" class="col-span-2 bg-purple-800 text-white py-5 rounded-3xl font-black text-[11px] uppercase">Problem Behavior</button>
+            <button onclick="rec('IND')" class="bg-green-600 text-white rounded-3xl font-black text-[11px] uppercase shadow-md">Independent</button>
+            <button onclick="rec('POS')" class="bg-yellow-500 text-white rounded-3xl font-black text-[11px] uppercase shadow-md">Positional</button>
+            <button onclick="rec('GES')" class="bg-teal-500 text-white rounded-3xl font-black text-[11px] uppercase shadow-md">Gestural</button>
+            <button onclick="rec('VB')" class="bg-blue-500 text-white rounded-3xl font-black text-[11px] uppercase shadow-md">Verbal</button>
+            <button onclick="rec('PP')" class="bg-orange-400 text-white rounded-3xl font-black text-[11px] uppercase shadow-md">Partial Phys</button>
+            <button onclick="rec('FP')" class="bg-orange-600 text-white rounded-3xl font-black text-[11px] uppercase shadow-md">Full Phys</button>
+            <button onclick="rec('INC')" class="bg-red-600 text-white rounded-3xl font-black text-[11px] uppercase shadow-md">Incorrect</button>
+            <button onclick="rec('NR')" class="bg-gray-500 text-white rounded-3xl font-black text-[11px] uppercase shadow-md">No Response</button>
+            <button onclick="rec('PB')" class="col-span-2 bg-purple-800 text-white py-5 rounded-3xl font-black text-[11px] uppercase shadow-lg">Problem Behavior</button>
         </div>
-        <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[12px] mb-8 underline">Exit</button>
+        <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[12px] mb-8 underline tracking-widest">Exit Runner</button>
     </div>
 
     <div id="skip-modal" class="hide fixed inset-0 bg-black/90 z-[300] flex items-center justify-center p-8 backdrop-blur-md">
-        <div class="bg-white w-full max-w-sm rounded-[40px] p-10 shadow-2xl">
-            <p class="text-[12px] font-black uppercase text-gray-400 mb-8 text-center">Record Skip Reason</p>
+        <div class="bg-white w-full max-w-sm rounded-[40px] p-10 shadow-2xl border-t-8 border-red-500">
+            <p class="text-[12px] font-black uppercase text-gray-400 mb-8 text-center tracking-[0.2em]">Record Skip Reason</p>
             <div class="grid grid-cols-1 gap-4">
-                <button onclick="finishSkip('REFUSAL')" class="bg-red-500 text-white py-5 rounded-2xl font-black uppercase">Student Refusal</button>
-                <button onclick="finishSkip('MATERIALS')" class="bg-gray-800 text-white py-5 rounded-2xl font-black uppercase">Missing Materials</button>
-                <button onclick="finishSkip('ENVIRONMENTAL')" class="bg-blue-600 text-white py-5 rounded-2xl font-black uppercase">Environmental</button>
-                <button onclick="hide('skip-modal')" class="text-gray-400 py-3 font-black uppercase text-center mt-4">Go Back</button>
+                <button onclick="finishSkip('REFUSAL')" class="bg-red-500 text-white py-5 rounded-2xl font-black uppercase text-[12px] shadow-lg">Student Refusal</button>
+                <button onclick="finishSkip('MATERIALS')" class="bg-gray-800 text-white py-5 rounded-2xl font-black uppercase text-[12px] shadow-lg">Missing Materials</button>
+                <button onclick="finishSkip('INTERRUPTED')" class="bg-blue-700 text-white py-5 rounded-2xl font-black uppercase text-[12px] shadow-lg">Interrupted</button>
+                <button onclick="hide('skip-modal')" class="text-gray-400 py-3 font-black uppercase text-[11px] text-center w-full mt-4">Go Back</button>
             </div>
         </div>
     </div>
 
     <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-8 flex flex-col items-center">
-        <h1 class="font-black text-4xl mb-10 mt-16 uppercase text-blue-900 italic underline tracking-tighter">Location</h1>
+        <h1 class="font-black text-4xl mb-10 mt-16 uppercase text-blue-900 italic underline decoration-green-400 tracking-tighter">Select Location</h1>
         <div id="l-list" class="grid grid-cols-2 gap-5 w-full max-w-md"></div>
     </div>
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-8 flex flex-col items-center hide">
-        <h1 class="text-white font-black text-5xl mb-12 mt-20 uppercase italic tracking-tighter">Profiles</h1>
+        <h1 class="text-white font-black text-5xl mb-12 mt-20 uppercase italic tracking-tighter shadow-sm">Profiles</h1>
         <div id="p-list" class="w-full max-w-sm space-y-4 mb-10"></div>
-        <input id="p-in" type="text" placeholder="STUDENT NAME..." class="w-full max-w-sm p-6 rounded-3xl mb-5 uppercase font-black outline-none border-4 border-blue-800">
-        <button onclick="addP()" class="w-full max-w-sm bg-green-500 text-white font-black py-7 rounded-3xl shadow-2xl text-lg">+ CREATE PROFILE</button>
+        <input id="p-in" type="text" placeholder="NEW STUDENT NAME..." class="w-full max-w-sm p-6 rounded-3xl mb-5 uppercase font-black outline-none shadow-inner border-4 border-blue-800 text-blue-900 placeholder:text-blue-300">
+        <button onclick="addP()" class="w-full max-w-sm bg-green-500 text-white font-black py-7 rounded-3xl shadow-2xl active:scale-95 transition-all text-lg tracking-widest">+ CREATE PROFILE</button>
     </div>
 
     <script>
@@ -128,22 +128,22 @@
             if(['baseline','treatment','maintenance','mastered'].includes(f)){
                 let tasks = d.filter(t => t.f === f && !t.res);
                 list.innerHTML = `<button onclick="startCycle()" class="w-full bg-black text-white py-6 rounded-[25px] font-black uppercase text-sm shadow-xl mb-8">Start Session</button>
-                <div class="bg-white p-6 rounded-[40px] shadow-custom mb-8">
-                    <input id="t-in" type="text" placeholder="GOAL NAME..." class="w-full p-5 border-b-4 mb-4 uppercase font-black outline-none">
-                    <button onclick="addT()" class="w-full bg-blue-600 text-white py-4 rounded-2xl text-[11px] font-black uppercase">+ Add Trial</button>
+                <div class="bg-white p-6 rounded-[40px] shadow-custom mb-8 border-2 border-gray-50">
+                    <input id="t-in" type="text" placeholder="Goal or Program Name..." class="w-full p-5 border-b-4 border-gray-100 mb-4 uppercase font-black outline-none text-md">
+                    <button onclick="addT()" class="w-full bg-blue-600 text-white py-4 rounded-2xl text-[11px] font-black uppercase shadow-md">+ Add Trial</button>
                 </div>`;
                 tasks.forEach(t => {
-                    list.innerHTML += `<div class="bg-white p-6 rounded-[30px] shadow-md flex justify-between items-center mb-4">
-                        <div onclick="run(${t.id})" class="flex-1 font-black uppercase text-sm">${t.text}</div>
-                        <button onclick="delT(${t.id})" class="text-red-200">✕</button>
+                    list.innerHTML += `<div class="bg-white p-6 rounded-[30px] shadow-md border-2 border-transparent flex justify-between items-center mb-4">
+                        <div onclick="run(${t.id})" class="flex-1 font-black uppercase text-sm cursor-pointer">${t.text}</div>
+                        <button onclick="delT(${t.id})" class="text-red-200 hover:text-red-600 text-lg">✕</button>
                     </div>`;
                 });
             }
 
-            if(f === 'recall'){
-                list.innerHTML = `<h2 class="text-3xl font-black uppercase mb-8 italic underline">Recall</h2>`;
-                d.filter(t => t.f === 'recall').reverse().forEach(t => {
-                    list.innerHTML += `<div class="bg-white p-6 rounded-[30px] shadow-sm mb-4 flex justify-between font-black uppercase text-[12px]">
+            if(f === 'recall' || f === 'trials'){
+                list.innerHTML = `<h2 class="text-3xl font-black uppercase mb-8 italic underline tracking-tighter">${f}</h2>`;
+                d.filter(x => x.res).reverse().forEach(t => {
+                    list.innerHTML += `<div class="bg-white p-6 rounded-[30px] border-2 border-gray-50 shadow-sm mb-4 flex justify-between items-center font-black uppercase text-[12px]">
                         <span>${t.text}</span><span class="text-indigo-600">${t.res}</span>
                     </div>`;
                 });
@@ -170,7 +170,7 @@
         function renderP(){ 
             hide('s-loc'); show('s-prof'); const list = document.getElementById('p-list'); 
             let p = JSON.parse(localStorage.getItem('profiles') || '[]'); list.innerHTML = ''; 
-            p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white p-7 rounded-[30px] font-black shadow-2xl uppercase mb-4 text-left border-l-[10px] border-indigo-500">👤 ${x}</button>`; }); 
+            p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white p-7 rounded-[30px] font-black shadow-2xl uppercase mb-4 text-left border-l-[10px] border-indigo-500 flex items-center">👤 <span class="ml-4">${x}</span></button>`; }); 
         }
         function selP(x){ u = x; localStorage.setItem('u', x); renderL(); }
         function addP(){ let v = document.getElementById('p-in').value.toUpperCase(); if(!v) return; let p = JSON.parse(localStorage.getItem('profiles') || '[]'); p.push(v); localStorage.setItem('profiles', JSON.stringify(p)); renderP(); }
@@ -178,7 +178,7 @@
         function renderL(){ 
             hide('s-prof'); show('s-loc'); const list = document.getElementById('l-list'); list.innerHTML = ''; 
             ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x => { 
-                list.innerHTML += `<button onclick="selL('${x}')" class="bg-white p-6 rounded-[35px] shadow-lg font-black uppercase text-[11px] text-blue-900 h-28 flex items-center justify-center text-center">📍 <br>${x}</button>`; 
+                list.innerHTML += `<button onclick="selL('${x}')" class="bg-white p-6 rounded-[35px] shadow-lg font-black uppercase text-[11px] text-blue-900 h-28 flex items-center justify-center text-center shadow-custom">📍 <br>${x}</button>`; 
             }); 
         }
         function selL(x){ l = x; localStorage.setItem('l', x); restore(); }
