@@ -3,25 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.6.10</title>
+    <title>Tracker Pro v6.6.11</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Restoring the original v6.5.9 Bold Style */
         .act-t { border-bottom: 5px solid #4f46e5; color: #4f46e5; font-weight: 900; }
         .hide { display: none !important; }
-        
-        /* Making sure buttons feel "Big" again */
-        button { transition: transform 0.1s; }
-        button:active { transform: scale(0.92); filter: brightness(0.8); }
-        
-        /* Ensuring text doesn't shrink on mobile */
-        body { -webkit-text-size-adjust: 100%; }
+        button:active { transform: scale(0.95); filter: brightness(0.9); }
+        body { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
 
     <div onclick="exitUser()" class="bg-black text-white text-[12px] font-black text-center py-2 uppercase sticky top-0 z-[150] cursor-pointer">
-        v6.6.10 | 👤 SWITCH USER
+        v6.6.11 | 👤 SWITCH USER
     </div>
 
     <div id="app-interface" class="hide min-h-screen">
@@ -40,7 +34,7 @@
 
         <div id="main-list" class="p-4 space-y-4 pb-28 max-w-md mx-auto"></div>
 
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-50">
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3 shadow-lg z-50">
             <button onclick="switchTab('trials')" id="tab-trials" class="flex flex-col items-center w-1/4">
                 <span class="text-2xl">📊</span><span class="text-[10px] font-black uppercase mt-1">Trials</span>
             </button>
@@ -58,48 +52,60 @@
 
     <div id="runner-screen" class="hide fixed inset-0 bg-white z-[220] p-5 text-center flex flex-col">
         <div class="flex justify-between items-center pt-10 mb-4">
-            <span class="text-blue-600 font-black text-[12px] uppercase tracking-widest">⚡ Session Active</span>
-            <button onclick="openSkipModal()" class="bg-red-600 text-white px-6 py-2 rounded-full font-black text-[12px] uppercase italic shadow-lg">Skip ⏭</button>
+            <span class="text-blue-600 font-black text-[12px] uppercase">⚡ Session Active</span>
+            <button onclick="openSkipModal()" class="bg-red-600 text-white px-6 py-2 rounded-full font-black text-[12px] uppercase italic">Skip ⏭</button>
         </div>
 
         <div class="bg-white p-8 rounded-[40px] border-[6px] border-blue-500 shadow-xl mb-6 flex items-center justify-center min-h-[150px]">
-            <h2 id="display-goal-name" class="text-2xl font-black uppercase text-gray-800 tracking-tight"></h2>
+            <h2 id="display-goal-name" class="text-2xl font-black uppercase text-gray-800"></h2>
         </div>
 
         <div class="grid grid-cols-2 gap-3 flex-1 pb-6">
-            <button onclick="handleResult('IND')" class="bg-green-600 text-white rounded-2xl font-black text-[11px] uppercase shadow-md">Independent</button>
-            <button onclick="handleResult('POS')" class="bg-yellow-500 text-white rounded-2xl font-black text-[11px] uppercase shadow-md">Positional</button>
-            <button onclick="handleResult('GES')" class="bg-teal-500 text-white rounded-2xl font-black text-[11px] uppercase shadow-md">Gestural</button>
-            <button onclick="handleResult('VB')" class="bg-blue-500 text-white rounded-2xl font-black text-[11px] uppercase shadow-md">Verbal</button>
-            <button onclick="handleResult('PP')" class="bg-orange-400 text-white rounded-2xl font-black text-[11px] uppercase shadow-md">Partial Phys</button>
-            <button onclick="handleResult('FP')" class="bg-orange-600 text-white rounded-2xl font-black text-[11px] uppercase shadow-md">Full Phys</button>
-            <button onclick="handleResult('INC')" class="bg-red-600 text-white rounded-2xl font-black text-[11px] uppercase shadow-md">Incorrect</button>
-            <button onclick="handleResult('NR')" class="bg-gray-500 text-white rounded-2xl font-black text-[11px] uppercase shadow-md">No Response</button>
-            <button onclick="handleResult('PB')" class="col-span-2 bg-purple-700 text-white py-5 rounded-2xl font-black text-[13px] uppercase shadow-lg tracking-wider">🏃 Problem Behavior</button>
+            <button onclick="handleResult('IND')" class="bg-green-600 text-white rounded-2xl font-black text-[11px] uppercase">Independent</button>
+            <button onclick="handleResult('POS')" class="bg-yellow-500 text-white rounded-2xl font-black text-[11px] uppercase">Positional</button>
+            <button onclick="handleResult('GES')" class="bg-teal-500 text-white rounded-2xl font-black text-[11px] uppercase">Gestural</button>
+            <button onclick="handleResult('VB')" class="bg-blue-500 text-white rounded-2xl font-black text-[11px] uppercase">Verbal</button>
+            <button onclick="handleResult('PP')" class="bg-orange-400 text-white rounded-2xl font-black text-[11px] uppercase">Partial Phys</button>
+            <button onclick="handleResult('FP')" class="bg-orange-600 text-white rounded-2xl font-black text-[11px] uppercase">Full Phys</button>
+            <button onclick="handleResult('INC')" class="bg-red-600 text-white rounded-2xl font-black text-[11px] uppercase">Incorrect</button>
+            <button onclick="handleResult('NR')" class="bg-gray-500 text-white rounded-2xl font-black text-[11px] uppercase">No Response</button>
+            <button onclick="handleResult('PB')" class="col-span-2 bg-purple-700 text-white py-5 rounded-2xl font-black text-[13px] uppercase">🏃 Problem Behavior</button>
         </div>
         
-        <button onclick="pauseSession()" class="text-gray-400 font-bold uppercase text-[11px] mb-6 underline tracking-tighter">Pause and Return</button>
+        <button onclick="pauseSession()" class="text-gray-400 font-bold uppercase text-[11px] mb-6 underline">Pause and Return</button>
     </div>
 
     <div id="skip-modal" class="hide fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-xs rounded-[40px] p-8 shadow-2xl">
-            <p class="font-black uppercase text-gray-400 mb-6 text-center tracking-widest">Reason for Skip</p>
+        <div class="bg-white w-full max-w-xs rounded-[40px] p-8 shadow-2xl text-center">
+            <p class="font-black uppercase text-gray-400 mb-6 tracking-widest">Reason for Skip</p>
             <div class="grid grid-cols-1 gap-4">
                 <button onclick="executeSkip('REFUSAL')" class="bg-red-500 text-white py-5 rounded-2xl font-black uppercase text-xs">🚫 Refusal / PB</button>
                 <button onclick="executeSkip('NO MATERIALS')" class="bg-gray-700 text-white py-5 rounded-2xl font-black uppercase text-xs">📦 No Materials</button>
                 <button onclick="executeSkip('INTERRUPTED')" class="bg-blue-600 text-white py-5 rounded-2xl font-black uppercase text-xs">⚠️ Interrupted</button>
-                <button onclick="hide('skip-modal')" class="text-gray-400 py-2 font-black uppercase text-center mt-2">Back</button>
+                <button onclick="hide('skip-modal')" class="text-gray-400 py-2 font-black uppercase mt-2">Back</button>
             </div>
         </div>
+    </div>
+
+    <div id="profile-selector" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide">
+        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
+        <div id="profile-list" class="w-full max-w-xs space-y-3 mb-8"></div>
+        <input id="new-profile-input" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none">
+        <button onclick="addNewProfile()" class="w-full max-w-xs bg-green-500 text-white font-black py-5 rounded-2xl">+ ADD STUDENT</button>
+    </div>
+
+    <div id="location-selector" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center">
+        <h1 class="font-black text-2xl mb-6 mt-10 uppercase text-blue-900 italic underline">Location</h1>
+        <div id="location-list" class="grid grid-cols-2 gap-4 w-full max-w-md"></div>
     </div>
 
     <script>
         let user, loc, filter, activeGoal;
 
-        const dbGet = () => JSON.parse(localStorage.getItem(`data_${user}_${loc}`) || '[]');
-        const dbSave = (d) => localStorage.setItem(`data_${user}_${loc}`, JSON.stringify(d));
-        const show = (id) => document.getElementById(id).classList.remove('hide');
-        const hide = (id) => document.getElementById(id).classList.add('hide');
+        function dbGet() { return JSON.parse(localStorage.getItem(`data_${user}_${loc}`) || '[]'); }
+        function dbSave(d) { localStorage.setItem(`data_${user}_${loc}`, JSON.stringify(d)); }
+        function show(id) { document.getElementById(id).classList.remove('hide'); }
+        function hide(id) { document.getElementById(id).classList.add('hide'); }
 
         function init() {
             user = localStorage.getItem('u'); loc = localStorage.getItem('l');
@@ -111,7 +117,7 @@
 
         function renderMain() {
             hide('profile-selector'); hide('location-selector'); show('app-interface');
-            document.getElementById('user-label').innerText = `${user} | ${loc}`;
+            document.getElementById('user-label').innerText = user + ' | ' + loc;
             refreshList();
         }
 
@@ -123,6 +129,7 @@
 
         function refreshList() {
             const container = document.getElementById('main-list');
+            if (!container) return;
             container.innerHTML = '';
             document.querySelectorAll('button[id^="tab-"]').forEach(b => b.classList.remove('act-t'));
             document.getElementById('tab-' + filter)?.classList.add('act-t');
@@ -135,14 +142,14 @@
                 let items = data.filter(i => i.f === filter && !i.done);
                 container.innerHTML = `
                     <div class="flex gap-3 mb-6">
-                        <button onclick="startSession()" class="flex-1 bg-black text-white py-5 rounded-2xl font-black uppercase text-xs shadow-xl tracking-widest">
+                        <button onclick="startSession()" class="flex-1 bg-black text-white py-5 rounded-2xl font-black uppercase text-xs shadow-xl">
                             ${queue.length ? '▶ Resume Session' : '🚀 Start Random'}
                         </button>
                         ${queue.length ? `<button onclick="resetSession()" class="bg-gray-200 text-gray-500 px-5 rounded-2xl font-black text-[10px]">RESET</button>` : ''}
                     </div>
-                    <div class="bg-white p-5 rounded-[30px] shadow-sm border-2 mb-6">
-                        <input id="goal-in" type="text" placeholder="GOAL NAME..." class="w-full p-4 border-2 rounded-2xl mb-3 uppercase font-black text-sm outline-none focus:border-blue-500">
-                        <button onclick="addGoal()" class="w-full bg-blue-600 text-white py-3 rounded-2xl font-black uppercase text-[11px] shadow-md">+ Add Goal</button>
+                    <div class="bg-white p-5 rounded-[30px] border-2 mb-6">
+                        <input id="goal-in" type="text" placeholder="GOAL NAME..." class="w-full p-4 border-2 rounded-2xl mb-3 uppercase font-black text-sm outline-none">
+                        <button onclick="addGoal()" class="w-full bg-blue-600 text-white py-3 rounded-2xl font-black uppercase text-[11px]">+ Add Goal</button>
                     </div>
                 `;
 
@@ -172,7 +179,8 @@
         }
 
         function launch(id) {
-            let item = dbGet().find(i => i.id == id);
+            let data = dbGet();
+            let item = data.find(i => i.id == id);
             if (!item) return;
             activeGoal = item;
             document.getElementById('display-goal-name').innerText = item.text;
@@ -222,7 +230,6 @@
             document.getElementById('goal-in').value = ''; refreshList();
         }
 
-        // Setup Logic
         function renderProfs() {
             show('profile-selector');
             const c = document.getElementById('profile-list');
@@ -242,7 +249,7 @@
         }
         function setL(lName) { localStorage.setItem('l', lName); loc = lName; renderMain(); }
 
-        function removeGoal(id) { if (confirm("Delete?")) { dbSave(dbGet().filter(i => i.id != id)); refreshList(); } }
+        function removeGoal(id) { if (confirm("Delete?")) { let d = dbGet().filter(i => i.id != id); dbSave(d); refreshList(); } }
         function exitUser() { localStorage.removeItem('u'); location.reload(); }
         function exitLocation() { localStorage.removeItem('l'); location.reload(); }
 
