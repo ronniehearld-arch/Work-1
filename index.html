@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.5.2</title>
+    <title>Tracker Pro v6.5.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.5.2 | (Tap to Switch User)</div>
+    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.5.3 | (Tap to Switch User)</div>
 
     <div id="app" class="hide min-h-screen">
         <div class="bg-white sticky top-7 z-50 shadow-sm">
@@ -33,7 +33,7 @@
     </div>
 
     <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-6 text-center flex flex-col">
-        <div class="text-blue-500 font-black text-[10px] mb-4 uppercase pt-10">Running: <span id="c-f-name"></span></div>
+        <div class="text-blue-500 font-black text-[10px] mb-4 uppercase pt-10">Running: <span id="c-f-name"></span> (Random)</div>
         <div class="bg-gray-50 p-12 rounded-[40px] border-4 border-blue-500 mb-8"><h2 id="c-task" class="text-3xl font-black uppercase"></h2></div>
         <div class="grid grid-cols-2 gap-4 flex-1 items-center pb-10">
             <button onclick="rec('No')" class="bg-red-500 text-white h-48 rounded-3xl font-black text-5xl shadow-lg">✕</button>
@@ -74,8 +74,11 @@
         }
 
         function checkResume(){
-            let savedId = localStorage.getItem(`curId_${u}_${l}_${f}`);
-            if(savedId && ['baseline','treatment','maintenance','mastered'].includes(f)) { runById(savedId); }
+            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
+            if(savedQueue && ['baseline','treatment','maintenance','mastered'].includes(f)) {
+                let queue = JSON.parse(savedQueue);
+                if(queue.length > 0) runById(queue[0]);
+            }
         }
 
         function refresh(){
@@ -84,14 +87,15 @@
             const activeTabBtn = document.getElementById('b-'+f); if(activeTabBtn) activeTabBtn.classList.add('act-t');
             
             let d=getDB();
-            let savedId = localStorage.getItem(`curId_${u}_${l}_${f}`);
+            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
+            let queue = savedQueue ? JSON.parse(savedQueue) : [];
+            let currentId = queue[0] || null;
 
-            // FOLDER VIEW
             if(['baseline','treatment','maintenance','mastered'].includes(f)){
                 let tasks = d.filter(t=>t.f===f && !t.res);
                 list.innerHTML = `<div class="flex gap-2 mb-4">
-                    <button onclick="runById('${savedId || (tasks[0]?tasks[0].id:'')}')" class="flex-1 bg-black text-white py-4 rounded-2xl font-black uppercase text-xs shadow-lg">${savedId?'Resume Cycle':'Start Cycle'}</button>
-                    ${savedId ? `<button onclick="resetCycle()" class="bg-gray-200 text-gray-500 px-4 rounded-2xl font-black text-[10px]">RESET</button>` : ''}
+                    <button onclick="startRandomCycle()" class="flex-1 bg-black text-white py-4 rounded-2xl font-black uppercase text-xs shadow-lg">${queue.length > 0?'Resume Cycle':'Start Random Cycle'}</button>
+                    ${queue.length > 0 ? `<button onclick="resetCycle()" class="bg-gray-200 text-gray-500 px-4 rounded-2xl font-black text-[10px]">RESET</button>` : ''}
                 </div>
                 <div class="bg-white p-4 rounded-3xl shadow-md border mb-4">
                     <input id="t-in" type="text" placeholder="GOAL NAME..." class="w-full p-3 border-2 rounded-xl mb-2 uppercase font-bold outline-none text-sm">
@@ -101,12 +105,11 @@
                 
                 tasks.forEach((t)=>{
                     let moveLabel = t.f === 'baseline' ? 'To TX' : t.f === 'treatment' ? 'To Maint' : t.f === 'maintenance' ? 'To Master' : 'To Base';
-                    let isNext = savedId == t.id;
+                    let isNext = currentId == t.id;
                     list.innerHTML += `<div class="bg-white p-4 rounded-3xl border ${isNext?'border-indigo-500 border-2 shadow-md':''} flex justify-between items-center mb-2"><div onclick="runById(${t.id})" class="flex-1 font-black uppercase text-sm cursor-pointer">${t.text} ${isNext?'<span class="text-indigo-500 text-[8px] ml-2">● NEXT</span>':''}</div><div class="flex gap-2"><button onclick="mov(${t.id})" class="bg-blue-600 text-white px-2 py-2 rounded-lg text-[7px] font-bold leading-tight w-12">${moveLabel}</button><button onclick="delT(${t.id})" class="text-red-200">✕</button></div></div>`;
                 });
             }
 
-            // TRIAL SHEET
             if(f === 'trials'){
                 list.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-black uppercase italic underline">Trial Sheet</h2><button onclick="clearHistory()" class="bg-red-600 text-white px-3 py-1 rounded-lg font-bold text-[8px] uppercase">Reset All Data</button></div>`;
                 let goals = [...new Set(d.filter(x => !x.res).map(x => x.text))];
@@ -121,7 +124,6 @@
                 list.innerHTML += table + `</table></div>`;
             }
 
-            // LOGS (CLEANED)
             if(f === 'recall' || f === 'ta_history'){
                 list.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-black uppercase italic underline">${f.replace('_',' ')}</h2><button onclick="clearHistory()" class="bg-red-600 text-white px-3 py-1 rounded-lg font-bold text-[8px] uppercase">Reset</button></div>`;
                 d.filter(t => t.f === f).forEach(t => {
@@ -130,21 +132,51 @@
             }
         }
 
+        function startRandomCycle(){
+            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
+            if(savedQueue) { runById(JSON.parse(savedQueue)[0]); return; }
+            
+            let tasks = getDB().filter(t=>t.f===f && !t.res);
+            if(tasks.length === 0) return;
+            
+            // Fisher-Yates Shuffle
+            let ids = tasks.map(t => t.id);
+            for (let i = ids.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [ids[i], ids[j]] = [ids[j], ids[i]];
+            }
+            
+            localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(ids));
+            runById(ids[0]);
+        }
+
         function runById(id){
             let d = getDB();
-            let tasks = d.filter(t=>t.f===f && !t.res);
-            let t = tasks.find(x => x.id == id);
+            let t = d.find(x => x.id == id);
             if(!t) { resetCycle(); return; }
-            localStorage.setItem(`curId_${u}_${l}_${f}`, id);
+            
+            // If running an individual task manually, update the queue to put this first
+            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
+            let queue = savedQueue ? JSON.parse(savedQueue) : [];
+            if(!queue.includes(id)) { queue.unshift(id); localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue)); }
+
             if(t.type === 'ta') { runTA(t.id); } 
             else { activeC = t; show('cyc'); hide('app'); document.getElementById('c-task').innerText = t.text; document.getElementById('c-f-name').innerText = f.toUpperCase(); }
         }
 
         function advance(currId){
-            let tasks = getDB().filter(t=>t.f===f && !t.res);
-            let idx = tasks.findIndex(t => t.id == currId);
-            if(idx < tasks.length - 1) { runById(tasks[idx+1].id); } 
-            else { resetCycle(); }
+            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
+            if(!savedQueue) { resetCycle(); return; }
+            
+            let queue = JSON.parse(savedQueue);
+            queue.shift(); // Remove completed task
+            
+            if(queue.length > 0) {
+                localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue));
+                runById(queue[0]);
+            } else {
+                resetCycle();
+            }
         }
 
         function rec(v){
@@ -158,7 +190,7 @@
         }
 
         function pauseCycle(){ hide('cyc'); hide('ta-run'); show('app'); refresh(); }
-        function resetCycle(){ localStorage.removeItem(`curId_${u}_${l}_${f}`); pauseCycle(); }
+        function resetCycle(){ localStorage.removeItem(`queue_${u}_${l}_${f}`); pauseCycle(); }
         function runTA(id){ let d=getDB().find(t=>t.id==id); taS={id:id,name:d.text,steps:d.steps,res:{}}; resTA(); }
         function resTA(){ hide('app'); show('ta-run'); document.getElementById('ta-h').innerText=taS.name; const list=document.getElementById('ta-s-list'); list.innerHTML=''; taS.steps.forEach((s,i)=>{ let v=taS.res[i]; list.innerHTML+=`<div class="flex justify-between items-center p-3 border rounded-xl font-bold uppercase text-[10px] mb-2"><span>${s}</span><div class="flex gap-2"><button onclick="mS(${i},'No')" class="w-10 h-10 rounded-full border-2 ${v==='No'?'bg-red-500 text-white':'border-gray-300'}">-</button><button onclick="mS(${i},'Yes')" class="w-10 h-10 rounded-full border-2 ${v==='Yes'?'bg-blue-900 text-white':'border-blue-900'}">+</button></div></div>`; }); }
         function mS(i,v){ taS.res[i]=v; resTA(); }
