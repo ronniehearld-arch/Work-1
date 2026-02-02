@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tracker Pro v6.5.9</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
+    <style>
+        .act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} 
+        .hide{display:none !important}
+        /* Darker state for buttons when pressed */
+        .prompt-btn:active { background-color: #1a1a1a !important; transform: scale(0.95); transition: 0.1s; }
+    </style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
     <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.5.9 | (Tap to Switch User)</div>
@@ -35,59 +40,53 @@
     <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-4 text-center flex flex-col">
         <div class="flex justify-between items-center pt-8 mb-2">
             <div class="text-blue-500 font-black text-[10px] uppercase">Running: <span id="c-f-name"></span></div>
-            <button onclick="show('skip-modal')" class="bg-red-600 text-white px-3 py-1 rounded-full font-black text-[9px] uppercase italic">Skip ⏭</button>
+            <div class="flex gap-2">
+                <button onclick="openUndoMenu()" class="bg-gray-800 text-white px-3 py-1 rounded-full font-black text-[9px] uppercase">Undo ↶</button>
+                <button onclick="show('skip-modal')" class="bg-red-600 text-white px-3 py-1 rounded-full font-black text-[9px] uppercase italic">Skip ⏭</button>
+            </div>
         </div>
         <div class="bg-gray-50 p-6 rounded-[30px] border-4 border-blue-500 mb-4 flex items-center justify-center min-h-[100px]">
             <h2 id="c-task" class="text-xl font-black uppercase"></h2>
         </div>
         <div class="grid grid-cols-2 gap-2 flex-1 pb-4">
-            <button onclick="rec('IND')" class="bg-green-600 text-white rounded-xl font-black text-[10px] uppercase">Independent</button>
-            <button onclick="rec('POS')" class="bg-yellow-500 text-white rounded-xl font-black text-[10px] uppercase">Positional</button>
-            <button onclick="rec('GES')" class="bg-teal-500 text-white rounded-xl font-black text-[10px] uppercase">Gestural</button>
-            <button onclick="rec('VB')" class="bg-blue-500 text-white rounded-xl font-black text-[10px] uppercase">Verbal</button>
-            <button onclick="rec('PP')" class="bg-orange-400 text-white rounded-xl font-black text-[10px] uppercase">Partial Phys</button>
-            <button onclick="rec('FP')" class="bg-orange-600 text-white rounded-xl font-black text-[10px] uppercase">Full Phys</button>
-            <button onclick="rec('INC')" class="bg-red-600 text-white rounded-xl font-black text-[10px] uppercase">Incorrect</button>
-            <button onclick="rec('NR')" class="bg-gray-500 text-white rounded-xl font-black text-[10px] uppercase">No Response</button>
-            <button onclick="rec('PB')" class="col-span-2 bg-purple-700 text-white py-3 rounded-xl font-black text-[10px] uppercase">Problem Behavior</button>
+            <button onclick="clickRec('IND')" class="prompt-btn bg-green-600 text-white rounded-xl font-black text-[10px] uppercase">Independent</button>
+            <button onclick="clickRec('POS')" class="prompt-btn bg-yellow-500 text-white rounded-xl font-black text-[10px] uppercase">Positional</button>
+            <button onclick="clickRec('GES')" class="prompt-btn bg-teal-500 text-white rounded-xl font-black text-[10px] uppercase">Gestural</button>
+            <button onclick="clickRec('VB')" class="prompt-btn bg-blue-500 text-white rounded-xl font-black text-[10px] uppercase">Verbal</button>
+            <button onclick="clickRec('PP')" class="prompt-btn bg-orange-400 text-white rounded-xl font-black text-[10px] uppercase">Partial Phys</button>
+            <button onclick="clickRec('FP')" class="prompt-btn bg-orange-600 text-white rounded-xl font-black text-[10px] uppercase">Full Phys</button>
+            <button onclick="clickRec('INC')" class="prompt-btn bg-red-600 text-white rounded-xl font-black text-[10px] uppercase">Incorrect</button>
+            <button onclick="clickRec('NR')" class="prompt-btn bg-gray-500 text-white rounded-xl font-black text-[10px] uppercase">No Response</button>
+            <button onclick="clickRec('PB')" class="prompt-btn col-span-2 bg-purple-700 text-white py-3 rounded-xl font-black text-[10px] uppercase">Problem Behavior</button>
         </div>
         <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-4 underline">Pause & Return</button>
     </div>
 
-    <div id="skip-modal" class="hide fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-6">
+    <div id="undo-modal" class="hide fixed inset-0 bg-black/80 z-[350] flex items-center justify-center p-6">
+        <div class="bg-white w-full max-w-xs rounded-3xl p-6 flex flex-col max-h-[80vh]">
+            <p class="text-[10px] font-black uppercase text-gray-400 mb-4 text-center">Tap entry to remove (Last 10)</p>
+            <div id="undo-list" class="space-y-2 overflow-y-auto mb-4"></div>
+            <button onclick="hide('undo-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px] text-center w-full">Close</button>
+        </div>
+    </div>
+
+    <div id="skip-modal" class="hide fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-6 text-center">
         <div class="bg-white w-full max-w-xs rounded-3xl p-6">
-            <p class="text-[10px] font-black uppercase text-gray-400 mb-4 text-center">Reason for Skipping</p>
+            <p class="text-[10px] font-black uppercase text-gray-400 mb-4">Reason for Skipping</p>
             <div class="grid grid-cols-1 gap-2">
                 <button onclick="finishSkip('REFUSAL')" class="bg-red-500 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Student Refusal</button>
                 <button onclick="finishSkip('MATERIALS')" class="bg-gray-800 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Missing Materials</button>
                 <button onclick="finishSkip('ENVIRONMENT')" class="bg-blue-600 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Environmental</button>
-                <button onclick="hide('skip-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px] text-center w-full mt-2">Cancel</button>
+                <button onclick="hide('skip-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px] mt-2">Cancel</button>
             </div>
         </div>
     </div>
 
-    <div id="ta-run" class="hide fixed inset-0 bg-white z-[210] p-6 overflow-y-auto flex flex-col">
-        <h2 id="ta-h" class="text-xl font-black uppercase mb-6 text-center italic underline"></h2>
+    <div id="ta-run" class="hide fixed inset-0 bg-white z-[210] p-6 overflow-y-auto flex flex-col text-center">
+        <h2 id="ta-h" class="text-xl font-black uppercase mb-6 italic underline"></h2>
         <div id="ta-s-list" class="space-y-4 mb-8 flex-1"></div>
         <button onclick="subTA()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black shadow-lg uppercase mb-4">Submit TA Data</button>
         <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-4 text-center">Pause TA</button>
-    </div>
-
-    <div id="ta-p-modal" class="hide fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-xs rounded-3xl p-6">
-            <p class="text-[10px] font-black uppercase text-gray-400 mb-4 text-center">Select Prompt Code</p>
-            <div class="grid grid-cols-1 gap-2">
-                <button onclick="setTAStep('POS')" class="bg-yellow-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Positional</button>
-                <button onclick="setTAStep('GES')" class="bg-teal-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Gestural</button>
-                <button onclick="setTAStep('VB')" class="bg-blue-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Verbal</button>
-                <button onclick="setTAStep('PP')" class="bg-orange-400 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Partial Phys</button>
-                <button onclick="setTAStep('FP')" class="bg-orange-600 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Full Phys</button>
-                <button onclick="setTAStep('INC')" class="bg-red-600 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Incorrect</button>
-                <button onclick="setTAStep('NR')" class="bg-gray-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">No Response</button>
-                <button onclick="setTAStep('PB')" class="bg-purple-700 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Problem Behavior</button>
-                <button onclick="hide('ta-p-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px] text-center w-full mt-2">Cancel</button>
-            </div>
-        </div>
     </div>
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide"><h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1><div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div><input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none"><button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg">+ ADD</button></div>
@@ -99,6 +98,18 @@
         const saveDB = (d) => localStorage.setItem(`d_${u}_${l}`, JSON.stringify(d));
         const show = (id) => document.getElementById(id).classList.remove('hide');
         const hide = (id) => document.getElementById(id).classList.add('hide');
+
+        function playClick() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+            osc.start(); osc.stop(ctx.currentTime + 0.1);
+        }
+
+        function clickRec(v) { playClick(); rec(v); }
 
         function init(){
             u = localStorage.getItem('u'); l = localStorage.getItem('l');
@@ -167,6 +178,28 @@
             }
         }
 
+        function openUndoMenu() {
+            let d = getDB();
+            let history = d.filter(x => x.res).slice(-10).reverse();
+            const list = document.getElementById('undo-list');
+            list.innerHTML = '';
+            if(history.length === 0) { list.innerHTML = '<p class="text-[10px] text-center text-gray-400">No data found</p>'; }
+            history.forEach(item => {
+                list.innerHTML += `<button onclick="confirmUndo(${item.id})" class="w-full bg-gray-50 p-3 rounded-xl border flex justify-between items-center text-[10px] font-black uppercase"><span>${item.text}</span> <span class="text-indigo-600">${typeof item.res === 'string' ? item.res : 'TA'}</span></button>`;
+            });
+            show('undo-modal');
+        }
+
+        function confirmUndo(id) {
+            if(confirm("Permanently delete this entry?")) {
+                let d = getDB();
+                let filtered = d.filter(x => x.id !== id);
+                saveDB(filtered);
+                hide('undo-modal');
+                refresh();
+            }
+        }
+
         function startRandomCycle(){
             let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
             if(savedQueue) { runById(JSON.parse(savedQueue)[0]); return; }
@@ -193,14 +226,10 @@
             if(queue.length > 0) { localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue)); runById(queue[0]); } else { resetCycle(); }
         }
 
-        // SURGICAL ADDITION: SKIP FUNCTION
         function finishSkip(reason){
             let d = getDB(); 
             d.push({id:Date.now(), text:activeC.text, res:'SKIPPED: '+reason, f:'recall', date:new Date().toLocaleDateString()}); 
-            saveDB(d); 
-            hide('skip-modal'); 
-            hide('cyc'); 
-            advance(activeC.id);
+            saveDB(d); hide('skip-modal'); hide('cyc'); advance(activeC.id);
         }
 
         function rec(v){ let d = getDB(); d.push({id:Date.now(), text:activeC.text, res:v, f:'recall', date:new Date().toLocaleDateString()}); saveDB(d); advance(activeC.id); }
@@ -255,4 +284,3 @@
     </script>
 </body>
 </html>
-
