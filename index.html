@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.5.3</title>
+    <title>Tracker Pro v6.5.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.5.3 | (Tap to Switch User)</div>
+    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.5.4 | (Tap to Switch User)</div>
 
     <div id="app" class="hide min-h-screen">
         <div class="bg-white sticky top-7 z-50 shadow-sm">
@@ -127,7 +127,19 @@
             if(f === 'recall' || f === 'ta_history'){
                 list.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-black uppercase italic underline">${f.replace('_',' ')}</h2><button onclick="clearHistory()" class="bg-red-600 text-white px-3 py-1 rounded-lg font-bold text-[8px] uppercase">Reset</button></div>`;
                 d.filter(t => t.f === f).forEach(t => {
-                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2 flex justify-between font-bold uppercase text-[10px]"><span>${t.text}</span><span class="${t.res==='Yes'?'text-green-600':'text-red-600'}">${typeof t.res==='string'?t.res:'TA COMPLETE'}</span></div>`;
+                    let resultDisplay = '';
+                    if(f === 'ta_history' && typeof t.res === 'object'){
+                        resultDisplay = `<div class="mt-2 space-y-1">`;
+                        t.steps.forEach((step, idx) => {
+                            let pass = t.res[idx] === 'Yes';
+                            resultDisplay += `<div class="flex justify-between text-[8px] font-bold ${pass?'text-green-600':'text-red-500'}"><span>${step}</span><span>${pass?'✓':'✕'}</span></div>`;
+                        });
+                        resultDisplay += `</div>`;
+                    } else {
+                        resultDisplay = `<span class="${t.res==='Yes'?'text-green-600':'text-red-600'}">${t.res}</span>`;
+                    }
+
+                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2"><div class="flex justify-between font-bold uppercase text-[10px]"><span>${t.text}</span> ${f==='recall'?resultDisplay:''}</div> ${f==='ta_history'?resultDisplay:''}</div>`;
                 });
             }
         }
@@ -135,17 +147,13 @@
         function startRandomCycle(){
             let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
             if(savedQueue) { runById(JSON.parse(savedQueue)[0]); return; }
-            
             let tasks = getDB().filter(t=>t.f===f && !t.res);
             if(tasks.length === 0) return;
-            
-            // Fisher-Yates Shuffle
             let ids = tasks.map(t => t.id);
             for (let i = ids.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [ids[i], ids[j]] = [ids[j], ids[i]];
             }
-            
             localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(ids));
             runById(ids[0]);
         }
@@ -154,12 +162,9 @@
             let d = getDB();
             let t = d.find(x => x.id == id);
             if(!t) { resetCycle(); return; }
-            
-            // If running an individual task manually, update the queue to put this first
             let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
             let queue = savedQueue ? JSON.parse(savedQueue) : [];
             if(!queue.includes(id)) { queue.unshift(id); localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue)); }
-
             if(t.type === 'ta') { runTA(t.id); } 
             else { activeC = t; show('cyc'); hide('app'); document.getElementById('c-task').innerText = t.text; document.getElementById('c-f-name').innerText = f.toUpperCase(); }
         }
@@ -167,16 +172,12 @@
         function advance(currId){
             let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
             if(!savedQueue) { resetCycle(); return; }
-            
             let queue = JSON.parse(savedQueue);
-            queue.shift(); // Remove completed task
-            
+            queue.shift();
             if(queue.length > 0) {
                 localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue));
                 runById(queue[0]);
-            } else {
-                resetCycle();
-            }
+            } else { resetCycle(); }
         }
 
         function rec(v){
@@ -185,7 +186,7 @@
         }
 
         function subTA(){
-            let d=getDB(); d.push({id:Date.now(), text:taS.name, res:taS.res, f:'ta_history', date:new Date().toLocaleDateString()}); 
+            let d=getDB(); d.push({id:Date.now(), text:taS.name, steps: taS.steps, res:taS.res, f:'ta_history', date:new Date().toLocaleDateString()}); 
             saveDB(d); hide('ta-run'); advance(taS.id);
         }
 
