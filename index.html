@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.6.3</title>
+    <title>Tracker Pro v6.6.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.6.3 | (Tap to Switch User)</div>
+    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.6.4 | (Tap to Switch User)</div>
 
     <div id="app" class="hide min-h-screen">
         <div class="bg-white sticky top-7 z-50 shadow-sm">
@@ -23,23 +23,17 @@
             </div>
         </div>
         <div id="m-list" class="p-4 space-y-3 pb-20 max-w-md mx-auto"></div>
-
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-2 shadow-lg z-50">
-            <button onclick="tab('trials')" id="b-trials" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trial Sheet</span></button>
-            <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span></button>
+            <button onclick="tab('trials')" id="b-trials" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trial</span></button>
+            <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Master</span></button>
             <button onclick="tab('ta_history')" id="b-ta_history" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📝</span><span class="text-[8px] font-black uppercase">TA Logs</span></button>
             <button onclick="tab('recall')" id="b-recall" class="flex flex-col items-center py-1 w-1/4"><span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">Recall</span></button>
         </div>
     </div>
 
     <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-4 text-center flex flex-col">
-        <div class="flex justify-between items-center pt-8 mb-2">
-            <span class="text-blue-500 font-black text-[10px] uppercase">Trial Mode</span>
-            <button onclick="showSkipMenu()" class="bg-gray-800 text-white px-4 py-1 rounded-full font-black text-[10px] uppercase italic">Skip ⏭</button>
-        </div>
-        <div class="bg-gray-50 p-6 rounded-[30px] border-4 border-blue-500 mb-4 flex items-center justify-center min-h-[100px]">
-            <h2 id="c-task" class="text-xl font-black uppercase"></h2>
-        </div>
+        <div class="flex justify-between items-center pt-8 mb-2"><span class="text-blue-500 font-black text-[10px] uppercase">Trial Mode</span><button onclick="show('skip-modal')" class="bg-gray-800 text-white px-4 py-1 rounded-full font-black text-[10px] uppercase italic">Skip ⏭</button></div>
+        <div class="bg-gray-50 p-6 rounded-[30px] border-4 border-blue-500 mb-4 flex items-center justify-center min-h-[100px]"><h2 id="c-task" class="text-xl font-black uppercase"></h2></div>
         <div class="grid grid-cols-2 gap-2 flex-1 pb-4">
             <button onclick="rec('IND')" class="bg-green-600 text-white rounded-xl font-black text-[10px] uppercase">Independent</button>
             <button onclick="rec('POS')" class="bg-yellow-500 text-white rounded-xl font-black text-[10px] uppercase">Positional</button>
@@ -55,30 +49,14 @@
     </div>
 
     <div id="ta-run" class="hide fixed inset-0 bg-white z-[210] p-6 overflow-y-auto flex flex-col">
-        <div class="flex justify-between items-center mb-6">
-            <h2 id="ta-h" class="text-lg font-black uppercase italic underline"></h2>
-            <button onclick="showSkipMenu()" class="bg-gray-800 text-white px-4 py-1 rounded-full font-black text-[10px] uppercase italic">Skip ⏭</button>
-        </div>
+        <div class="flex justify-between items-center mb-6"><h2 id="ta-h" class="text-lg font-black uppercase italic underline"></h2><button onclick="show('skip-modal')" class="bg-gray-800 text-white px-4 py-1 rounded-full font-black text-[10px] uppercase italic">Skip ⏭</button></div>
         <div id="ta-s-list" class="space-y-4 mb-8 flex-1"></div>
         <button onclick="subTA()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black shadow-lg uppercase mb-4">Submit TA Data</button>
         <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-4 text-center">Pause TA</button>
     </div>
 
-    <div id="skip-modal" class="hide fixed inset-0 bg-black/80 z-[400] flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-xs rounded-3xl p-6">
-            <p class="text-[10px] font-black uppercase text-gray-400 mb-4 text-center">Reason for Skip?</p>
-            <div class="grid grid-cols-1 gap-2">
-                <button onclick="confirmSkip('REFUSAL')" class="bg-red-500 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Refusal / PB</button>
-                <button onclick="confirmSkip('NO MATERIALS')" class="bg-gray-600 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Missing Materials</button>
-                <button onclick="confirmSkip('INTERRUPTED')" class="bg-blue-500 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Interrupted</button>
-                <button onclick="confirmSkip('NOT READY')" class="bg-orange-500 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Student Not Ready</button>
-                <button onclick="hide('skip-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px] text-center w-full mt-2">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="ta-p-modal" class="hide fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-6"><div class="bg-white w-full max-w-xs rounded-3xl p-6"><p class="text-[10px] font-black uppercase text-gray-400 mb-4 text-center">Select Prompt Code</p><div class="grid grid-cols-1 gap-2"><button onclick="setTAStep('POS')" class="bg-yellow-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Positional</button><button onclick="setTAStep('GES')" class="bg-teal-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Gestural</button><button onclick="setTAStep('VB')" class="bg-blue-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Verbal</button><button onclick="setTAStep('PP')" class="bg-orange-400 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Partial Phys</button><button onclick="setTAStep('FP')" class="bg-orange-600 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Full Phys</button><button onclick="setTAStep('INC')" class="bg-red-600 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Incorrect</button><button onclick="setTAStep('NR')" class="bg-gray-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">No Response</button><button onclick="setTAStep('PB')" class="bg-purple-700 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Problem Behavior</button><button onclick="hide('ta-p-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px] text-center w-full mt-2">Cancel</button></div></div></div>
-    
+    <div id="skip-modal" class="hide fixed inset-0 bg-black/80 z-[400] flex items-center justify-center p-6"><div class="bg-white w-full max-w-xs rounded-3xl p-6"><p class="text-[10px] font-black uppercase text-gray-400 mb-4 text-center">Reason for Skip?</p><div class="grid grid-cols-1 gap-2"><button onclick="confirmSkip('REFUSAL')" class="bg-red-500 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Refusal / PB</button><button onclick="confirmSkip('NO MATERIALS')" class="bg-gray-600 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Missing Materials</button><button onclick="confirmSkip('INTERRUPTED')" class="bg-blue-500 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Interrupted</button><button onclick="confirmSkip('NOT READY')" class="bg-orange-500 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Student Not Ready</button><button onclick="hide('skip-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px] text-center w-full mt-2">Cancel</button></div></div></div>
+    <div id="ta-p-modal" class="hide fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-6"><div class="bg-white w-full max-w-xs rounded-3xl p-6"><p class="text-[10px] font-black uppercase text-gray-400 mb-4 text-center">Select Prompt</p><div class="grid grid-cols-1 gap-2"><button onclick="setTAStep('POS')" class="bg-yellow-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Positional</button><button onclick="setTAStep('GES')" class="bg-teal-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Gestural</button><button onclick="setTAStep('VB')" class="bg-blue-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Verbal</button><button onclick="setTAStep('PP')" class="bg-orange-400 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Partial Phys</button><button onclick="setTAStep('FP')" class="bg-orange-600 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Full Phys</button><button onclick="setTAStep('INC')" class="bg-red-600 text-white py-2 rounded-xl font-bold uppercase text-[10px]">Incorrect</button><button onclick="setTAStep('NR')" class="bg-gray-500 text-white py-2 rounded-xl font-bold uppercase text-[10px]">No Response</button><button onclick="setTAStep('PB')" class="bg-purple-700 text-white py-2 rounded-xl font-bold uppercase text-[10px]">PB</button><button onclick="hide('ta-p-modal')" class="text-gray-400 py-2 uppercase text-[10px] text-center w-full">Cancel</button></div></div></div>
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide"><h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1><div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div><input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none"><button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg">+ ADD</button></div>
     <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center"><h1 class="font-black text-2xl mb-6 mt-10 uppercase text-blue-900 italic underline">Location</h1><div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md"></div></div>
 
@@ -90,26 +68,18 @@
         const hide = (id) => document.getElementById(id)?.classList.add('hide');
 
         function init(){
-            u = localStorage.getItem('u'); l = localStorage.getItem('l');
-            f = localStorage.getItem('f') || 'baseline';
+            u = localStorage.getItem('u'); l = localStorage.getItem('l'); f = localStorage.getItem('f') || 'baseline';
             if(u && l){ restore(); } else if(u){ renderL(); } else { renderP(); }
         }
-
         function restore(){ hide('s-loc'); hide('s-prof'); show('app'); document.getElementById('u-lab').innerText=`${u} | ${l}`; checkResume(); refresh(); }
         function tab(x){ f=x; localStorage.setItem('f',x); hide('cyc'); hide('ta-run'); show('app'); checkResume(); refresh(); }
-
-        function checkResume(){
-            let q = JSON.parse(localStorage.getItem(`queue_${u}_${l}_${f}`) || '[]');
-            if(q.length > 0 && ['baseline','treatment','maintenance','mastered'].includes(f)) runById(q[0]);
-        }
+        function checkResume(){ let q = JSON.parse(localStorage.getItem(`queue_${u}_${l}_${f}`) || '[]'); if(q.length > 0 && ['baseline','treatment','maintenance','mastered'].includes(f)) runById(q[0]); }
 
         function refresh(){
             const list=document.getElementById('m-list'); if(!list) return; list.innerHTML='';
             document.querySelectorAll('button[id^="b-"]').forEach(b=>b.classList.remove('act-t'));
             document.getElementById('b-'+f)?.classList.add('act-t');
-            let d=getDB();
-            let q = JSON.parse(localStorage.getItem(`queue_${u}_${l}_${f}`) || '[]');
-
+            let d=getDB(), q = JSON.parse(localStorage.getItem(`queue_${u}_${l}_${f}`) || '[]');
             if(['baseline','treatment','maintenance','mastered'].includes(f)){
                 let tasks = d.filter(t=>t.f===f && !t.res);
                 list.innerHTML = `<div class="flex gap-2 mb-4"><button onclick="startRandomCycle()" class="flex-1 bg-black text-white py-4 rounded-2xl font-black uppercase text-xs shadow-lg">${q.length > 0?'Resume Cycle':'Start Random Cycle'}</button>${q.length > 0 ? `<button onclick="resetCycle()" class="bg-gray-200 text-gray-500 px-4 rounded-2xl font-black text-[10px]">RESET</button>` : ''}</div><div class="bg-white p-4 rounded-3xl shadow-md border mb-4"><input id="t-in" type="text" placeholder="GOAL NAME..." class="w-full p-3 border-2 rounded-xl mb-2 uppercase font-bold text-sm"><div class="flex gap-2"><button onclick="addT('trial')" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-[10px] font-bold uppercase">+ Trial</button><button onclick="addT('ta')" class="flex-1 bg-orange-500 text-white py-2 rounded-xl text-[10px] font-bold uppercase">+ TA</button></div></div>`;
@@ -118,91 +88,59 @@
                     list.innerHTML += `<div class="bg-white p-4 rounded-3xl border ${q[0]==t.id?'border-indigo-500 border-2':''} flex justify-between items-center mb-2"><div onclick="runById(${t.id})" class="flex-1 font-black uppercase text-sm">${t.text}</div><div class="flex gap-2"><button onclick="mov(${t.id})" class="bg-blue-600 text-white px-2 py-2 rounded-lg text-[7px] font-bold w-12">${move}</button><button onclick="delT(${t.id})" class="text-red-200 px-2">✕</button></div></div>`;
                 });
             }
-            if(f === 'trials'){
-                list.innerHTML = `<h2 class="text-xl font-black uppercase italic underline mb-4">Trial Sheet</h2>`;
+            if(f==='trials'){
                 let goals = [...new Set(d.filter(x => !x.res).map(x => x.text))];
-                let table = `<div class="bg-white rounded-3xl border shadow-sm overflow-hidden"><table class="w-full text-left"><tr class="bg-gray-50 text-[9px] font-black border-b"><th class="p-4">Program</th><th class="p-4 text-center">Total</th><th class="p-4 text-right">Ind%</th></tr>`;
+                let table = `<div class="bg-white rounded-3xl border overflow-hidden"><table class="w-full text-left font-bold uppercase text-[10px]"><tr class="bg-gray-50 border-b"><th class="p-4">Program</th><th class="p-4">Total</th><th class="p-4">Ind%</th></tr>`;
                 goals.forEach(g => {
-                    let hists = d.filter(x => x.res && x.text === g);
-                    let total = 0, ind = 0;
-                    hists.forEach(h => { if(typeof h.res === 'object'){ let s = Object.values(h.res); total += s.length; ind += s.filter(v=>v==='IND').length; } else { total++; if(h.res==='IND') ind++; } });
-                    table += `<tr class="border-b"><td class="p-4 font-black uppercase text-xs">${g}</td><td class="p-4 text-center font-bold text-gray-400 text-xs">${total}</td><td class="p-4 text-right font-black text-indigo-600">${total > 0 ? Math.round((ind/total)*100) : 0}%</td></tr>`;
+                    let hists = d.filter(x => x.res && x.text === g), tot = 0, ind = 0;
+                    hists.forEach(h => { if(typeof h.res === 'object'){ let s = Object.values(h.res); tot += s.length; ind += s.filter(v=>v==='IND').length; } else { tot++; if(h.res==='IND') ind++; } });
+                    table += `<tr class="border-b"><td class="p-4">${g}</td><td class="p-4">${tot}</td><td class="p-4 text-indigo-600">${tot > 0 ? Math.round((ind/tot)*100) : 0}%</td></tr>`;
                 });
-                list.innerHTML += table + `</table></div><button onclick="clearHistory()" class="w-full mt-6 text-red-400 text-[10px] font-bold uppercase italic">Clear All Progress Data</button>`;
+                list.innerHTML = `<h2 class="text-xl font-black uppercase italic underline mb-4">Trial Sheet</h2>` + table + `</table></div><button onclick="clearHistory()" class="w-full mt-6 text-red-400 font-bold uppercase text-[10px]">Clear Data</button>`;
             }
-            if(f === 'recall' || f === 'ta_history'){
+            if(f==='recall' || f==='ta_history'){
                 list.innerHTML = `<h2 class="text-xl font-black uppercase italic underline mb-4">${f.replace('_',' ')}</h2>`;
-                d.filter(t => t.f === f).reverse().forEach(t => {
-                    let r = typeof t.res === 'object' ? 'COMPLETED' : t.res;
-                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2 font-bold uppercase text-[10px] flex justify-between"><span>${t.text}</span> <span class="text-indigo-600">${r}</span></div>`;
-                });
+                d.filter(t => t.f === f).reverse().forEach(t => { list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2 font-bold uppercase text-[10px] flex justify-between"><span>${t.text}</span> <span class="text-indigo-600">${typeof t.res==='object'?'COMPLETED':t.res}</span></div>`; });
             }
         }
-
         function runById(id){
-            let d = getDB(); let t = d.find(x => x.id == id); if(!t) { resetCycle(); return; }
+            let d = getDB(), t = d.find(x => x.id == id); if(!t) { resetCycle(); return; }
             hide('app'); hide('cyc'); hide('ta-run');
-            if(t.type === 'ta') { 
-                taS = {id:t.id, name:t.text, steps:t.steps, res:{}}; 
-                show('ta-run'); resTA(); 
-            } else { 
-                activeC = t; show('cyc'); 
-                document.getElementById('c-task').innerText = t.text; 
-            }
+            if(t.type === 'ta') { taS = {id:t.id, name:t.text, steps:t.steps, res:{}}; show('ta-run'); resTA(); } 
+            else { activeC = t; show('cyc'); document.getElementById('c-task').innerText = t.text; }
         }
-
         function startRandomCycle(){
-            let tasks = getDB().filter(t=>t.f===f && !t.res);
-            if(tasks.length === 0) return;
-            let ids = tasks.map(t => t.id);
-            for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
-            localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(ids));
-            runById(ids[0]);
+            let tasks = getDB().filter(t=>t.f===f && !t.res); if(!tasks.length) return;
+            let ids = tasks.map(t => t.id); for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
+            localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(ids)); runById(ids[0]);
         }
-
-        function showSkipMenu(){ show('skip-modal'); }
-
         function confirmSkip(reason){
             let q = JSON.parse(localStorage.getItem(`queue_${u}_${l}_${f}`) || '[]');
             if(q.length > 0){
-                let curId = q.shift();
-                let d = getDB();
-                let t = d.find(x => x.id == curId);
-                // Log the skip
+                let curId = q.shift(); let d = getDB(), t = d.find(x => x.id == curId);
                 d.push({id:Date.now(), text:t.text, res:'SKIPPED: '+reason, f:'recall', date:new Date().toLocaleDateString()});
-                saveDB(d);
-                // Move to back
-                q.push(curId);
-                localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(q));
-                hide('skip-modal'); hide('cyc'); hide('ta-run');
-                runById(q[0]);
+                saveDB(d); q.push(curId); localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(q));
+                hide('skip-modal'); hide('cyc'); hide('ta-run'); runById(q[0]);
             }
         }
-
         function advance(){
-            let q = JSON.parse(localStorage.getItem(`queue_${u}_${l}_${f}`) || '[]');
-            q.shift();
+            let q = JSON.parse(localStorage.getItem(`queue_${u}_${l}_${f}`) || '[]'); q.shift();
             localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(q));
             if(q.length > 0) runById(q[0]); else { hide('cyc'); hide('ta-run'); show('app'); resetCycle(); }
         }
-
         function rec(v){ let d = getDB(); d.push({id:Date.now(), text:activeC.text, res:v, f:'recall', date:new Date().toLocaleDateString()}); saveDB(d); advance(); }
         function subTA(){ let d=getDB(); d.push({id:Date.now(), text:taS.name, steps:taS.steps, res:taS.res, f:'ta_history'}); saveDB(d); advance(); }
-        
         function resTA(){ 
-            document.getElementById('ta-h').innerText=taS.name; 
-            const list=document.getElementById('ta-s-list'); list.innerHTML=''; 
-            taS.steps.forEach((s,i)=>{ 
-                list.innerHTML+=`<div class="flex justify-between items-center p-3 border rounded-xl font-bold uppercase text-[10px] mb-2"><span>${s}</span><div class="flex gap-2 items-center"><span class="text-blue-600 mr-2">${taS.res[i]||'—'}</span><button onclick="curTAStepIdx=${i};show('ta-p-modal')" class="w-10 h-10 rounded-full border-2 border-gray-300">-</button><button onclick="taS.res[${i}]='IND';resTA()" class="w-10 h-10 rounded-full border-2 border-blue-900">+</button></div></div>`; 
-            }); 
+            document.getElementById('ta-h').innerText=taS.name; const list=document.getElementById('ta-s-list'); list.innerHTML=''; 
+            taS.steps.forEach((s,i)=>{ list.innerHTML+=`<div class="flex justify-between items-center p-3 border rounded-xl font-bold uppercase text-[10px] mb-2"><span>${s}</span><div class="flex gap-2 items-center"><span class="text-blue-600 mr-2">${taS.res[i]||'—'}</span><button onclick="curTAStepIdx=${i};show('ta-p-modal')" class="w-10 h-10 rounded-full border-2">-</button><button onclick="taS.res[${i}]='IND';resTA()" class="w-10 h-10 rounded-full border-2">+</button></div></div>`; }); 
         }
         function setTAStep(v){ taS.res[curTAStepIdx]=v; hide('ta-p-modal'); resTA(); }
         function pauseCycle(){ hide('cyc'); hide('ta-run'); show('app'); refresh(); }
         function resetCycle(){ localStorage.removeItem(`queue_${u}_${l}_${f}`); pauseCycle(); }
         function mov(id){ let d=getDB(); d.forEach(t=>{ if(t.id==id){ t.f=t.f==='baseline'?'treatment':t.f==='treatment'?'maintenance':t.f==='maintenance'?'mastered':'baseline'; } }); saveDB(d); resetCycle(); }
         function addT(type){ let v=document.getElementById('t-in').value.trim().toUpperCase(); if(!v) return; let steps=[]; if(type==='ta'){ let s; while(s=prompt("Step:")) if(s) steps.push(s.toUpperCase()); } let d=getDB(); d.push({id:Date.now(), text:v, type:type, f:f, steps:steps}); saveDB(d); refresh(); }
-        function renderP(){ hide('s-loc'); hide('app'); show('s-prof'); const list=document.getElementById('p-list'); let p=JSON.parse(localStorage.getItem('profiles')||'[]'); list.innerHTML=''; p.forEach(x=>{ list.innerHTML+=`<button onclick="u='${x}';localStorage.setItem('u','${x}');renderL()" class="w-full bg-white p-4 rounded-2xl font-black shadow-md uppercase mb-2 text-left">${x}</button>`; }); }
-        function renderL(){ hide('s-prof'); hide('app'); show('s-loc'); const list=document.getElementById('l-list'); list.innerHTML=''; ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x=>{ list.innerHTML+=`<button onclick="l='${x}';localStorage.setItem('l','${x}');restore()" class="bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900 h-20">${x}</button>`; }); }
+        function renderP(){ hide('s-loc'); hide('app'); show('s-prof'); const list=document.getElementById('p-list'); let p=JSON.parse(localStorage.getItem('profiles')||'[]'); list.innerHTML=''; p.forEach(x=>{ list.innerHTML+=`<button onclick="u='${x}';localStorage.setItem('u','${x}');renderL()" class="w-full bg-white p-4 rounded-2xl font-black uppercase mb-2 text-left">${x}</button>`; }); }
+        function renderL(){ hide('s-prof'); hide('app'); show('s-loc'); const list=document.getElementById('l-list'); list.innerHTML=''; ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x=>{ list.innerHTML+=`<button onclick="l='${x}';localStorage.setItem('l','${x}');restore()" class="bg-white p-4 rounded-2xl border font-black uppercase text-[10px] h-20">${x}</button>`; }); }
         function addP(){ let v=document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); p.push(v); localStorage.setItem('profiles',JSON.stringify(p)); renderP(); }
         function delT(id){ if(confirm('Delete?')){ let d=getDB().filter(t=>t.id!=id); saveDB(d); refresh(); } }
         function clearHistory(){ if(confirm("Clear history?")){ let d=getDB(); saveDB(d.filter(t=>!t.res)); refresh(); } }
