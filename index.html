@@ -8,7 +8,7 @@
     <style>
         .act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} 
         .hide{display:none !important}
-        .prompt-btn:active { background-color: #1a1a1a !important; transform: scale(0.95); transition: 0.1s; }
+        .prompt-btn:active, .ta-btn:active { background-color: #1a1a1a !important; transform: scale(0.95); transition: 0.1s; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
@@ -61,6 +61,27 @@
         <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-4 underline">Pause & Return</button>
     </div>
 
+    <div id="ta-run" class="hide fixed inset-0 bg-white z-[210] p-6 overflow-y-auto flex flex-col text-center">
+        <h2 id="ta-h" class="text-xl font-black uppercase mb-6 italic underline"></h2>
+        <div id="ta-s-list" class="space-y-4 mb-8 flex-1"></div>
+        <button onclick="subTA()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black shadow-lg uppercase mb-4">Submit TA Data</button>
+        <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-4 text-center">Pause TA</button>
+    </div>
+
+    <div id="ta-p-modal" class="hide fixed inset-0 bg-black/90 z-[400] flex items-center justify-center p-6">
+        <div class="bg-white w-full max-w-xs rounded-3xl p-4 grid grid-cols-2 gap-2">
+            <button onclick="setTAStep('IND')" class="bg-green-600 text-white py-4 rounded-xl font-bold uppercase text-[10px]">Independent</button>
+            <button onclick="setTAStep('POS')" class="bg-yellow-500 text-white py-4 rounded-xl font-bold uppercase text-[10px]">Positional</button>
+            <button onclick="setTAStep('GES')" class="bg-teal-500 text-white py-4 rounded-xl font-bold uppercase text-[10px]">Gestural</button>
+            <button onclick="setTAStep('VB')" class="bg-blue-500 text-white py-4 rounded-xl font-bold uppercase text-[10px]">Verbal</button>
+            <button onclick="setTAStep('PP')" class="bg-orange-400 text-white py-4 rounded-xl font-bold uppercase text-[10px]">Partial Phys</button>
+            <button onclick="setTAStep('FP')" class="bg-orange-600 text-white py-4 rounded-xl font-bold uppercase text-[10px]">Full Phys</button>
+            <button onclick="setTAStep('INC')" class="bg-red-600 text-white py-4 rounded-xl font-bold uppercase text-[10px]">Incorrect</button>
+            <button onclick="setTAStep('NR')" class="bg-gray-500 text-white py-4 rounded-xl font-bold uppercase text-[10px]">No Response</button>
+            <button onclick="hide('ta-p-modal')" class="col-span-2 text-gray-400 py-2 font-bold uppercase text-[10px]">Cancel</button>
+        </div>
+    </div>
+
     <div id="undo-modal" class="hide fixed inset-0 bg-black/80 z-[350] flex items-center justify-center p-6">
         <div class="bg-white w-full max-w-xs rounded-3xl p-6 flex flex-col max-h-[80vh]">
             <p class="text-[10px] font-black uppercase text-gray-400 mb-4 text-center">Tap entry to remove (Last 10)</p>
@@ -79,13 +100,6 @@
                 <button onclick="hide('skip-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px] mt-2">Cancel</button>
             </div>
         </div>
-    </div>
-
-    <div id="ta-run" class="hide fixed inset-0 bg-white z-[210] p-6 overflow-y-auto flex flex-col text-center">
-        <h2 id="ta-h" class="text-xl font-black uppercase mb-6 italic underline"></h2>
-        <div id="ta-s-list" class="space-y-4 mb-8 flex-1"></div>
-        <button onclick="subTA()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black shadow-lg uppercase mb-4">Submit TA Data</button>
-        <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-4 text-center">Pause TA</button>
     </div>
 
     <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide"><h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1><div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div><input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none"><button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg">+ ADD</button></div>
@@ -259,16 +273,17 @@
 
         function runTA(id){ let d=getDB().find(t=>t.id==id); taS={id:id,name:d.text,steps:d.steps,res:{}}; resTA(); }
         function resTA(){ 
-            hide('app'); show('ta-run'); document.getElementById('ta-h').innerText=taS.name; 
+            hide('app'); hide('cyc'); show('ta-run'); document.getElementById('ta-h').innerText=taS.name; 
             const list=document.getElementById('ta-s-list'); list.innerHTML=''; 
             taS.steps.forEach((s,i)=>{ 
                 let v=taS.res[i] || '—'; 
-                list.innerHTML+=`<div class="flex justify-between items-center p-3 border rounded-xl font-bold uppercase text-[10px] mb-2"><span>${s}</span><div class="flex gap-2 items-center"><span class="text-blue-600 mr-2 font-black">${v}</span><button onclick="promptTA(${i})" class="w-10 h-10 rounded-full border-2 border-gray-300">-</button><button onclick="setTAStep('IND', ${i})" class="w-10 h-10 rounded-full border-2 border-blue-900">+</button></div></div>`; 
+                list.innerHTML+=`<div class="flex justify-between items-center p-3 border rounded-xl font-bold uppercase text-[10px] mb-2 bg-white"><span>${s}</span><div class="flex gap-2 items-center"><span class="text-blue-600 mr-2 font-black">${v}</span><button onclick="promptTA(${i})" class="ta-btn w-10 h-10 rounded-full border-2 border-gray-300 text-gray-400">-</button><button onclick="setTAStep('IND', ${i})" class="ta-btn w-10 h-10 rounded-full border-2 border-blue-900 text-blue-900 font-black">+</button></div></div>`; 
             }); 
         }
-        function promptTA(i){ curTAStepIdx = i; show('ta-p-modal'); }
+        function promptTA(i){ curTAStepIdx = i; playClick(); show('ta-p-modal'); }
         function setTAStep(val, i = null){ 
             if(i !== null) curTAStepIdx = i;
+            playClick();
             taS.res[curTAStepIdx] = val; 
             hide('ta-p-modal'); resTA(); 
         }
@@ -276,7 +291,7 @@
         function pauseCycle(){ hide('cyc'); hide('ta-run'); show('app'); refresh(); }
         function resetCycle(){ localStorage.removeItem(`queue_${u}_${l}_${f}`); pauseCycle(); }
         function mov(id){ let d=getDB(); d.forEach(t=>{ if(t.id==id){ t.f=t.f==='baseline'?'treatment':t.f==='treatment'?'maintenance':t.f==='maintenance'?'mastered':'baseline'; } }); saveDB(d); resetCycle(); }
-        function addT(type){ let v=document.getElementById('t-in').value.trim().toUpperCase(); if(!v) return; let steps = []; if(type==='ta'){ let s; while(s = prompt("Step:")) if(s) steps.push(s.toUpperCase()); } let d=getDB(); d.push({id:Date.now(), text:v, type:type, f:f, steps:steps}); saveDB(d); refresh(); }
+        function addT(type){ let v=document.getElementById('t-in').value.trim().toUpperCase(); if(!v) return; let steps = []; if(type==='ta'){ let s; while(s = prompt("Step:")) if(s) steps.push(s.toUpperCase()); } if(type==='ta' && steps.length === 0) return; let d=getDB(); d.push({id:Date.now(), text:v, type:type, f:f, steps:steps}); saveDB(d); refresh(); }
         
         function renderP(){ 
             hide('s-loc'); hide('app'); show('s-prof'); 
