@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.5.6</title>
+    <title>Tracker Pro v6.5.7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} .hide{display:none !important}</style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
-    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.5.6 | (Tap to Switch User)</div>
+    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-1 uppercase cursor-pointer sticky top-0 z-[150]">v6.5.7 | (Tap to Switch User)</div>
 
     <div id="app" class="hide min-h-screen">
         <div class="bg-white sticky top-7 z-50 shadow-sm">
@@ -38,12 +38,13 @@
             <h2 id="c-task" class="text-2xl font-black uppercase"></h2>
         </div>
         <div class="grid grid-cols-2 gap-3 flex-1 pb-4">
-            <button onclick="rec('IND')" class="bg-green-600 text-white rounded-2xl font-black text-xs uppercase">Independent</button>
-            <button onclick="rec('INC')" class="bg-red-600 text-white rounded-2xl font-black text-xs uppercase">Incorrect</button>
-            <button onclick="rec('PP')" class="bg-orange-400 text-white rounded-2xl font-black text-xs uppercase">Partial Physical</button>
-            <button onclick="rec('FP')" class="bg-orange-600 text-white rounded-2xl font-black text-xs uppercase">Full Physical</button>
-            <button onclick="rec('VB')" class="bg-blue-500 text-white rounded-2xl font-black text-xs uppercase">Verbal</button>
-            <button onclick="rec('PB')" class="bg-purple-700 text-white rounded-2xl font-black text-xs uppercase">Problem Behavior</button>
+            <button onclick="rec('IND')" class="bg-green-600 text-white rounded-2xl font-black text-xs uppercase shadow-md">Independent</button>
+            <button onclick="rec('GES')" class="bg-teal-500 text-white rounded-2xl font-black text-xs uppercase shadow-md">Gestural</button>
+            <button onclick="rec('VB')" class="bg-blue-500 text-white rounded-2xl font-black text-xs uppercase shadow-md">Verbal</button>
+            <button onclick="rec('PP')" class="bg-orange-400 text-white rounded-2xl font-black text-xs uppercase shadow-md">Partial Physical</button>
+            <button onclick="rec('FP')" class="bg-orange-600 text-white rounded-2xl font-black text-xs uppercase shadow-md">Full Physical</button>
+            <button onclick="rec('INC')" class="bg-red-600 text-white rounded-2xl font-black text-xs uppercase shadow-md">Incorrect</button>
+            <button onclick="rec('PB')" class="col-span-2 bg-purple-700 text-white py-3 rounded-2xl font-black text-xs uppercase shadow-md">Problem Behavior</button>
         </div>
         <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-4 underline">Pause & Return</button>
     </div>
@@ -59,12 +60,13 @@
         <div class="bg-white w-full max-w-xs rounded-3xl p-6">
             <p class="text-[10px] font-black uppercase text-gray-400 mb-4 text-center">Select Error Code for Step</p>
             <div class="grid grid-cols-1 gap-2">
-                <button onclick="setTAStep('INC')" class="bg-red-600 text-white py-3 rounded-xl font-bold uppercase text-xs">Incorrect</button>
+                <button onclick="setTAStep('GES')" class="bg-teal-500 text-white py-3 rounded-xl font-bold uppercase text-xs">Gestural</button>
+                <button onclick="setTAStep('VB')" class="bg-blue-500 text-white py-3 rounded-xl font-bold uppercase text-xs">Verbal</button>
                 <button onclick="setTAStep('PP')" class="bg-orange-400 text-white py-3 rounded-xl font-bold uppercase text-xs">Partial Physical</button>
                 <button onclick="setTAStep('FP')" class="bg-orange-600 text-white py-3 rounded-xl font-bold uppercase text-xs">Full Physical</button>
-                <button onclick="setTAStep('VB')" class="bg-blue-500 text-white py-3 rounded-xl font-bold uppercase text-xs">Verbal</button>
+                <button onclick="setTAStep('INC')" class="bg-red-600 text-white py-3 rounded-xl font-bold uppercase text-xs">Incorrect</button>
                 <button onclick="setTAStep('PB')" class="bg-purple-700 text-white py-3 rounded-xl font-bold uppercase text-xs">Problem Behavior</button>
-                <button onclick="hide('ta-p-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px]">Cancel</button>
+                <button onclick="hide('ta-p-modal')" class="text-gray-400 py-2 font-bold uppercase text-[10px] text-center w-full">Cancel</button>
             </div>
         </div>
     </div>
@@ -137,7 +139,7 @@
                     if(f === 'ta_history' && typeof t.res === 'object'){
                         resultDisplay = `<div class="mt-2 space-y-1">`;
                         t.steps.forEach((step, idx) => {
-                            let r = t.res[idx]; let color = r==='IND'?'text-green-600':'text-red-500';
+                            let r = t.res[idx] || '—'; let color = r==='IND'?'text-green-600':'text-red-500';
                             resultDisplay += `<div class="flex justify-between text-[8px] font-bold ${color}"><span>${step}</span><span>${r}</span></div>`;
                         });
                         resultDisplay += `</div>`;
