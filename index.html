@@ -3,32 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.8.9 - Full Build</title>
+    <title>Tracker Pro v6.7.9 - Full Build</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .act-t { border-bottom: 4px solid #4f46e5 !important; color: #4f46e5 !important; font-weight: 900 !important; } 
         .hide { display: none !important; }
         
-        /* THE FULL SHEET REPLICA STYLING - MIRRORING YOUR IMAGE */
-        .full-sheet-overlay { position: fixed; inset: 0; background: #fff; z-index: 500; overflow: auto; padding: 0; }
-        .workbook-page { width: 1100px; color: black; font-family: Arial, sans-serif; padding: 20px; margin: auto; }
-        .wb-table { width: 100%; border-collapse: collapse; border: 2px solid black; margin-top: 5px; }
-        .wb-table th, .wb-table td { border: 1px solid black; font-size: 9px; padding: 4px; text-align: center; font-weight: bold; }
-        .wb-grey { background: #e5e7eb; }
-        .wb-vert { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 11px; padding: 10px !important; }
-        .wb-left { text-align: left !important; font-weight: normal; font-size: 8px; line-height: 1.2; padding: 5px; }
-
-        /* ORIGINAL STYLES RESTORED */
-        .sbt-grid-container { display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background-color: #000; border: 2px solid #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px; }
+        /* --- ORIGINAL GRID STYLING UNTOUCHED --- */
+        .sbt-grid-container { 
+            display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background-color: #000; 
+            border: 2px solid #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px;
+        }
         .grid-header { background-color: #f3f4f6; font-size: 11px; font-weight: 900; text-transform: uppercase; padding: 12px 5px; text-align: center; border-bottom: 1px solid #000; }
         .grid-cell { background-color: #ffffff; padding: 22px 5px; font-weight: 900; font-size: 13px; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .grid-cell:active { background-color: #e5e7eb; }
         .cell-eng { background-color: #f9fafb; color: #4f46e5; border-left: 1px solid #000; }
+
+        /* --- THE FULL SHEET REPLICA (SCROLLABLE OVERLAY) --- */
+        #full-sheet-overlay { 
+            position: fixed; inset: 0; background: #fff; z-index: 1000; overflow: auto; 
+        }
+        .sheet-content { 
+            width: 1050px; padding: 25px; color: black; font-family: 'Arial Narrow', Arial, sans-serif;
+        }
+        .sheet-table { width: 100%; border-collapse: collapse; border: 2.5px solid black; }
+        .sheet-table th, .sheet-table td { border: 1.5px solid black; padding: 5px; font-size: 10px; text-align: center; font-weight: bold; }
+        .sheet-grey { background-color: #e5e7eb; }
+        .sheet-vert { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; padding: 15px !important; }
+        .sheet-left { text-align: left !important; font-weight: normal; font-size: 9px; line-height: 1.3; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
 
     <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-2 uppercase sticky top-0 z-[150]">
-        TRACKER PRO V6.8.9 | FULL HEAVY-DUTY BUILD | (SWITCH USER)
+        Tracker Pro v6.7.9 | (Tap to Switch User)
     </div>
 
     <div id="app" class="hide min-h-screen">
@@ -44,7 +52,7 @@
             </div>
         </div>
         <div id="m-list" class="p-4 space-y-3 pb-24 max-w-md mx-auto"></div>
-        
+
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3 shadow-lg z-50">
             <button onclick="tab('trials')" id="b-trials" class="flex flex-col items-center w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trial Sheet</span></button>
             <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center w-1/4"><span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span></button>
@@ -53,48 +61,47 @@
         </div>
     </div>
 
-    <div id="full-page-view" class="hide full-sheet-overlay">
-        <div class="sticky top-0 bg-black text-white p-4 flex justify-between items-center z-[600]">
-            <span class="text-xs font-black uppercase">Full Workbook View</span>
-            <button onclick="hide('full-page-view')" class="bg-red-600 px-4 py-1 rounded text-[10px] font-black uppercase">Close</button>
+    <div id="full-sheet-overlay" class="hide">
+        <div class="sticky top-0 left-0 bg-indigo-700 text-white p-4 flex justify-between items-center w-full z-[1100]">
+            <span class="font-black uppercase text-xs">Full Workbook Data Sheet</span>
+            <button onclick="hide('full-sheet-overlay')" class="bg-white text-indigo-700 px-6 py-2 rounded-full font-black uppercase text-[10px]">Close Sheet</button>
         </div>
         
-        <div class="workbook-page">
-            <div class="text-[10px] font-bold border-b-2 border-black pb-1 mb-1 italic">Data Sheet and Guide for the Skill-Based Treatment of Problem Behavior (Revised May 2019; FTF Behavioral Consulting, Inc.)</div>
-            <table class="wb-table mb-1">
-                <tr><td class="text-left">Organization:</td><td class="text-left">Client Name:</td><td class="text-left">Skills Trainer:</td><td class="text-left">Supervisor:</td><td class="text-left">Consultant:</td></tr>
+        <div class="sheet-content">
+            <div class="text-[12px] font-black border-b-2 border-black pb-1 mb-2">Data Sheet and Guide for the Skill-Based Treatment of Problem Behavior (Revised May 2019)</div>
+            <table class="sheet-table mb-2">
+                <tr><td class="sheet-left">Organization:</td><td class="sheet-left">Client Name:</td><td class="sheet-left">Skills Trainer:</td><td class="sheet-left">Supervisor:</td><td class="sheet-left">Consultant:</td></tr>
             </table>
 
-            <table class="wb-table">
-                <tr class="wb-grey"><td colspan="13" class="text-left font-black p-2">Diversified Chaining Branch: <span class="border-b border-black w-40 inline-block"></span> / New people: ______ / New locations: ______ / Extended time: ______</td></tr>
-                <tr class="wb-grey">
-                    <th rowspan="2">Step</th><th rowspan="2" style="width:40px">Date</th><th rowspan="2" style="width:180px">Responses Reinforced</th><th colspan="10">Progressively Changing Response Requirements</th><th rowspan="2" style="width:200px">Instructions</th>
+            <table class="sheet-table">
+                <tr class="sheet-grey"><td colspan="13" class="sheet-left font-black p-3">Diversified Chaining Branch: <span class="border-b border-black w-64 inline-block"></span> / New people: ______ / New locations: ______</td></tr>
+                <tr class="sheet-grey">
+                    <th rowspan="2">Step</th><th rowspan="2" style="width:50px">Date</th><th rowspan="2" style="width:200px">Responses Reinforced</th><th colspan="10">Progressively Changing Response Requirements</th><th rowspan="2" style="width:220px">Instructions</th>
                 </tr>
-                <tr class="wb-grey">
+                <tr class="sheet-grey">
                     <th>EO</th><th>SR</th><th>EO</th><th>SR</th><th>EO</th><th>SR</th><th>EO</th><th>SR</th><th>EO</th><th>SR</th>
                 </tr>
                 <tr>
-                    <td class="wb-vert wb-grey" rowspan="2">CAB 4</td><td></td><td class="wb-left">CFCR, TR, CAB 1, 2, or <b>CAB4</b><br>Communicate, tolerate denial, relinquish positive reinforcers.</td>
-                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="wb-grey">#<br>--<br>Eng</td>
-                    <td>cFCR</td><td class="wb-grey">#<br>--<br>Eng</td>
-                    <td>cFCR<br>TR<br>CAB1</td><td class="wb-grey">#<br>--<br>Eng</td>
-                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="wb-grey">#<br>--<br>Eng</td>
-                    <td>cFCR<br>TR</td><td class="wb-grey">#<br>--<br>Eng</td>
-                    <td class="wb-left" rowspan="2"><b>DATA COLLECTION</b><br>In EO, circle the response to EO if independent. Circle Eng if it occurred throughout SR.<br><br><b>SHAPING CRITERIA</b><br>Remain at each step until 3 consecutive trials of target response level.</td>
+                    <td class="sheet-vert sheet-grey" rowspan="2">CAB 4</td><td></td><td class="sheet-left"><b>cFCR, TR, CAB 1, 2, or CAB 4</b><br>Communicate, tolerate denial, relinquish positive reinforcers, transition and get ready to learn.</td>
+                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="sheet-grey">#<br>--<br>Eng</td>
+                    <td>cFCR</td><td class="sheet-grey">#<br>--<br>Eng</td>
+                    <td>cFCR<br>TR<br>CAB1</td><td class="sheet-grey">#<br>--<br>Eng</td>
+                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="sheet-grey">#<br>--<br>Eng</td>
+                    <td>cFCR<br>TR</td><td class="sheet-grey">#<br>--<br>Eng</td>
+                    <td class="sheet-left" rowspan="2"><b>DATA COLLECTION</b><br>In EO, circle the response to EO if independent. Slash the response if prompted.<br><br><b>SHAPING CRITERIA</b><br>Remain at each teaching step until 3 consecutive trials of the target response level have been completed with zero PB.</td>
                 </tr>
                 <tr>
-                    <td></td><td class="wb-left">Transition and get ready to learn, and/or cooperate/comply/respond accurately to 1-3 instructions.</td>
-                    <td>cFCR</td><td class="wb-grey">Eng</td><td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="wb-grey">Eng</td><td>cFCR<br>TR</td><td class="wb-grey">Eng</td><td>cFCR<br>CAB1</td><td class="wb-grey">Eng</td><td>cFCR<br>TR</td><td class="wb-grey">Eng</td>
+                    <td></td><td class="sheet-left">Academic, life skills, or vocational tasks for 1 min.</td>
+                    <td>cFCR</td><td class="sheet-grey">Eng</td><td>cFCR<br>TR<br>CAB1</td><td class="sheet-grey">Eng</td><td>cFCR</td><td class="sheet-grey">Eng</td><td>cFCR<br>TR</td><td class="sheet-grey">Eng</td><td>cFCR</td><td class="sheet-grey">Eng</td>
                 </tr>
             </table>
-            <div class="text-[8px] font-bold mt-2 italic">EO = establishing operation; SR = synthesized reinforcement; PB = problem behavior; Eng = Engagement; cFCR = Complex FCR; TR = Tolerance response; CAB = Contextually appropriate behavior</div>
         </div>
     </div>
 
     <div id="cyc" class="hide fixed inset-0 bg-white z-[220] flex flex-col overflow-y-auto">
         <div class="p-4 text-center">
             <div class="flex justify-between items-center mb-4">
-                <button onclick="show('full-page-view')" class="bg-indigo-600 text-white px-3 py-1 rounded-lg font-black text-[10px] uppercase shadow-lg">View Full Sheet</button>
+                <button onclick="show('full-sheet-overlay')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-lg border-2 border-indigo-200">View Entire Table</button>
                 <button onclick="openUndoMenu()" class="bg-gray-800 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase">Undo</button>
             </div>
             <div class="mb-4 bg-gray-50 py-4 rounded-2xl border font-mono text-5xl font-black text-indigo-600" id="sbt-timer">00:00</div>
@@ -121,7 +128,7 @@
     <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center overflow-y-auto"><h1 class="font-black text-3xl mb-10 mt-12 uppercase italic">Folders</h1><div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div><div class="w-full max-w-md bg-white p-8 rounded-[40px] shadow-xl border"><input id="l-in" type="text" placeholder="FOLDER..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-sm"><button onclick="addL()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl uppercase">+ Add</button></div></div>
 
     <script>
-        // ALL ORIGINAL JAVASCRIPT RESTORED
+        // --- 100% ORIGINAL JAVASCRIPT RESTORED ---
         let u, l, f, activeC, sbtInterval, sbtSeconds = 0;
         function getDB() { let key = "d_" + u + "_" + l; let raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }
         function saveDB(d) { localStorage.setItem("d_" + u + "_" + l, JSON.stringify(d)); }
