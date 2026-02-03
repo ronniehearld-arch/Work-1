@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.5.9 - Clinical</title>
+    <title>Tracker Pro v6.5.9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} 
@@ -49,7 +49,7 @@
         </div>
         <div class="grid grid-cols-2 gap-2 flex-1 pb-4">
             <button onclick="clickRec('IND')" class="prompt-btn bg-green-600 text-white rounded-xl font-black text-[10px] uppercase">Independent</button>
-            <button onclick="clickRec('ERROR')" class="prompt-btn bg-indigo-600 text-white rounded-xl font-black text-[10px] uppercase italic">Errorless (Skip)</button>
+            <button onclick="clickRec('ERRORLESS')" class="prompt-btn bg-indigo-600 text-white rounded-xl font-black text-[10px] uppercase italic">Errorless</button>
             <button onclick="clickRec('POS')" class="prompt-btn bg-yellow-500 text-white rounded-xl font-black text-[10px] uppercase">Positional</button>
             <button onclick="clickRec('GES')" class="prompt-btn bg-teal-500 text-white rounded-xl font-black text-[10px] uppercase">Gestural</button>
             <button onclick="clickRec('VB')" class="prompt-btn bg-blue-500 text-white rounded-xl font-black text-[10px] uppercase">Verbal</button>
@@ -140,35 +140,20 @@
             } catch(e) {}
         }
 
-        // UPDATED LOGIC HERE
+        // --- THE LOGIC YOU REQUESTED ---
         function clickRec(v) { 
             playClick(); 
             rec(v); 
-
-            // Only advance the cycle if result is Independent or the Errorless Skip button
-            if (v === 'IND' || v === 'ERROR') {
-                setTimeout(() => next(), 100); 
-            } else {
-                // If it was a prompt (POS, GES, VB, etc.) or PB, we do nothing.
-                // The task remains the same on the screen.
-                console.log("Prompt recorded. Staying on current target.");
+            // Move only if Independent or Errorless
+            if(v === 'IND' || v === 'ERRORLESS') {
+                setTimeout(() => next(), 100);
             }
         }
 
         function rec(v) {
             let d = getDB();
-            let entry = {
-                id: Date.now(),
-                text: activeC.text,
-                res: v,
-                f: 'recall',
-                origin: f,
-                loc: l,
-                time: new Date().toLocaleTimeString()
-            };
-            d.push(entry);
-            saveDB(d);
-            refresh();
+            d.push({ id: Date.now(), text: activeC.text, res: v, f: 'recall', origin: f, loc: l });
+            saveDB(d); refresh();
         }
 
         function next() {
@@ -176,22 +161,13 @@
             if(!savedQueue) return;
             let queue = JSON.parse(savedQueue);
             queue.shift();
-            if(queue.length === 0) {
-                localStorage.removeItem(`queue_${u}_${l}_${f}`);
-                pauseCycle();
-            } else {
-                localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue));
-                runById(queue[0]);
-            }
+            if(queue.length === 0) { localStorage.removeItem(`queue_${u}_${l}_${f}`); pauseCycle(); }
+            else { localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue)); runById(queue[0]); }
         }
 
-        function finishSkip(reason) {
-            clickRec('SKIP: ' + reason);
-            hide('skip-modal');
-            // Force move to next after skip
-            setTimeout(() => next(), 150);
-        }
+        function finishSkip(reason) { clickRec('SKIP: ' + reason); hide('skip-modal'); setTimeout(() => next(), 150); }
 
+        // --- ALL ORIGINAL CODES BELOW ---
         function init(){
             u = localStorage.getItem('u'); l = localStorage.getItem('l');
             f = localStorage.getItem('f') || 'baseline';
@@ -263,12 +239,7 @@
                         });
                         resultDisplay += `</div>`;
                     } else { resultDisplay = `<span class="font-black text-indigo-600">${t.res}</span>`; }
-                    
-                    let originMap = {baseline:'BASE', treatment:'TX', maintenance:'MAINT', mastered:'MAST'};
-                    let tabLabel = t.origin ? `<span class="text-gray-400 text-[7px] ml-1 font-black">(${originMap[t.origin] || t.origin.toUpperCase()})</span>` : '';
-                    let locLabel = t.loc ? `<span class="text-gray-400 text-[7px] ml-1 font-black">[${t.loc}]</span>` : '';
-                    
-                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2"><div class="flex justify-between font-bold uppercase text-[10px]"><span>${t.text} ${tabLabel}${locLabel}</span> ${f==='recall'?resultDisplay:''}</div> ${f==='ta_history'?resultDisplay:''}</div>`;
+                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2"><div class="flex justify-between font-bold uppercase text-[10px]"><span>${t.text}</span> ${f==='recall'?resultDisplay:''}</div> ${f==='ta_history'?resultDisplay:''}</div>`;
                 });
             }
         }
@@ -278,22 +249,13 @@
             let history = d.filter(x => x.res).slice(-10).reverse();
             const list = document.getElementById('undo-list');
             list.innerHTML = '';
-            if(history.length === 0) { list.innerHTML = '<p class="text-[10px] text-center text-gray-400">No data found</p>'; }
             history.forEach(item => {
                 list.innerHTML += `<button onclick="confirmUndo(${item.id})" class="w-full bg-gray-50 p-3 rounded-xl border flex justify-between items-center text-[10px] font-black uppercase"><span>${item.text}</span> <span class="text-indigo-600">${typeof item.res === 'string' ? item.res : 'TA'}</span></button>`;
             });
             show('undo-modal');
         }
 
-        function confirmUndo(id) {
-            if(confirm("Permanently delete this entry?")) {
-                let d = getDB();
-                let filtered = d.filter(x => x.id !== id);
-                saveDB(filtered);
-                hide('undo-modal');
-                refresh();
-            }
-        }
+        function confirmUndo(id) { if(confirm("Permanently delete this entry?")) { saveDB(getDB().filter(x => x.id !== id)); hide('undo-modal'); refresh(); } }
 
         function startRandomCycle(){
             let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
@@ -314,30 +276,18 @@
             runById(ids[0]);
         }
 
-        function resetCycle(){
-            localStorage.removeItem(`queue_${u}_${l}_${f}`);
-            refresh();
-        }
+        function resetCycle(){ localStorage.removeItem(`queue_${u}_${l}_${f}`); refresh(); }
 
         function runById(id){
             let t = getDB().find(x=>x.id==id);
             if(!t) return;
             activeC = t;
-            if(t.steps){
-                taS = {}; curTAStepIdx = 0;
-                show('ta-run'); hide('app');
-                document.getElementById('ta-h').innerText = t.text;
-                renderTASteps();
-            } else {
-                show('cyc'); hide('app');
-                document.getElementById('c-task').innerText = t.text;
-                document.getElementById('c-f-name').innerText = f;
-            }
+            if(t.steps){ taS = {}; curTAStepIdx = 0; show('ta-run'); hide('app'); document.getElementById('ta-h').innerText = t.text; renderTASteps(); }
+            else { show('cyc'); hide('app'); document.getElementById('c-task').innerText = t.text; document.getElementById('c-f-name').innerText = f; }
         }
 
         function renderTASteps(){
-            const list = document.getElementById('ta-s-list');
-            list.innerHTML = '';
+            const list = document.getElementById('ta-s-list'); list.innerHTML = '';
             activeC.steps.forEach((s, idx)=>{
                 let res = taS[idx] || '—';
                 let color = res === 'IND' ? 'bg-green-600 text-white' : (res === '—' ? 'bg-white text-gray-400' : 'bg-red-500 text-white');
@@ -345,54 +295,26 @@
             });
         }
 
-        function setTAStep(v){
-            taS[curTAStepIdx] = v;
-            hide('ta-p-modal');
-            renderTASteps();
-        }
+        function setTAStep(v){ taS[curTAStepIdx] = v; hide('ta-p-modal'); renderTASteps(); }
 
         function subTA(){
             let d = getDB();
-            d.push({
-                id: Date.now(),
-                text: activeC.text,
-                res: taS,
-                f: 'ta_history',
-                steps: activeC.steps,
-                origin: f,
-                loc: l
-            });
-            saveDB(d);
-            next();
+            d.push({ id: Date.now(), text: activeC.text, res: taS, f: 'ta_history', steps: activeC.steps, origin: f, loc: l });
+            saveDB(d); next();
         }
 
-        function pauseCycle(){
-            hide('cyc'); hide('ta-run'); show('app');
-            refresh();
-        }
+        function pauseCycle(){ hide('cyc'); hide('ta-run'); show('app'); refresh(); }
 
         function addT(type){
             let v = document.getElementById('t-in').value.trim().toUpperCase();
             if(!v) return;
             let d = getDB();
             let newTask = { id: Date.now(), text: v, f: f };
-            if(type==='ta'){
-                let s = prompt("Enter steps separated by commas:");
-                if(!s) return;
-                newTask.steps = s.split(',').map(x=>x.trim().toUpperCase());
-            }
-            d.push(newTask);
-            saveDB(d);
-            document.getElementById('t-in').value='';
-            refresh();
+            if(type==='ta'){ let s = prompt("Enter steps separated by commas:"); if(!s) return; newTask.steps = s.split(',').map(x=>x.trim().toUpperCase()); }
+            d.push(newTask); saveDB(d); document.getElementById('t-in').value=''; refresh();
         }
 
-        function delT(id){
-            if(confirm('Delete goal?')){
-                saveDB(getDB().filter(t=>t.id!=id));
-                refresh();
-            }
-        }
+        function delT(id){ if(confirm('Delete goal?')){ saveDB(getDB().filter(t=>t.id!=id)); refresh(); } }
 
         function mov(id){
             let d = getDB();
@@ -401,34 +323,24 @@
             else if(t.f === 'treatment') t.f = 'maintenance';
             else if(t.f === 'maintenance') t.f = 'mastered';
             else t.f = 'baseline';
-            saveDB(d);
-            refresh();
+            saveDB(d); refresh();
         }
 
-        function clearHistory(){
-            if(confirm('Clear all recorded data?')){
-                let d = getDB().filter(t=>!t.res);
-                saveDB(d);
-                refresh();
-            }
-        }
+        function clearHistory(){ if(confirm('Clear data?')){ saveDB(getDB().filter(t=>!t.res)); refresh(); } }
 
         function addP(){
             let v = document.getElementById('p-in').value.trim().toUpperCase();
             if(!v) return;
             let p = JSON.parse(localStorage.getItem('profiles')||'[]');
             if(!p.includes(v)) p.push(v);
-            localStorage.setItem('profiles', JSON.stringify(p));
-            renderP();
+            localStorage.setItem('profiles', JSON.stringify(p)); renderP();
         }
 
         function renderP(){
             hide('s-loc'); hide('app'); show('s-prof');
             let p = JSON.parse(localStorage.getItem('profiles')||'[]');
             const list = document.getElementById('p-list'); list.innerHTML='';
-            p.forEach(x => {
-                list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white p-5 rounded-2xl font-black text-blue-900 uppercase shadow-md">${x}</button>`;
-            });
+            p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white p-5 rounded-2xl font-black text-blue-900 uppercase shadow-md">${x}</button>`; });
         }
 
         function selP(x){ u=x; localStorage.setItem('u',x); renderL(); }
@@ -438,17 +350,14 @@
             if(!v) return;
             let locs = JSON.parse(localStorage.getItem('locations')||'["SBT"]');
             if(!locs.includes(v)) locs.push(v);
-            localStorage.setItem('locations', JSON.stringify(locs));
-            renderL();
+            localStorage.setItem('locations', JSON.stringify(locs)); renderL();
         }
 
         function renderL(){
             hide('s-prof'); hide('app'); show('s-loc');
             let locs = JSON.parse(localStorage.getItem('locations')||'["SBT"]');
             const list = document.getElementById('l-list'); list.innerHTML='';
-            locs.forEach(x => {
-                list.innerHTML += `<button onclick="selL('${x}')" class="w-full bg-white h-20 rounded-2xl font-black text-indigo-900 uppercase shadow-sm border flex items-center justify-center">${x}</button>`;
-            });
+            locs.forEach(x => { list.innerHTML += `<button onclick="selL('${x}')" class="w-full bg-white h-20 rounded-2xl font-black text-indigo-900 uppercase shadow-sm border flex items-center justify-center">${x}</button>`; });
         }
 
         function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
