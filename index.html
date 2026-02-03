@@ -3,295 +3,602 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.8.8 - Full Heavy-Duty Clinical Build</title>
+    <title>Tracker Pro v6.8.9 - Full Heavy-Duty Clinical Build</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ALL ORIGINAL STYLES PRESERVED */
-        .active-tab-indicator { border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #4f46e5; color: #4f46e5; font-weight: 900; } 
-        .hidden-element { display: none !important; }
+        /* FULL CSS - NO MINIFICATION - NO SHORT-HAND */
+        .active-tab-indicator { 
+            border-bottom-width: 4px;
+            border-bottom-style: solid;
+            border-bottom-color: #4f46e5;
+            color: #4f46e5;
+            font-weight: 900;
+        } 
         
+        .hidden-element { 
+            display: none !important; 
+        }
+        
+        /* SBT DATA ENTRY GRID - EXACT HANDOUT SPECIFICATIONS */
         .sbt-grid-container { 
             display: grid; 
             grid-template-columns: 2fr 1fr; 
-            column-gap: 1px; row-gap: 1px;
+            column-gap: 1px;
+            row-gap: 1px;
             background-color: #000000; 
-            border: 2px solid #000000; 
+            border-width: 2px;
+            border-style: solid;
+            border-color: #000000; 
             border-radius: 12px; 
             overflow: hidden; 
             margin-bottom: 12px;
         }
 
         .grid-column-header { 
-            background-color: #f3f4f6; color: #111827; font-size: 11px; font-weight: 900; 
-            text-transform: uppercase; padding: 15px 5px; text-align: center; border-bottom: 1px solid #000000;
+            background-color: #f3f4f6; 
+            color: #111827;
+            font-size: 11px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            padding-top: 15px;
+            padding-bottom: 15px;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: center; 
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: #000000;
         }
 
         .grid-input-cell { 
-            background-color: #ffffff; padding: 20px 5px; font-weight: 900; font-size: 14px; 
-            text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            background-color: #ffffff; 
+            padding-top: 0px;
+            padding-bottom: 0px;
+            padding-left: 0px;
+            padding-right: 0px;
+            font-weight: 900; 
+            font-size: 14px; 
+            text-align: center; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: stretch; 
+            justify-content: center;
+            text-transform: uppercase;
+            min-height: 80px;
         }
-        .grid-input-cell:active { background-color: #e5e7eb; }
 
-        /* SYMBOL BUTTONS WITHIN THE CELL */
-        .symbol-row { display: flex; width: 100%; height: 100%; }
-        .sym-btn { flex: 1; display: flex; align-items: center; justify-content: center; border-right: 1px solid #eee; height: 100%; padding: 10px 0; }
-        .sym-btn:last-child { border-right: none; }
-        .sym-ind { color: #000; font-size: 18px; }
-        .sym-p { color: #b45309; background: #fffbeb; font-style: italic; }
-        .sym-err { color: #dc2626; background: #fef2f2; }
+        .engagement-cell { 
+            background-color: #f9fafb; 
+            color: #4f46e5; 
+            border-left-width: 1px;
+            border-left-style: solid;
+            border-left-color: #000000; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
 
-        .engagement-cell { background-color: #f9fafb; color: #4f46e5; border-left: 1px solid #000000; font-weight: 900; }
+        /* BRANCHING SYMBOL BUTTONS */
+        .symbol-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right-width: 1px;
+            border-right-style: solid;
+            border-right-color: #e5e7eb;
+            font-size: 18px;
+        }
 
-        /* REPLICA DATA SHEET */
-        .replica-sheet-container { border: 2px solid #000; background: #fff; margin-bottom: 25px; }
-        .replica-sheet-row { display: flex; border-bottom: 1px solid #000; }
-        .replica-sheet-row:last-child { border-bottom: 0px; }
-        .replica-sheet-header { background: #f3f4f6; font-weight: 900; text-transform: uppercase; font-size: 10px; padding: 6px; border-right: 1px solid #000; text-align: center; }
-        .replica-sheet-cell { flex: 1; border-right: 1px solid #000; padding: 8px 2px; font-size: 11px; text-align: center; font-weight: 700; }
-        .replica-sheet-cell:last-child { border-right: 0px; }
+        .symbol-box:last-child {
+            border-right-width: 0px;
+        }
+
+        .symbol-box:active {
+            background-color: #f3f4f6;
+        }
+
+        .label-text {
+            font-size: 9px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .prompt-color { color: #b45309; background-color: #fffbeb; }
+        .error-color { color: #dc2626; background-color: #fef2f2; }
+
+        /* REPLICA DATA SHEET TABLE */
+        .replica-sheet-container { 
+            border-width: 2px;
+            border-style: solid;
+            border-color: #000000; 
+            background-color: #ffffff; 
+            margin-bottom: 25px; 
+        }
+
+        .replica-sheet-row { 
+            display: flex; 
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: #000000; 
+        }
+
+        .replica-sheet-row:last-child { 
+            border-bottom-width: 0px; 
+        }
+
+        .replica-sheet-header { 
+            background-color: #f3f4f6; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            font-size: 10px; 
+            padding: 6px; 
+            border-right-width: 1px;
+            border-right-style: solid;
+            border-right-color: #000000; 
+            text-align: center; 
+        }
+
+        .replica-sheet-cell { 
+            flex: 1; 
+            border-right-width: 1px;
+            border-right-style: solid;
+            border-right-color: #000000; 
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-left: 2px;
+            padding-right: 2px;
+            font-size: 11px; 
+            text-align: center; 
+            font-weight: 700; 
+        }
+
+        .replica-sheet-cell:last-child { 
+            border-right-width: 0px; 
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900 select-none">
 
     <div id="version-header" onclick="exitToUserSelection()" class="bg-black text-white text-[10px] font-bold text-center py-2 uppercase sticky top-0 z-[150] tracking-widest cursor-pointer">
-        Tracker Pro v6.8.8 | Heavy-Duty Symbol Build
+        Tracker Pro v6.8.9 | Full Heavy-Duty Build | (Switch User)
     </div>
 
     <div id="main-application-container" class="hidden-element min-h-screen">
         <div class="bg-white sticky top-8 z-50 shadow-md">
             <div class="flex justify-between p-3 bg-gray-50 border-b text-[10px] font-black uppercase">
-                 <button onclick="exitToFolderSelection()" class="text-blue-600 font-bold px-2">⬅ BACK</button>
+                 <button onclick="exitToFolderSelection()" class="text-blue-600 font-bold px-2">⬅ BACK TO FOLDERS</button>
                  <span id="current-user-label" class="text-gray-400"></span>
             </div>
             <div class="flex border-b">
                 <button onclick="switchTab('baseline')" id="tab-button-baseline" class="p-4 flex-1 text-[11px] font-bold uppercase transition-all">Baseline</button>
                 <button onclick="switchTab('treatment')" id="tab-button-treatment" class="p-4 flex-1 text-[11px] font-bold uppercase transition-all">Treatment</button>
-                <button onclick="switchTab('maintenance')" id="tab-button-maintenance" class="p-4 flex-1 text-[11px] font-bold uppercase transition-all">Maint</button>
+                <button onclick="switchTab('maintenance')" id="tab-button-maintenance" class="p-4 flex-1 text-[11px] font-bold uppercase transition-all">Maintenance</button>
             </div>
         </div>
+
         <div id="main-task-list" class="p-4 space-y-3 pb-24 max-w-md mx-auto"></div>
 
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3 shadow-lg z-50">
-            <button onclick="switchTab('trials')" class="flex flex-col items-center w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trial Sheet</span></button>
-            <button onclick="switchTab('mastered')" class="flex flex-col items-center w-1/4"><span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span></button>
-            <button onclick="switchTab('ta_history')" class="flex flex-col items-center w-1/4"><span class="text-xl">📝</span><span class="text-[8px] font-black uppercase">TA Logs</span></button>
-            <button onclick="switchTab('recall')" class="flex flex-col items-center w-1/4"><span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">Recall</span></button>
+            <button onclick="switchTab('trials')" id="nav-button-trials" class="flex flex-col items-center w-1/4">
+                <span class="text-xl">📊</span>
+                <span class="text-[8px] font-black uppercase mt-1">Trial Sheet</span>
+            </button>
+            <button onclick="switchTab('mastered')" id="nav-button-mastered" class="flex flex-col items-center w-1/4">
+                <span class="text-xl">🏆</span>
+                <span class="text-[8px] font-black uppercase mt-1">Mastered</span>
+            </button>
+            <button onclick="switchTab('ta_history')" id="nav-button-ta_history" class="flex flex-col items-center w-1/4">
+                <span class="text-xl">📝</span>
+                <span class="text-[8px] font-black uppercase mt-1">TA Logs</span>
+            </button>
+            <button onclick="switchTab('recall')" id="nav-button-recall" class="flex flex-col items-center w-1/4">
+                <span class="text-xl">📋</span>
+                <span class="text-[8px] font-black uppercase mt-1">Recall</span>
+            </button>
         </div>
     </div>
 
     <div id="sbt-entry-interface" class="hidden-element fixed inset-0 bg-white z-[220] p-4 text-center flex flex-col overflow-y-auto">
         <div class="flex justify-between items-center pt-8 mb-4">
-            <div class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Active</div>
-            <button onclick="undoLastTrial()" class="bg-gray-800 text-white px-4 py-2 rounded-full font-black text-[10px] uppercase">Undo</button>
+            <div id="current-session-status" class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Session Active</div>
+            <button onclick="openUndoHistoryModal()" class="bg-gray-800 text-white px-4 py-2 rounded-full font-black text-[10px] uppercase shadow-md">Undo Entry</button>
         </div>
         
-        <div class="mb-4 bg-gray-50 py-4 rounded-2xl border shadow-inner">
+        <div class="mb-4 bg-gray-50 py-4 rounded-2xl border border-gray-100 shadow-inner">
             <span id="sbt-stopwatch-display" class="text-5xl font-black font-mono text-indigo-600">00:00</span>
         </div>
 
         <div class="bg-white p-6 rounded-[35px] border-4 border-blue-500 mb-6 flex items-center justify-center min-h-[100px] shadow-xl">
-            <h2 id="active-task-name-display" class="text-2xl font-black uppercase text-gray-800 tracking-tight"></h2>
+            <h2 id="active-task-name-display" class="text-2xl font-black uppercase text-gray-800 tracking-tight leading-none"></h2>
         </div>
         
-        <div class="sbt-grid-container shadow-2xl">
-            <div class="grid-column-header">Response (○ / P / -)</div>
-            <div class="grid-column-header italic text-indigo-600">Engaged</div>
+        <div id="sbt-grid-buttons" class="flex flex-col">
+            <div class="sbt-grid-container shadow-2xl">
+                <div class="grid-column-header">Response (○, P, -)</div>
+                <div class="grid-column-header italic text-indigo-600">Engaged</div>
 
-            <div class="grid-input-cell p-0">
-                <div class="symbol-row">
-                    <div onclick="recordSbtResponse('○ FCR')" class="sym-btn sym-ind">○</div>
-                    <div onclick="recordSbtResponse('P FCR')" class="sym-btn sym-p">P</div>
-                    <div onclick="recordSbtResponse('- FCR')" class="sym-btn sym-err">-</div>
+                <div class="grid-input-cell">
+                    <div class="symbol-box" onclick="recordSbtResponse('○ FCR')">○ <span class="label-text">FCR</span></div>
+                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P FCR')">P <span class="label-text">FCR</span></div>
+                    <div class="symbol-box error-color" onclick="recordSbtResponse('- FCR')">- <span class="label-text">FCR</span></div>
                 </div>
-            </div>
-            <div onclick="recordSbtResponse('FCR+ENG')" class="grid-input-cell engagement-cell">ENG</div>
+                <div onclick="recordSbtResponse('FCR+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
-            <div class="grid-input-cell p-0">
-                <div class="symbol-row">
-                    <div onclick="recordSbtResponse('○ TR')" class="sym-btn sym-ind">○</div>
-                    <div onclick="recordSbtResponse('P TR')" class="sym-btn sym-p">P</div>
-                    <div onclick="recordSbtResponse('- TR')" class="sym-btn sym-err">-</div>
+                <div class="grid-input-cell">
+                    <div class="symbol-box" onclick="recordSbtResponse('○ TR')">○ <span class="label-text">TR</span></div>
+                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P TR')">P <span class="label-text">TR</span></div>
+                    <div class="symbol-box error-color" onclick="recordSbtResponse('- TR')">- <span class="label-text">TR</span></div>
                 </div>
-            </div>
-            <div onclick="recordSbtResponse('TR+ENG')" class="grid-input-cell engagement-cell">ENG</div>
+                <div onclick="recordSbtResponse('TR+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
-            <div class="grid-input-cell p-0">
-                <div class="symbol-row">
-                    <div onclick="recordSbtResponse('○ CAB-1')" class="sym-btn sym-ind">○</div>
-                    <div onclick="recordSbtResponse('P CAB-1')" class="sym-btn sym-p">P</div>
-                    <div onclick="recordSbtResponse('- CAB-1')" class="sym-btn sym-err">-</div>
+                <div class="grid-input-cell">
+                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-1')">○ <span class="label-text">CAB-1</span></div>
+                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-1')">P <span class="label-text">CAB-1</span></div>
+                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-1')">- <span class="label-text">CAB-1</span></div>
                 </div>
-            </div>
-            <div onclick="recordSbtResponse('CAB-1+ENG')" class="grid-input-cell engagement-cell">ENG</div>
+                <div onclick="recordSbtResponse('CAB-1+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
-            <div class="grid-input-cell p-0">
-                <div class="symbol-row">
-                    <div onclick="recordSbtResponse('○ CAB-2')" class="sym-btn sym-ind">○</div>
-                    <div onclick="recordSbtResponse('P CAB-2')" class="sym-btn sym-p">P</div>
-                    <div onclick="recordSbtResponse('- CAB-2')" class="sym-btn sym-err">-</div>
+                <div class="grid-input-cell">
+                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-2')">○ <span class="label-text">CAB-2</span></div>
+                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-2')">P <span class="label-text">CAB-2</span></div>
+                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-2')">- <span class="label-text">CAB-2</span></div>
                 </div>
-            </div>
-            <div onclick="recordSbtResponse('CAB-2+ENG')" class="grid-input-cell engagement-cell">ENG</div>
+                <div onclick="recordSbtResponse('CAB-2+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
-            <div class="grid-input-cell p-0">
-                <div class="symbol-row">
-                    <div onclick="recordSbtResponse('○ CAB-3')" class="sym-btn sym-ind">○</div>
-                    <div onclick="recordSbtResponse('P CAB-3')" class="sym-btn sym-p">P</div>
-                    <div onclick="recordSbtResponse('- CAB-3')" class="sym-btn sym-err">-</div>
+                <div class="grid-input-cell">
+                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-3')">○ <span class="label-text">CAB-3</span></div>
+                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-3')">P <span class="label-text">CAB-3</span></div>
+                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-3')">- <span class="label-text">CAB-3</span></div>
                 </div>
-            </div>
-            <div onclick="recordSbtResponse('CAB-3+ENG')" class="grid-input-cell engagement-cell">ENG</div>
+                <div onclick="recordSbtResponse('CAB-3+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
-            <div class="grid-input-cell p-0">
-                <div class="symbol-row">
-                    <div onclick="recordSbtResponse('○ CAB-4')" class="sym-btn sym-ind">○</div>
-                    <div onclick="recordSbtResponse('P CAB-4')" class="sym-btn sym-p">P</div>
-                    <div onclick="recordSbtResponse('- CAB-4')" class="sym-btn sym-err">-</div>
+                <div class="grid-input-cell">
+                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-4')">○ <span class="label-text">CAB-4</span></div>
+                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-4')">P <span class="label-text">CAB-4</span></div>
+                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-4')">- <span class="label-text">CAB-4</span></div>
                 </div>
-            </div>
-            <div onclick="recordSbtResponse('CAB-4+ENG')" class="grid-input-cell engagement-cell">ENG</div>
+                <div onclick="recordSbtResponse('CAB-4+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
-            <div class="grid-input-cell p-0">
-                <div class="symbol-row">
-                    <div onclick="recordSbtResponse('○ CAB-5')" class="sym-btn sym-ind">○</div>
-                    <div onclick="recordSbtResponse('P CAB-5')" class="sym-btn sym-p">P</div>
-                    <div onclick="recordSbtResponse('- CAB-5')" class="sym-btn sym-err">-</div>
+                <div class="grid-input-cell">
+                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-5')">○ <span class="label-text">CAB-5</span></div>
+                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-5')">P <span class="label-text">CAB-5</span></div>
+                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-5')">- <span class="label-text">CAB-5</span></div>
                 </div>
-            </div>
-            <div onclick="recordSbtResponse('CAB-5+ENG')" class="grid-input-cell engagement-cell">ENG</div>
+                <div onclick="recordSbtResponse('CAB-5+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
-            <div onclick="recordSbtResponse('R1')" class="grid-input-cell text-red-600 border-t border-black col-span-1">R1 (DANGER)</div>
-            <div onclick="recordSbtResponse('R2')" class="grid-input-cell text-orange-500 border-t border-black col-span-1">R2 (NON-D)</div>
+                <div onclick="recordSbtResponse('R1')" class="grid-input-cell text-red-600 border-t border-black flex items-center justify-center" style="padding: 20px;">R1 (DANGER)</div>
+                <div onclick="recordSbtResponse('R2')" class="grid-input-cell text-orange-500 border-t border-black flex items-center justify-center" style="padding: 20px;">R2 (NON-D)</div>
+            </div>
+            
+            <button onclick="recordSbtResponse('EO/NO-RESPONSE')" class="w-full py-5 border-2 border-dashed border-gray-400 text-gray-400 font-black text-[11px] rounded-2xl uppercase italic tracking-widest mb-6 active:bg-gray-50">
+                EO / NO RESPONSE
+            </button>
         </div>
 
-        <button onclick="recordSbtResponse('EO/NO-RESPONSE')" class="w-full py-5 border-2 border-dashed border-gray-400 text-gray-400 font-black text-[11px] rounded-2xl uppercase italic tracking-widest mb-6 active:bg-gray-50">EO / NO RESPONSE</button>
         <button onclick="closeSbtSession()" class="text-gray-400 font-bold uppercase text-[10px] mb-12 underline tracking-widest">Close Session</button>
     </div>
 
     <script>
-        let currentUserId = ""; let currentFolderId = ""; let currentActiveTab = "baseline";
-        let activeTaskObject = null; let sbtStopwatchInterval = null; let sbtTotalSeconds = 0;
+        let currentUserId = "";
+        let currentFolderId = "";
+        let currentActiveTab = "baseline";
+        let activeTaskObject = null;
+        let sbtStopwatchInterval = null;
+        let sbtTotalSeconds = 0;
 
         function getDatabaseRecords() {
-            let key = "data_store_" + currentUserId + "_" + currentFolderId;
-            return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : [];
+            let databaseKey = "data_store_" + currentUserId + "_" + currentFolderId;
+            let encodedData = localStorage.getItem(databaseKey);
+            if (encodedData === null) {
+                return [];
+            } else {
+                return JSON.parse(encodedData);
+            }
         }
 
-        function saveDatabaseRecords(data) {
-            let key = "data_store_" + currentUserId + "_" + currentFolderId;
-            localStorage.setItem(key, JSON.stringify(data));
+        function saveDatabaseRecords(dataArray) {
+            let databaseKey = "data_store_" + currentUserId + "_" + currentFolderId;
+            let encodedData = JSON.stringify(dataArray);
+            localStorage.setItem(databaseKey, encodedData);
         }
 
-        function showElement(id) { document.getElementById(id).classList.remove('hidden-element'); }
-        function hideElement(id) { document.getElementById(id).classList.add('hidden-element'); }
+        function showElement(elementId) {
+            document.getElementById(elementId).classList.remove('hidden-element');
+        }
+
+        function hideElement(elementId) {
+            document.getElementById(elementId).classList.add('hidden-element');
+        }
 
         function initializeApplication() {
             currentUserId = localStorage.getItem('app_user_id');
             currentFolderId = localStorage.getItem('app_folder_id');
-            currentActiveTab = localStorage.getItem('app_active_tab') || "baseline";
-            if (currentUserId && currentFolderId) { loadMainInterface(); } 
-            else if (currentUserId) { renderFolderSelectionScreen(); } 
-            else { renderUserSelectionScreen(); }
+            currentActiveTab = localStorage.getItem('app_active_tab');
+            
+            if (currentActiveTab === null) {
+                currentActiveTab = "baseline";
+            }
+
+            if (currentUserId !== null && currentFolderId !== null) {
+                loadMainInterface();
+            } else if (currentUserId !== null) {
+                renderFolderSelectionScreen();
+            } else {
+                renderUserSelectionScreen();
+            }
         }
 
         function loadMainInterface() {
-            hideElement('user-selection-screen'); hideElement('folder-selection-screen');
+            hideElement('user-selection-screen');
+            hideElement('folder-selection-screen');
             showElement('main-application-container');
             document.getElementById('current-user-label').innerText = currentUserId + " | " + currentFolderId;
             refreshViewContent();
         }
 
-        function switchTab(id) {
-            currentActiveTab = id; localStorage.setItem('app_active_tab', id);
-            stopSbtStopwatch(); hideElement('sbt-entry-interface'); showElement('main-application-container');
+        function switchTab(tabId) {
+            currentActiveTab = tabId;
+            localStorage.setItem('app_active_tab', tabId);
+            stopSbtStopwatch();
+            hideElement('sbt-entry-interface');
+            showElement('main-application-container');
             refreshViewContent();
         }
 
         function refreshViewContent() {
             const container = document.getElementById('main-task-list');
             container.innerHTML = '';
-            ['baseline', 'treatment', 'maintenance'].forEach(t => document.getElementById('tab-button-'+t)?.classList.remove('active-tab-indicator'));
-            document.getElementById('tab-button-' + currentActiveTab)?.classList.add('active-tab-indicator');
+            
+            let tabs = ['baseline', 'treatment', 'maintenance'];
+            for (let i = 0; i < tabs.length; i++) {
+                let btn = document.getElementById('tab-button-' + tabs[i]);
+                if (btn) {
+                    btn.classList.remove('active-tab-indicator');
+                }
+            }
+            
+            let activeTabBtn = document.getElementById('tab-button-' + currentActiveTab);
+            if (activeTabBtn) {
+                activeTabBtn.classList.add('active-tab-indicator');
+            }
             
             let allRecords = getDatabaseRecords();
 
-            if (['baseline', 'treatment', 'maintenance'].includes(currentActiveTab)) {
-                container.innerHTML = `<button onclick="startGeneralSession()" class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black uppercase text-sm shadow-xl mb-6 border-b-4 border-indigo-900 active:border-b-0 active:translate-y-1 transition-all">⚡ Open SBT Data Sheet ⚡</button>
-                <div class="bg-white p-6 rounded-[35px] shadow-md border border-gray-100 mb-6">
-                    <input id="new-task-input-field" type="text" placeholder="NAME NEW TASK..." class="w-full p-4 border-2 border-gray-50 rounded-2xl mb-4 uppercase font-black outline-none text-sm focus:border-indigo-400">
-                    <button onclick="createNewTaskRecord()" class="w-full bg-blue-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg">+ Add To List</button>
-                </div>`;
-                allRecords.filter(r => r.folder === currentActiveTab && !r.result).forEach(task => {
-                    container.innerHTML += `<div class="bg-white p-5 rounded-[32px] border border-gray-50 flex justify-between items-center mb-3 shadow-sm">
-                        <div onclick="startTaskSession(${task.id})" class="flex-1 font-black uppercase text-sm py-2 cursor-pointer text-gray-800">${task.title}</div>
-                        <button onclick="deleteTaskRecord(${task.id})" class="text-red-200 px-3 transition-colors">✕</button>
+            if (currentActiveTab === 'baseline' || currentActiveTab === 'treatment' || currentActiveTab === 'maintenance') {
+                container.innerHTML = `
+                    <button onclick="startGeneralSession()" class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black uppercase text-sm shadow-xl mb-6 border-b-4 border-indigo-900 active:border-b-0 active:translate-y-1 transition-all">
+                        ⚡ Open SBT Data Sheet ⚡
+                    </button>
+                    <div class="bg-white p-6 rounded-[35px] shadow-md border border-gray-100 mb-6">
+                        <input id="new-task-input-field" type="text" placeholder="NAME NEW TASK..." class="w-full p-4 border-2 border-gray-50 rounded-2xl mb-4 uppercase font-black outline-none text-sm focus:border-indigo-400">
+                        <button onclick="createNewTaskRecord()" class="w-full bg-blue-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg">+ Add To List</button>
                     </div>`;
+
+                let filteredTasks = allRecords.filter(function(record) {
+                    return record.folder === currentActiveTab && record.result === undefined;
                 });
+
+                for (let j = 0; j < filteredTasks.length; j++) {
+                    let task = filteredTasks[j];
+                    container.innerHTML += `
+                        <div class="bg-white p-5 rounded-[32px] border border-gray-50 flex justify-between items-center mb-3 shadow-sm">
+                            <div onclick="startTaskSession(${task.id})" class="flex-1 font-black uppercase text-sm py-2 cursor-pointer text-gray-800">${task.title}</div>
+                            <button onclick="deleteTaskRecord(${task.id})" class="text-red-200 hover:text-red-500 font-bold px-3 transition-colors">✕</button>
+                        </div>`;
+                }
             } else if (currentActiveTab === 'trials') {
                 container.innerHTML = `<h2 class="text-xl font-black uppercase mb-4 italic tracking-tight text-center">SBT Handout Replica</h2>`;
-                let trialLogs = allRecords.filter(r => r.result);
+                let trialLogs = allRecords.filter(function(r) { return r.result !== undefined; });
                 for (let k = 0; k < trialLogs.length; k += 5) {
-                    let chunk = trialLogs.slice(k, k + 5);
-                    let html = `<div class="replica-sheet-container shadow-md"><div class="replica-sheet-row"><div class="replica-sheet-header" style="flex:0 0 35px">Tr#</div><div class="replica-sheet-header" style="flex:1">EO</div><div class="replica-sheet-header" style="flex:2">Response (SR)</div><div class="replica-sheet-header" style="flex:0 0 40px">Eng</div><div class="replica-sheet-header" style="flex:1">Timer</div></div>`;
-                    chunk.forEach((entry, m) => {
-                        let parts = entry.result.split(' (');
-                        let isEng = parts[0].includes('ENG');
-                        let cleanRes = parts[0].replace('+ENG', '');
-                        let time = parts[1] ? parts[1].replace(')', '') : '--:--';
-                        html += `<div class="replica-sheet-row"><div class="replica-sheet-cell" style="flex:0 0 35px">${k+m+1}</div><div class="replica-sheet-cell" style="flex:1">SD/EO</div><div class="replica-sheet-cell uppercase font-black" style="flex:2">${cleanRes}</div><div class="replica-sheet-cell uppercase font-black" style="flex:0 0 40px">${isEng?'YES':'NO'}</div><div class="replica-sheet-cell" style="flex:1">${time}</div></div>`;
-                    });
-                    container.innerHTML += html + `</div>`;
+                    let trialChunk = trialLogs.slice(k, k + 5);
+                    let replicaHtml = `<div class="replica-sheet-container shadow-md">
+                        <div class="replica-sheet-row">
+                            <div class="replica-sheet-header" style="flex: 0 0 35px;">Tr#</div>
+                            <div class="replica-sheet-header" style="flex: 1;">EO</div>
+                            <div class="replica-sheet-header" style="flex: 2;">Response (SR)</div>
+                            <div class="replica-sheet-header" style="flex: 0 0 40px;">Eng</div>
+                            <div class="replica-sheet-header" style="flex: 1;">Timer</div>
+                        </div>`;
+                    for (let m = 0; m < trialChunk.length; m++) {
+                        let entry = trialChunk[m];
+                        let resultParts = entry.result.split(' (');
+                        let isEngaged = resultParts[0].includes('ENG');
+                        let cleanResponse = resultParts[0].replace('+ENG', '');
+                        let capturedTime = resultParts[1] ? resultParts[1].replace(')', '') : '--:--';
+                        replicaHtml += `
+                        <div class="replica-sheet-row">
+                            <div class="replica-sheet-cell" style="flex: 0 0 35px;">${k + m + 1}</div>
+                            <div class="replica-sheet-cell" style="flex: 1;">SD/EO</div>
+                            <div class="replica-sheet-cell uppercase font-black" style="flex: 2;">${cleanResponse}</div>
+                            <div class="replica-sheet-cell uppercase font-black" style="flex: 0 0 40px;">${isEngaged ? 'YES' : 'NO'}</div>
+                            <div class="replica-sheet-cell" style="flex: 1;">${capturedTime}</div>
+                        </div>`;
+                    }
+                    replicaHtml += `</div>`;
+                    container.innerHTML += replicaHtml;
                 }
-            } else if (currentActiveTab === 'recall') {
-                allRecords.filter(r => r.result).reverse().forEach(r => {
-                    container.innerHTML += `<div class="bg-white p-4 border mb-2 rounded-xl flex justify-between font-black text-[10px] uppercase shadow-sm"><span>${r.title}</span><span class="text-indigo-600">${r.result}</span></div>`;
-                });
             }
         }
 
-        function recordSbtResponse(val) {
+        function startGeneralSession() {
+            activeTaskObject = { id: Date.now(), title: "QUICK SESSION" };
+            openSbtInterface();
+        }
+
+        function startTaskSession(taskId) {
             let records = getDatabaseRecords();
-            let time = document.getElementById('sbt-stopwatch-display').innerText;
-            records.push({ id: Date.now(), title: activeTaskObject.title, result: val + " (" + time + ")", folder: 'recall' });
+            for (let i = 0; i < records.length; i++) {
+                if (records[i].id === taskId) {
+                    activeTaskObject = records[i];
+                }
+            }
+            openSbtInterface();
+        }
+
+        function openSbtInterface() {
+            showElement('sbt-entry-interface');
+            hideElement('main-application-container');
+            document.getElementById('active-task-name-display').innerText = activeTaskObject.title;
+            startSbtStopwatch();
+        }
+
+        function recordSbtResponse(responseValue) {
+            let records = getDatabaseRecords();
+            let timeString = document.getElementById('sbt-stopwatch-display').innerText;
+            let fullResultString = responseValue + " (" + timeString + ")";
+            let newLogEntry = {
+                id: Date.now(),
+                title: activeTaskObject.title,
+                result: fullResultString,
+                folder: 'recall',
+                date: new Date().toLocaleDateString()
+            };
+            records.push(newLogEntry);
             saveDatabaseRecords(records);
             startSbtStopwatch();
         }
 
         function startSbtStopwatch() {
-            if (sbtStopwatchInterval) clearInterval(sbtStopwatchInterval);
+            if (sbtStopwatchInterval !== null) {
+                clearInterval(sbtStopwatchInterval);
+            }
             sbtTotalSeconds = 0;
-            sbtStopwatchInterval = setInterval(() => {
-                sbtTotalSeconds++;
-                let m = Math.floor(sbtTotalSeconds/60).toString().padStart(2,'0');
-                let s = (sbtTotalSeconds%60).toString().padStart(2,'0');
-                document.getElementById('sbt-stopwatch-display').innerText = m + ":" + s;
+            document.getElementById('sbt-stopwatch-display').innerText = "00:00";
+            sbtStopwatchInterval = setInterval(function() {
+                sbtTotalSeconds = sbtTotalSeconds + 1;
+                let minutes = Math.floor(sbtTotalSeconds / 60);
+                let seconds = sbtTotalSeconds % 60;
+                let minuteString = minutes < 10 ? "0" + minutes : minutes;
+                let secondString = seconds < 10 ? "0" + seconds : seconds;
+                document.getElementById('sbt-stopwatch-display').innerText = minuteString + ":" + secondString;
             }, 1000);
         }
 
-        function stopSbtStopwatch() { clearInterval(sbtStopwatchInterval); sbtStopwatchInterval = null; }
-        function startGeneralSession() { activeTaskObject = { title: "GENERAL SESSION" }; openSbtInterface(); }
-        function startTaskSession(id) { activeTaskObject = getDatabaseRecords().find(r => r.id === id); openSbtInterface(); }
-        function openSbtInterface() { showElement('sbt-entry-interface'); hideElement('main-application-container'); document.getElementById('active-task-name-display').innerText = activeTaskObject.title; startSbtStopwatch(); }
-        function closeSbtSession() { stopSbtStopwatch(); hideElement('sbt-entry-interface'); showElement('main-application-container'); refreshViewContent(); }
-        function createNewTaskRecord() { let val = document.getElementById('new-task-input-field').value; if(!val) return; let db = getDatabaseRecords(); db.push({id: Date.now(), title: val.toUpperCase(), folder: currentActiveTab}); saveDatabaseRecords(db); document.getElementById('new-task-input-field').value = ""; refreshViewContent(); }
-        function deleteTaskRecord(id) { saveDatabaseRecords(getDatabaseRecords().filter(r => r.id !== id)); refreshViewContent(); }
-        function undoLastTrial() { let db = getDatabaseRecords(); for(let i=db.length-1; i>=0; i--){ if(db[i].result){ db.splice(i,1); break; } } saveDatabaseRecords(db); alert("Deleted last trial."); }
-        function exitToUserSelection() { localStorage.removeItem('app_user_id'); location.reload(); }
-        function exitToFolderSelection() { localStorage.removeItem('app_folder_id'); location.reload(); }
+        function stopSbtStopwatch() {
+            if (sbtStopwatchInterval !== null) {
+                clearInterval(sbtStopwatchInterval);
+                sbtStopwatchInterval = null;
+            }
+        }
 
-        // SETUP SCREENS
-        function renderUserSelectionScreen() { hideElement('main-application-container'); showElement('user-selection-screen'); let users = JSON.parse(localStorage.getItem('app_users') || "[]"); const container = document.getElementById('user-list-container'); container.innerHTML = ''; users.forEach(u => { let b = document.createElement('button'); b.className = "w-full bg-white/20 text-white p-6 rounded-3xl font-black uppercase text-left border border-white/10 mb-2"; b.innerText = u; b.onclick = () => { localStorage.setItem('app_user_id', u); renderFolderSelectionScreen(); }; container.appendChild(b); }); }
-        function createNewUserProfile() { let n = document.getElementById('new-user-input').value.trim().toUpperCase(); if(!n) return; let u = JSON.parse(localStorage.getItem('app_users') || "[]"); u.push(n); localStorage.setItem('app_users', JSON.stringify(u)); document.getElementById('new-user-input').value = ""; renderUserSelectionScreen(); }
-        function renderFolderSelectionScreen() { hideElement('user-selection-screen'); showElement('folder-selection-screen'); let f = JSON.parse(localStorage.getItem('app_folders') || '["SBT", "DTT"]'); const container = document.getElementById('folder-list-container'); container.innerHTML = ''; f.forEach(fn => { let b = document.createElement('button'); b.className = "w-full h-24 bg-white p-4 rounded-3xl shadow-md font-black uppercase text-indigo-950 text-sm"; b.innerText = fn; b.onclick = () => { localStorage.setItem('app_folder_id', fn); loadMainInterface(); }; container.appendChild(b); }); }
-        function createNewFolder() { let n = document.getElementById('new-folder-input').value.trim().toUpperCase(); if(!n) return; let f = JSON.parse(localStorage.getItem('app_folders') || '["SBT", "DTT"]'); f.push(n); localStorage.setItem('app_folders', JSON.stringify(f)); document.getElementById('new-folder-input').value = ""; renderFolderSelectionScreen(); }
+        function closeSbtSession() {
+            stopSbtStopwatch();
+            hideElement('sbt-entry-interface');
+            showElement('main-application-container');
+            refreshViewContent();
+        }
+
+        function createNewTaskRecord() {
+            let taskName = document.getElementById('new-task-input-field').value;
+            if (taskName.trim() === "") { return; }
+            let records = getDatabaseRecords();
+            let newTask = { id: Date.now(), title: taskName.toUpperCase(), folder: currentActiveTab };
+            records.push(newTask);
+            saveDatabaseRecords(records);
+            document.getElementById('new-task-input-field').value = "";
+            refreshViewContent();
+        }
+
+        function deleteTaskRecord(taskId) {
+            let records = getDatabaseRecords();
+            let updatedRecords = records.filter(function(r) { return r.id !== taskId; });
+            saveDatabaseRecords(updatedRecords);
+            refreshViewContent();
+        }
+
+        function openUndoHistoryModal() {
+            let records = getDatabaseRecords();
+            for (let i = records.length - 1; i >= 0; i--) {
+                if (records[i].result !== undefined) {
+                    records.splice(i, 1);
+                    break;
+                }
+            }
+            saveDatabaseRecords(records);
+            alert("Last Entry Removed");
+        }
+
+        function exitToUserSelection() {
+            localStorage.removeItem('app_user_id');
+            location.reload();
+        }
+
+        function exitToFolderSelection() {
+            localStorage.removeItem('app_folder_id');
+            location.reload();
+        }
+
+        // USER SELECTION SCREEN LOGIC
+        function renderUserSelectionScreen() {
+            hideElement('main-application-container');
+            showElement('user-selection-screen');
+            let users = JSON.parse(localStorage.getItem('app_users') || "[]");
+            const container = document.getElementById('user-list-container');
+            container.innerHTML = '';
+            for(let i=0; i<users.length; i++) {
+                let name = users[i];
+                let btn = document.createElement('button');
+                btn.className = "w-full bg-white/20 text-white p-6 rounded-3xl font-black uppercase text-left border border-white/10 mb-3";
+                btn.innerText = name;
+                btn.onclick = function() {
+                    currentUserId = name;
+                    localStorage.setItem('app_user_id', name);
+                    renderFolderSelectionScreen();
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        function createNewUserProfile() {
+            let name = document.getElementById('new-user-input').value.trim().toUpperCase();
+            if(!name) return;
+            let users = JSON.parse(localStorage.getItem('app_users') || "[]");
+            users.push(name);
+            localStorage.setItem('app_users', JSON.stringify(users));
+            document.getElementById('new-user-input').value = "";
+            renderUserSelectionScreen();
+        }
+
+        function renderFolderSelectionScreen() {
+            hideElement('user-selection-screen');
+            showElement('folder-selection-screen');
+            let folders = JSON.parse(localStorage.getItem('app_folders') || '["SBT", "DTT"]');
+            const container = document.getElementById('folder-list-container');
+            container.innerHTML = '';
+            for(let i=0; i<folders.length; i++) {
+                let fName = folders[i];
+                let btn = document.createElement('button');
+                btn.className = "w-full h-24 bg-white p-4 rounded-3xl shadow-md font-black uppercase text-indigo-950 text-sm";
+                btn.innerText = fName;
+                btn.onclick = function() {
+                    currentFolderId = fName;
+                    localStorage.setItem('app_folder_id', fName);
+                    loadMainInterface();
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        function createNewFolder() {
+            let fName = document.getElementById('new-folder-input').value.trim().toUpperCase();
+            if(!fName) return;
+            let folders = JSON.parse(localStorage.getItem('app_folders') || '["SBT", "DTT"]');
+            folders.push(fName);
+            localStorage.setItem('app_folders', JSON.stringify(folders));
+            document.getElementById('new-folder-input').value = "";
+            renderFolderSelectionScreen();
+        }
 
         initializeApplication();
     </script>
 
     <div id="user-selection-screen" class="fixed inset-0 bg-indigo-950 z-[100] p-8 flex flex-col items-center hidden-element">
-        <h1 class="text-white font-black text-4xl mb-12 mt-12 uppercase italic underline decoration-indigo-500">Tracker Pro</h1>
+        <h1 class="text-white font-black text-4xl mb-12 mt-12 uppercase italic tracking-tighter underline decoration-indigo-500">Tracker Pro</h1>
         <div id="user-list-container" class="w-full max-w-xs mb-8"></div>
-        <div class="w-full max-w-xs bg-white/10 p-6 rounded-[35px] border border-white/5">
+        <div class="w-full max-w-xs bg-white/10 p-6 rounded-[35px] backdrop-blur-md border border-white/5">
             <input id="new-user-input" type="text" placeholder="STUDENT NAME..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-center text-sm outline-none">
             <button onclick="createNewUserProfile()" class="w-full bg-green-500 text-white font-black py-4 rounded-2xl shadow-xl uppercase text-xs">+ Create Profile</button>
         </div>
@@ -302,7 +609,7 @@
         <div id="folder-list-container" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div>
         <div class="w-full max-w-md bg-white p-8 rounded-[40px] shadow-xl border border-gray-200">
             <input id="new-folder-input" type="text" placeholder="FOLDER NAME..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-sm outline-none border-2 border-gray-50 focus:border-indigo-400">
-            <button onclick="createNewFolder()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl uppercase text-xs shadow-lg">+ Add Folder</button>
+            <button onclick="createNewFolder()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl uppercase text-xs shadow-lg tracking-widest">+ Add Folder</button>
         </div>
     </div>
 </body>
