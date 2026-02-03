@@ -198,10 +198,12 @@
                         resultDisplay += `</div>`;
                     } else { resultDisplay = `<span class="font-black text-indigo-600">${t.res}</span>`; }
                     
-                    // Display Location in Recall
-                    let locLabel = t.loc ? `<span class="bg-gray-100 text-gray-400 px-1 rounded text-[7px] ml-2 font-black">${t.loc}</span>` : '';
+                    // Display Location and Tab source without coloring
+                    let originMap = {baseline:'BASE', treatment:'TX', maintenance:'MAINT', mastered:'MAST'};
+                    let tabLabel = t.origin ? `<span class="text-gray-400 text-[7px] ml-1 font-black">(${originMap[t.origin] || t.origin.toUpperCase()})</span>` : '';
+                    let locLabel = t.loc ? `<span class="text-gray-400 text-[7px] ml-1 font-black">[${t.loc}]</span>` : '';
                     
-                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2"><div class="flex justify-between font-bold uppercase text-[10px]"><span>${t.text} ${locLabel}</span> ${f==='recall'?resultDisplay:''}</div> ${f==='ta_history'?resultDisplay:''}</div>`;
+                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2"><div class="flex justify-between font-bold uppercase text-[10px]"><span>${t.text} ${tabLabel}${locLabel}</span> ${f==='recall'?resultDisplay:''}</div> ${f==='ta_history'?resultDisplay:''}</div>`;
                 });
             }
         }
@@ -264,14 +266,14 @@
 
         function finishSkip(reason){
             let d = getDB(); 
-            d.push({id:Date.now(), text:activeC.text, res:'SKIPPED: '+reason, f:'recall', loc:l, date:new Date().toLocaleDateString()}); 
+            d.push({id:Date.now(), text:activeC.text, res:'SKIPPED: '+reason, f:'recall', loc:l, origin:f, date:new Date().toLocaleDateString()}); 
             saveDB(d); hide('skip-modal'); hide('cyc'); advance(activeC.id);
         }
 
-        function rec(v){ let d = getDB(); d.push({id:Date.now(), text:activeC.text, res:v, f:'recall', loc:l, date:new Date().toLocaleDateString()}); saveDB(d); advance(activeC.id); }
+        function rec(v){ let d = getDB(); d.push({id:Date.now(), text:activeC.text, res:v, f:'recall', loc:l, origin:f, date:new Date().toLocaleDateString()}); saveDB(d); advance(activeC.id); }
 
         function subTA(){
-            let d=getDB(); d.push({id:Date.now(), text:taS.name, steps: taS.steps, res:taS.res, f:'ta_history', loc:l, date:new Date().toLocaleDateString()}); 
+            let d=getDB(); d.push({id:Date.now(), text:taS.name, steps: taS.steps, res:taS.res, f:'ta_history', loc:l, origin:f, date:new Date().toLocaleDateString()}); 
             saveDB(d); hide('ta-run'); advance(taS.id);
         }
 
