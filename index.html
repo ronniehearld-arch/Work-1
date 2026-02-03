@@ -102,8 +102,23 @@
         </div>
     </div>
 
-    <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide"><h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1><div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div><input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none"><button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg">+ ADD</button></div>
-    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center"><h1 class="font-black text-2xl mb-6 mt-10 uppercase text-blue-900 italic underline">Location</h1><div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md"></div></div>
+    <div id="s-prof" class="fixed inset-0 bg-blue-900 z-[100] p-6 flex flex-col items-center hide">
+        <h1 class="text-white font-black text-3xl mb-8 mt-10 uppercase italic">Profiles</h1>
+        <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
+        <input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-bold outline-none">
+        <button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-5 rounded-2xl shadow-lg">+ ADD</button>
+    </div>
+
+    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center overflow-y-auto">
+        <h1 class="font-black text-2xl mb-6 mt-10 uppercase text-blue-900 italic underline">Location</h1>
+        <div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div>
+        
+        <div class="w-full max-w-md bg-white p-4 rounded-3xl shadow-sm border">
+            <p class="text-[10px] font-black uppercase text-gray-400 mb-2">Manage Folders</p>
+            <input id="l-in" type="text" placeholder="FOLDER NAME..." class="w-full p-4 rounded-2xl mb-4 uppercase font-bold outline-none border-2">
+            <button onclick="addL()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase text-sm">+ ADD FOLDER</button>
+        </div>
+    </div>
 
     <script>
         let u, l, f, activeC, taS, curTAStepIdx;
@@ -198,7 +213,6 @@
                         resultDisplay += `</div>`;
                     } else { resultDisplay = `<span class="font-black text-indigo-600">${t.res}</span>`; }
                     
-                    // Display Location and Tab source without coloring
                     let originMap = {baseline:'BASE', treatment:'TX', maintenance:'MAINT', mastered:'MAST'};
                     let tabLabel = t.origin ? `<span class="text-gray-400 text-[7px] ml-1 font-black">(${originMap[t.origin] || t.origin.toUpperCase()})</span>` : '';
                     let locLabel = t.loc ? `<span class="text-gray-400 text-[7px] ml-1 font-black">[${t.loc}]</span>` : '';
@@ -307,13 +321,40 @@
             p.forEach(x=>{ list.innerHTML+=`<button onclick="selP('${x}')" class="w-full bg-white p-4 rounded-2xl font-black shadow-md uppercase mb-2 text-left">${x}</button>`; }); 
         }
         function selP(x){ u=x; localStorage.setItem('u',x); renderL(); }
+
+        // NEW LOCATION LOGIC
         function renderL(){ 
             hide('s-prof'); hide('app'); show('s-loc'); 
             const list=document.getElementById('l-list'); 
+            let locs = JSON.parse(localStorage.getItem('locations') || '["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"]');
             list.innerHTML=''; 
-            ["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"].forEach(x=>{ list.innerHTML+=`<button onclick="selL('${x}')" class="bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900 h-20">${x}</button>`; }); 
+            locs.forEach(x=>{ 
+                list.innerHTML+=`
+                <div class="relative h-20">
+                    <button onclick="selL('${x}')" class="w-full h-full bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900">${x}</button>
+                    <button onclick="delL('${x}')" class="absolute -top-2 -right-2 bg-red-100 text-red-600 w-6 h-6 rounded-full font-black text-xs border border-red-200">✕</button>
+                </div>`; 
+            }); 
         }
         function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
+        function addL(){
+            let v = document.getElementById('l-in').value.trim().toUpperCase();
+            if(!v) return;
+            let locs = JSON.parse(localStorage.getItem('locations') || '["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"]');
+            if(!locs.includes(v)) locs.push(v);
+            localStorage.setItem('locations', JSON.stringify(locs));
+            document.getElementById('l-in').value = '';
+            renderL();
+        }
+        function delL(x){
+            if(confirm(`Delete folder "${x}"?`)){
+                let locs = JSON.parse(localStorage.getItem('locations') || '["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"]');
+                locs = locs.filter(i => i !== x);
+                localStorage.setItem('locations', JSON.stringify(locs));
+                renderL();
+            }
+        }
+
         function addP(){ let v=document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); p.push(v); localStorage.setItem('profiles',JSON.stringify(p)); renderP(); }
         function delT(id){ if(confirm('Delete?')){ let d=getDB().filter(t=>t.id!=id); saveDB(d); refresh(); } }
         function clearHistory(){ if(confirm("Clear history?")){ let d=getDB(); saveDB(d.filter(t=>!t.res)); refresh(); } }
