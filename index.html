@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.8.9 - Full Heavy-Duty Clinical Build</title>
+    <title>Tracker Pro v6.8.0 - Full Heavy-Duty Clinical Build</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* FULL CSS - NO MINIFICATION - NO SHORT-HAND */
@@ -76,38 +76,28 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
         }
 
-        /* BRANCHING SYMBOL BUTTONS */
-        .symbol-box {
+        /* CLINICAL SYMBOL BOXES */
+        .symbol-sub-box {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-right-width: 1px;
-            border-right-style: solid;
-            border-right-color: #e5e7eb;
-            font-size: 18px;
+            border-right: 1px solid #eeeeee;
         }
-
-        .symbol-box:last-child {
-            border-right-width: 0px;
+        .symbol-sub-box:last-child {
+            border-right: none;
         }
-
-        .symbol-box:active {
+        .symbol-sub-box:active {
             background-color: #f3f4f6;
         }
-
-        .label-text {
-            font-size: 9px;
-            color: #6b7280;
-            margin-top: 4px;
+        .sym-label {
+            font-size: 8px;
+            color: #9ca3af;
+            margin-top: 2px;
         }
-
-        .prompt-color { color: #b45309; background-color: #fffbeb; }
-        .error-color { color: #dc2626; background-color: #fef2f2; }
 
         /* REPLICA DATA SHEET TABLE */
         .replica-sheet-container { 
@@ -217,62 +207,61 @@
         
         <div id="sbt-grid-buttons" class="flex flex-col">
             <div class="sbt-grid-container shadow-2xl">
-                <div class="grid-column-header">Response (○, P, -)</div>
+                <div class="grid-column-header">Response (○ / P / -)</div>
                 <div class="grid-column-header italic text-indigo-600">Engaged</div>
 
                 <div class="grid-input-cell">
-                    <div class="symbol-box" onclick="recordSbtResponse('○ FCR')">○ <span class="label-text">FCR</span></div>
-                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P FCR')">P <span class="label-text">FCR</span></div>
-                    <div class="symbol-box error-color" onclick="recordSbtResponse('- FCR')">- <span class="label-text">FCR</span></div>
+                    <div class="symbol-sub-box" onclick="recordSbtResponse('○ FCR')">○<span class="sym-label">FCR</span></div>
+                    <div class="symbol-sub-box" style="color:#b45309; background-color:#fffbeb;" onclick="recordSbtResponse('P FCR')">P<span class="sym-label">FCR</span></div>
+                    <div class="symbol-sub-box" style="color:#dc2626; background-color:#fef2f2;" onclick="recordSbtResponse('- FCR')">-<span class="sym-label">FCR</span></div>
                 </div>
                 <div onclick="recordSbtResponse('FCR+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
                 <div class="grid-input-cell">
-                    <div class="symbol-box" onclick="recordSbtResponse('○ TR')">○ <span class="label-text">TR</span></div>
-                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P TR')">P <span class="label-text">TR</span></div>
-                    <div class="symbol-box error-color" onclick="recordSbtResponse('- TR')">- <span class="label-text">TR</span></div>
+                    <div class="symbol-sub-box" onclick="recordSbtResponse('○ TR')">○<span class="sym-label">TR</span></div>
+                    <div class="symbol-sub-box" style="color:#b45309; background-color:#fffbeb;" onclick="recordSbtResponse('P TR')">P<span class="sym-label">TR</span></div>
+                    <div class="symbol-sub-box" style="color:#dc2626; background-color:#fef2f2;" onclick="recordSbtResponse('- TR')">-<span class="sym-label">TR</span></div>
                 </div>
                 <div onclick="recordSbtResponse('TR+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
                 <div class="grid-input-cell">
-                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-1')">○ <span class="label-text">CAB-1</span></div>
-                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-1')">P <span class="label-text">CAB-1</span></div>
-                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-1')">- <span class="label-text">CAB-1</span></div>
+                    <div class="symbol-sub-box" onclick="recordSbtResponse('○ CAB-1')">○<span class="sym-label">CAB-1</span></div>
+                    <div class="symbol-sub-box" style="color:#b45309; background-color:#fffbeb;" onclick="recordSbtResponse('P CAB-1')">P<span class="sym-label">CAB-1</span></div>
+                    <div class="symbol-sub-box" style="color:#dc2626; background-color:#fef2f2;" onclick="recordSbtResponse('- CAB-1')">-<span class="sym-label">CAB-1</span></div>
                 </div>
                 <div onclick="recordSbtResponse('CAB-1+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
                 <div class="grid-input-cell">
-                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-2')">○ <span class="label-text">CAB-2</span></div>
-                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-2')">P <span class="label-text">CAB-2</span></div>
-                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-2')">- <span class="label-text">CAB-2</span></div>
+                    <div class="symbol-sub-box" onclick="recordSbtResponse('○ CAB-2')">○<span class="sym-label">CAB-2</span></div>
+                    <div class="symbol-sub-box" style="color:#b45309; background-color:#fffbeb;" onclick="recordSbtResponse('P CAB-2')">P<span class="sym-label">CAB-2</span></div>
+                    <div class="symbol-sub-box" style="color:#dc2626; background-color:#fef2f2;" onclick="recordSbtResponse('- CAB-2')">-<span class="sym-label">CAB-2</span></div>
                 </div>
                 <div onclick="recordSbtResponse('CAB-2+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
                 <div class="grid-input-cell">
-                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-3')">○ <span class="label-text">CAB-3</span></div>
-                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-3')">P <span class="label-text">CAB-3</span></div>
-                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-3')">- <span class="label-text">CAB-3</span></div>
+                    <div class="symbol-sub-box" onclick="recordSbtResponse('○ CAB-3')">○<span class="sym-label">CAB-3</span></div>
+                    <div class="symbol-sub-box" style="color:#b45309; background-color:#fffbeb;" onclick="recordSbtResponse('P CAB-3')">P<span class="sym-label">CAB-3</span></div>
+                    <div class="symbol-sub-box" style="color:#dc2626; background-color:#fef2f2;" onclick="recordSbtResponse('- CAB-3')">-<span class="sym-label">CAB-3</span></div>
                 </div>
                 <div onclick="recordSbtResponse('CAB-3+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
                 <div class="grid-input-cell">
-                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-4')">○ <span class="label-text">CAB-4</span></div>
-                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-4')">P <span class="label-text">CAB-4</span></div>
-                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-4')">- <span class="label-text">CAB-4</span></div>
+                    <div class="symbol-sub-box" onclick="recordSbtResponse('○ CAB-4')">○<span class="sym-label">CAB-4</span></div>
+                    <div class="symbol-sub-box" style="color:#b45309; background-color:#fffbeb;" onclick="recordSbtResponse('P CAB-4')">P<span class="sym-label">CAB-4</span></div>
+                    <div class="symbol-sub-box" style="color:#dc2626; background-color:#fef2f2;" onclick="recordSbtResponse('- CAB-4')">-<span class="sym-label">CAB-4</span></div>
                 </div>
                 <div onclick="recordSbtResponse('CAB-4+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
                 <div class="grid-input-cell">
-                    <div class="symbol-box" onclick="recordSbtResponse('○ CAB-5')">○ <span class="label-text">CAB-5</span></div>
-                    <div class="symbol-box prompt-color" onclick="recordSbtResponse('P CAB-5')">P <span class="label-text">CAB-5</span></div>
-                    <div class="symbol-box error-color" onclick="recordSbtResponse('- CAB-5')">- <span class="label-text">CAB-5</span></div>
+                    <div class="symbol-sub-box" onclick="recordSbtResponse('○ CAB-5')">○<span class="sym-label">CAB-5</span></div>
+                    <div class="symbol-sub-box" style="color:#b45309; background-color:#fffbeb;" onclick="recordSbtResponse('P CAB-5')">P<span class="sym-label">CAB-5</span></div>
+                    <div class="symbol-sub-box" style="color:#dc2626; background-color:#fef2f2;" onclick="recordSbtResponse('- CAB-5')">-<span class="sym-label">CAB-5</span></div>
                 </div>
                 <div onclick="recordSbtResponse('CAB-5+ENG')" class="grid-input-cell engagement-cell">ENG</div>
 
-                <div onclick="recordSbtResponse('R1')" class="grid-input-cell text-red-600 border-t border-black flex items-center justify-center" style="padding: 20px;">R1 (DANGER)</div>
-                <div onclick="recordSbtResponse('R2')" class="grid-input-cell text-orange-500 border-t border-black flex items-center justify-center" style="padding: 20px;">R2 (NON-D)</div>
+                <div onclick="recordSbtResponse('R1')" class="grid-input-cell text-red-600 border-t border-black" style="padding:20px;">R1 (DANGER)</div>
+                <div onclick="recordSbtResponse('R2')" class="grid-input-cell text-orange-500 border-t border-black" style="padding:20px;">R2 (NON-D)</div>
             </div>
-            
             <button onclick="recordSbtResponse('EO/NO-RESPONSE')" class="w-full py-5 border-2 border-dashed border-gray-400 text-gray-400 font-black text-[11px] rounded-2xl uppercase italic tracking-widest mb-6 active:bg-gray-50">
                 EO / NO RESPONSE
             </button>
@@ -352,6 +341,7 @@
             const container = document.getElementById('main-task-list');
             container.innerHTML = '';
             
+            // Update Tab Button Visuals
             let tabs = ['baseline', 'treatment', 'maintenance'];
             for (let i = 0; i < tabs.length; i++) {
                 let btn = document.getElementById('tab-button-' + tabs[i]);
@@ -368,6 +358,7 @@
             let allRecords = getDatabaseRecords();
 
             if (currentActiveTab === 'baseline' || currentActiveTab === 'treatment' || currentActiveTab === 'maintenance') {
+                // INPUT BLOCK
                 container.innerHTML = `
                     <button onclick="startGeneralSession()" class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black uppercase text-sm shadow-xl mb-6 border-b-4 border-indigo-900 active:border-b-0 active:translate-y-1 transition-all">
                         ⚡ Open SBT Data Sheet ⚡
@@ -391,7 +382,10 @@
                 }
             } else if (currentActiveTab === 'trials') {
                 container.innerHTML = `<h2 class="text-xl font-black uppercase mb-4 italic tracking-tight text-center">SBT Handout Replica</h2>`;
+                
                 let trialLogs = allRecords.filter(function(r) { return r.result !== undefined; });
+                
+                // Group trials into blocks of 5 to match handout rows
                 for (let k = 0; k < trialLogs.length; k += 5) {
                     let trialChunk = trialLogs.slice(k, k + 5);
                     let replicaHtml = `<div class="replica-sheet-container shadow-md">
@@ -402,12 +396,14 @@
                             <div class="replica-sheet-header" style="flex: 0 0 40px;">Eng</div>
                             <div class="replica-sheet-header" style="flex: 1;">Timer</div>
                         </div>`;
+                    
                     for (let m = 0; m < trialChunk.length; m++) {
                         let entry = trialChunk[m];
                         let resultParts = entry.result.split(' (');
                         let isEngaged = resultParts[0].includes('ENG');
                         let cleanResponse = resultParts[0].replace('+ENG', '');
                         let capturedTime = resultParts[1] ? resultParts[1].replace(')', '') : '--:--';
+                        
                         replicaHtml += `
                         <div class="replica-sheet-row">
                             <div class="replica-sheet-cell" style="flex: 0 0 35px;">${k + m + 1}</div>
@@ -449,6 +445,7 @@
             let records = getDatabaseRecords();
             let timeString = document.getElementById('sbt-stopwatch-display').innerText;
             let fullResultString = responseValue + " (" + timeString + ")";
+            
             let newLogEntry = {
                 id: Date.now(),
                 title: activeTaskObject.title,
@@ -456,9 +453,10 @@
                 folder: 'recall',
                 date: new Date().toLocaleDateString()
             };
+            
             records.push(newLogEntry);
             saveDatabaseRecords(records);
-            startSbtStopwatch();
+            startSbtStopwatch(); // Reset for next trial
         }
 
         function startSbtStopwatch() {
@@ -467,12 +465,18 @@
             }
             sbtTotalSeconds = 0;
             document.getElementById('sbt-stopwatch-display').innerText = "00:00";
+            
             sbtStopwatchInterval = setInterval(function() {
                 sbtTotalSeconds = sbtTotalSeconds + 1;
                 let minutes = Math.floor(sbtTotalSeconds / 60);
                 let seconds = sbtTotalSeconds % 60;
-                let minuteString = minutes < 10 ? "0" + minutes : minutes;
-                let secondString = seconds < 10 ? "0" + seconds : seconds;
+                
+                let minuteString = minutes.toString();
+                if (minutes < 10) { minuteString = "0" + minuteString; }
+                
+                let secondString = seconds.toString();
+                if (seconds < 10) { secondString = "0" + secondString; }
+                
                 document.getElementById('sbt-stopwatch-display').innerText = minuteString + ":" + secondString;
             }, 1000);
         }
@@ -494,8 +498,14 @@
         function createNewTaskRecord() {
             let taskName = document.getElementById('new-task-input-field').value;
             if (taskName.trim() === "") { return; }
+            
             let records = getDatabaseRecords();
-            let newTask = { id: Date.now(), title: taskName.toUpperCase(), folder: currentActiveTab };
+            let newTask = {
+                id: Date.now(),
+                title: taskName.toUpperCase(),
+                folder: currentActiveTab
+            };
+            
             records.push(newTask);
             saveDatabaseRecords(records);
             document.getElementById('new-task-input-field').value = "";
@@ -504,7 +514,12 @@
 
         function deleteTaskRecord(taskId) {
             let records = getDatabaseRecords();
-            let updatedRecords = records.filter(function(r) { return r.id !== taskId; });
+            let updatedRecords = [];
+            for (let i = 0; i < records.length; i++) {
+                if (records[i].id !== taskId) {
+                    updatedRecords.push(records[i]);
+                }
+            }
             saveDatabaseRecords(updatedRecords);
             refreshViewContent();
         }
@@ -531,17 +546,40 @@
             location.reload();
         }
 
-        // USER SELECTION SCREEN LOGIC
+        // Initialize on Load
+        initializeApplication();
+    </script>
+
+    <div id="user-selection-screen" class="fixed inset-0 bg-indigo-950 z-[100] p-8 flex flex-col items-center hidden-element">
+        <h1 class="text-white font-black text-4xl mb-12 mt-12 uppercase italic tracking-tighter underline decoration-indigo-500">Tracker Pro</h1>
+        <div id="user-list-container" class="w-full max-w-xs space-y-3 mb-8"></div>
+        <div class="w-full max-w-xs bg-white/10 p-6 rounded-[35px] backdrop-blur-md border border-white/5">
+            <input id="new-user-input" type="text" placeholder="STUDENT NAME..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-center text-sm outline-none">
+            <button onclick="createNewUserProfile()" class="w-full bg-green-500 text-white font-black py-4 rounded-2xl shadow-xl uppercase text-xs">+ Create Profile</button>
+        </div>
+    </div>
+
+    <div id="folder-selection-screen" class="fixed inset-0 bg-gray-100 z-[90] hidden-element p-6 flex flex-col items-center overflow-y-auto">
+        <h1 class="font-black text-3xl mb-10 mt-12 uppercase italic text-indigo-950">Folder Access</h1>
+        <div id="folder-list-container" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div>
+        <div class="w-full max-w-md bg-white p-8 rounded-[40px] shadow-xl border border-gray-200">
+            <input id="new-folder-input" type="text" placeholder="FOLDER NAME..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-sm outline-none border-2 border-gray-50 focus:border-indigo-400">
+            <button onclick="createNewFolder()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl uppercase text-xs shadow-lg tracking-widest">+ Add Folder</button>
+        </div>
+    </div>
+
+    <script>
         function renderUserSelectionScreen() {
             hideElement('main-application-container');
             showElement('user-selection-screen');
-            let users = JSON.parse(localStorage.getItem('app_users') || "[]");
+            let users = localStorage.getItem('app_users');
+            let userArray = users ? JSON.parse(users) : [];
             const container = document.getElementById('user-list-container');
             container.innerHTML = '';
-            for(let i=0; i<users.length; i++) {
-                let name = users[i];
+            for(let i=0; i<userArray.length; i++) {
+                let name = userArray[i];
                 let btn = document.createElement('button');
-                btn.className = "w-full bg-white/20 text-white p-6 rounded-3xl font-black uppercase text-left border border-white/10 mb-3";
+                btn.className = "w-full bg-white/20 text-white p-6 rounded-3xl font-black uppercase text-left border border-white/10 shadow-lg active:bg-white/40 transition-colors";
                 btn.innerText = name;
                 btn.onclick = function() {
                     currentUserId = name;
@@ -555,9 +593,10 @@
         function createNewUserProfile() {
             let name = document.getElementById('new-user-input').value.trim().toUpperCase();
             if(!name) return;
-            let users = JSON.parse(localStorage.getItem('app_users') || "[]");
-            users.push(name);
-            localStorage.setItem('app_users', JSON.stringify(users));
+            let users = localStorage.getItem('app_users');
+            let userArray = users ? JSON.parse(users) : [];
+            userArray.push(name);
+            localStorage.setItem('app_users', JSON.stringify(userArray));
             document.getElementById('new-user-input').value = "";
             renderUserSelectionScreen();
         }
@@ -565,13 +604,14 @@
         function renderFolderSelectionScreen() {
             hideElement('user-selection-screen');
             showElement('folder-selection-screen');
-            let folders = JSON.parse(localStorage.getItem('app_folders') || '["SBT", "DTT"]');
+            let folders = localStorage.getItem('app_folders');
+            let folderArray = folders ? JSON.parse(folders) : ["SBT", "DTT"];
             const container = document.getElementById('folder-list-container');
             container.innerHTML = '';
-            for(let i=0; i<folders.length; i++) {
-                let fName = folders[i];
+            for(let i=0; i<folderArray.length; i++) {
+                let fName = folderArray[i];
                 let btn = document.createElement('button');
-                btn.className = "w-full h-24 bg-white p-4 rounded-3xl shadow-md font-black uppercase text-indigo-950 text-sm";
+                btn.className = "w-full h-24 bg-white p-4 rounded-3xl shadow-md border-2 border-transparent active:border-indigo-400 font-black uppercase text-indigo-950 transition-all text-sm";
                 btn.innerText = fName;
                 btn.onclick = function() {
                     currentFolderId = fName;
@@ -585,32 +625,13 @@
         function createNewFolder() {
             let fName = document.getElementById('new-folder-input').value.trim().toUpperCase();
             if(!fName) return;
-            let folders = JSON.parse(localStorage.getItem('app_folders') || '["SBT", "DTT"]');
-            folders.push(fName);
-            localStorage.setItem('app_folders', JSON.stringify(folders));
+            let folders = localStorage.getItem('app_folders');
+            let folderArray = folders ? JSON.parse(folders) : ["SBT", "DTT"];
+            folderArray.push(fName);
+            localStorage.setItem('app_folders', JSON.stringify(folderArray));
             document.getElementById('new-folder-input').value = "";
             renderFolderSelectionScreen();
         }
-
-        initializeApplication();
     </script>
-
-    <div id="user-selection-screen" class="fixed inset-0 bg-indigo-950 z-[100] p-8 flex flex-col items-center hidden-element">
-        <h1 class="text-white font-black text-4xl mb-12 mt-12 uppercase italic tracking-tighter underline decoration-indigo-500">Tracker Pro</h1>
-        <div id="user-list-container" class="w-full max-w-xs mb-8"></div>
-        <div class="w-full max-w-xs bg-white/10 p-6 rounded-[35px] backdrop-blur-md border border-white/5">
-            <input id="new-user-input" type="text" placeholder="STUDENT NAME..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-center text-sm outline-none">
-            <button onclick="createNewUserProfile()" class="w-full bg-green-500 text-white font-black py-4 rounded-2xl shadow-xl uppercase text-xs">+ Create Profile</button>
-        </div>
-    </div>
-
-    <div id="folder-selection-screen" class="fixed inset-0 bg-gray-100 z-[90] hidden-element p-6 flex flex-col items-center overflow-y-auto">
-        <h1 class="font-black text-3xl mb-10 mt-12 uppercase italic text-indigo-950">Folders</h1>
-        <div id="folder-list-container" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div>
-        <div class="w-full max-w-md bg-white p-8 rounded-[40px] shadow-xl border border-gray-200">
-            <input id="new-folder-input" type="text" placeholder="FOLDER NAME..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-sm outline-none border-2 border-gray-50 focus:border-indigo-400">
-            <button onclick="createNewFolder()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl uppercase text-xs shadow-lg tracking-widest">+ Add Folder</button>
-        </div>
-    </div>
 </body>
 </html>
