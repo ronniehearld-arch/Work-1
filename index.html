@@ -3,34 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.7.9 - Full Build</title>
+    <title>Tracker Pro v6.7.9 - Full Clinical Build</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .act-t { border-bottom: 4px solid #4f46e5 !important; color: #4f46e5 !important; font-weight: 900 !important; } 
         .hide { display: none !important; }
         
-        /* --- ORIGINAL GRID STYLING UNTOUCHED --- */
+        /* ORIGINAL APP STYLING (DO NOT TOUCH) */
         .sbt-grid-container { 
             display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background-color: #000; 
             border: 2px solid #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px;
         }
         .grid-header { background-color: #f3f4f6; font-size: 11px; font-weight: 900; text-transform: uppercase; padding: 12px 5px; text-align: center; border-bottom: 1px solid #000; }
         .grid-cell { background-color: #ffffff; padding: 22px 5px; font-weight: 900; font-size: 13px; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .grid-cell:active { background-color: #e5e7eb; }
         .cell-eng { background-color: #f9fafb; color: #4f46e5; border-left: 1px solid #000; }
 
-        /* --- THE FULL SHEET REPLICA (SCROLLABLE OVERLAY) --- */
-        #full-sheet-overlay { 
-            position: fixed; inset: 0; background: #fff; z-index: 1000; overflow: auto; 
+        /* THE 1:1 FULL PAGE REPLICA STYLING */
+        #full-sheet-overlay { position: fixed; inset: 0; background: #334155; z-index: 1000; overflow: auto; padding: 10px; }
+        .workbook-page { 
+            width: 1200px; background: white; padding: 40px; margin: 0 auto; color: black; font-family: 'Arial', sans-serif; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .sheet-content { 
-            width: 1050px; padding: 25px; color: black; font-family: 'Arial Narrow', Arial, sans-serif;
-        }
-        .sheet-table { width: 100%; border-collapse: collapse; border: 2.5px solid black; }
-        .sheet-table th, .sheet-table td { border: 1.5px solid black; padding: 5px; font-size: 10px; text-align: center; font-weight: bold; }
-        .sheet-grey { background-color: #e5e7eb; }
-        .sheet-vert { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; padding: 15px !important; }
-        .sheet-left { text-align: left !important; font-weight: normal; font-size: 9px; line-height: 1.3; }
+        .wb-table { width: 100%; border-collapse: collapse; border: 2px solid black; }
+        .wb-table th, .wb-table td { border: 1px solid black; padding: 6px; font-size: 11px; font-weight: bold; text-align: center; vertical-align: middle; }
+        .wb-grey { background-color: #e5e7eb; }
+        .wb-vert { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 14px; padding: 20px !important; }
+        .wb-left { text-align: left !important; font-weight: normal; font-size: 10px; line-height: 1.4; padding: 10px; }
+        .wb-header-field { border-bottom: 1px solid black; display: inline-block; min-width: 150px; margin-right: 20px; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
@@ -62,46 +60,91 @@
     </div>
 
     <div id="full-sheet-overlay" class="hide">
-        <div class="sticky top-0 left-0 bg-indigo-700 text-white p-4 flex justify-between items-center w-full z-[1100]">
-            <span class="font-black uppercase text-xs">Full Workbook Data Sheet</span>
-            <button onclick="hide('full-sheet-overlay')" class="bg-white text-indigo-700 px-6 py-2 rounded-full font-black uppercase text-[10px]">Close Sheet</button>
+        <div class="sticky top-0 left-0 bg-red-600 text-white p-4 flex justify-between items-center w-full z-[1100] shadow-xl">
+            <span class="font-black uppercase text-sm">Full Workbook View (FTF Replica)</span>
+            <button onclick="hide('full-sheet-overlay')" class="bg-white text-red-600 px-8 py-2 rounded-full font-black uppercase text-xs">Close Document</button>
         </div>
         
-        <div class="sheet-content">
-            <div class="text-[12px] font-black border-b-2 border-black pb-1 mb-2">Data Sheet and Guide for the Skill-Based Treatment of Problem Behavior (Revised May 2019)</div>
-            <table class="sheet-table mb-2">
-                <tr><td class="sheet-left">Organization:</td><td class="sheet-left">Client Name:</td><td class="sheet-left">Skills Trainer:</td><td class="sheet-left">Supervisor:</td><td class="sheet-left">Consultant:</td></tr>
-            </table>
+        <div class="workbook-page">
+            <div class="text-[14px] font-bold border-b-2 border-black pb-2 mb-4 italic text-gray-800">
+                Data Sheet and Guide for the Skill-Based Treatment of Problem Behavior (Revised May 2019; FTF Behavioral Consulting, Inc.)
+            </div>
 
-            <table class="sheet-table">
-                <tr class="sheet-grey"><td colspan="13" class="sheet-left font-black p-3">Diversified Chaining Branch: <span class="border-b border-black w-64 inline-block"></span> / New people: ______ / New locations: ______</td></tr>
-                <tr class="sheet-grey">
-                    <th rowspan="2">Step</th><th rowspan="2" style="width:50px">Date</th><th rowspan="2" style="width:200px">Responses Reinforced</th><th colspan="10">Progressively Changing Response Requirements</th><th rowspan="2" style="width:220px">Instructions</th>
+            <div class="mb-6 font-bold text-[12px]">
+                Organization: <span class="wb-header-field"></span>
+                Client Name: <span class="wb-header-field"></span>
+                Skills Trainer: <span class="wb-header-field"></span>
+                Supervisor: <span class="wb-header-field"></span>
+            </div>
+
+            <table class="wb-table">
+                <tr class="wb-grey">
+                    <td colspan="13" class="wb-left font-black text-[13px] py-3">
+                        Diversified Chaining Branch: <span class="wb-header-field" style="min-width:300px"></span>
+                        New people: <span class="wb-header-field" style="min-width:100px"></span>
+                        New locations: <span class="wb-header-field" style="min-width:100px"></span>
+                    </td>
                 </tr>
-                <tr class="sheet-grey">
+                <tr class="wb-grey">
+                    <th rowspan="2" style="width:50px">Step</th>
+                    <th rowspan="2" style="width:80px">Date</th>
+                    <th rowspan="2" style="width:250px">Responses Reinforced</th>
+                    <th colspan="10">Progressively Changing Response Requirements</th>
+                    <th rowspan="2" style="width:250px">Instructions</th>
+                </tr>
+                <tr class="wb-grey">
                     <th>EO</th><th>SR</th><th>EO</th><th>SR</th><th>EO</th><th>SR</th><th>EO</th><th>SR</th><th>EO</th><th>SR</th>
                 </tr>
+
                 <tr>
-                    <td class="sheet-vert sheet-grey" rowspan="2">CAB 4</td><td></td><td class="sheet-left"><b>cFCR, TR, CAB 1, 2, or CAB 4</b><br>Communicate, tolerate denial, relinquish positive reinforcers, transition and get ready to learn.</td>
-                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="sheet-grey">#<br>--<br>Eng</td>
-                    <td>cFCR</td><td class="sheet-grey">#<br>--<br>Eng</td>
-                    <td>cFCR<br>TR<br>CAB1</td><td class="sheet-grey">#<br>--<br>Eng</td>
-                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="sheet-grey">#<br>--<br>Eng</td>
-                    <td>cFCR<br>TR</td><td class="sheet-grey">#<br>--<br>Eng</td>
-                    <td class="sheet-left" rowspan="2"><b>DATA COLLECTION</b><br>In EO, circle the response to EO if independent. Slash the response if prompted.<br><br><b>SHAPING CRITERIA</b><br>Remain at each teaching step until 3 consecutive trials of the target response level have been completed with zero PB.</td>
+                    <td rowspan="2" class="wb-vert wb-grey">CAB 4</td>
+                    <td></td>
+                    <td class="wb-left"><b>cFCR, TR, CAB 1, 2, or CAB 4</b><br>Communicate, tolerate denial, relinquish positive reinforcers, transition and get ready to learn.</td>
+                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td>cFCR</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td>cFCR<br>TR<br>CAB1</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td>cFCR<br>TR</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td rowspan="2" class="wb-left">
+                        <b>DATA COLLECTION</b><br>
+                        In EO, circle response if independent. Slash if prompted. <br><br>
+                        <b>SHAPING CRITERIA</b><br>
+                        Remain at each teaching step until 3 consecutive trials of the target response level have been completed with zero PB. Record Engagement for every trial.
+                    </td>
                 </tr>
                 <tr>
-                    <td></td><td class="sheet-left">Academic, life skills, or vocational tasks for 1 min.</td>
-                    <td>cFCR</td><td class="sheet-grey">Eng</td><td>cFCR<br>TR<br>CAB1</td><td class="sheet-grey">Eng</td><td>cFCR</td><td class="sheet-grey">Eng</td><td>cFCR<br>TR</td><td class="sheet-grey">Eng</td><td>cFCR</td><td class="sheet-grey">Eng</td>
+                    <td></td>
+                    <td class="wb-left">Transition and get ready to learn, and/or cooperate/comply/respond accurately to 1-3 instructions.</td>
+                    <td>cFCR</td><td class="wb-grey">Eng</td><td>cFCR<br>TR<br>CAB1</td><td class="wb-grey">Eng</td><td>cFCR</td><td class="sheet-grey">Eng</td><td>cFCR<br>TR</td><td class="sheet-grey">Eng</td><td>cFCR</td><td class="sheet-grey">Eng</td>
+                </tr>
+
+                <tr>
+                    <td class="wb-vert wb-grey">CAB 5</td>
+                    <td></td>
+                    <td class="wb-left">Cooperate/comply/respond accurately to multiple instructions (academic, life skills, or vocational) for 1-3 minutes.</td>
+                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4<br>CAB5</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td>cFCR</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td>cFCR<br>TR<br>CAB1</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td>cFCR<br>TR<br>CAB1<br>CAB2<br>CAB4</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td>cFCR<br>TR</td><td class="wb-grey">#<br>--<br>Eng</td>
+                    <td class="wb-left">
+                        <b>PROMPTING & REINFORCEMENT</b><br>
+                        Use only the amount of prompting necessary. Provide the synthesized reinforcer for 30 seconds to 1 minute following every target response.
+                    </td>
                 </tr>
             </table>
+
+            <div class="mt-4 text-[11px] font-bold border-t border-black pt-2 flex justify-between italic">
+                <span>EO = establishing operation; SR = synthesized reinforcement; PB = problem behavior; Eng = Engagement</span>
+                <span>FTF Behavioral Consulting Skill-Based Treatment Workbook | Page ____</span>
+            </div>
         </div>
     </div>
 
     <div id="cyc" class="hide fixed inset-0 bg-white z-[220] flex flex-col overflow-y-auto">
         <div class="p-4 text-center">
             <div class="flex justify-between items-center mb-4">
-                <button onclick="show('full-sheet-overlay')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-lg border-2 border-indigo-200">View Entire Table</button>
+                <button onclick="show('full-sheet-overlay')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-lg">View Full Page Replica</button>
                 <button onclick="openUndoMenu()" class="bg-gray-800 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase">Undo</button>
             </div>
             <div class="mb-4 bg-gray-50 py-4 rounded-2xl border font-mono text-5xl font-black text-indigo-600" id="sbt-timer">00:00</div>
@@ -128,46 +171,32 @@
     <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center overflow-y-auto"><h1 class="font-black text-3xl mb-10 mt-12 uppercase italic">Folders</h1><div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div><div class="w-full max-w-md bg-white p-8 rounded-[40px] shadow-xl border"><input id="l-in" type="text" placeholder="FOLDER..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-sm"><button onclick="addL()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl uppercase">+ Add</button></div></div>
 
     <script>
-        // --- 100% ORIGINAL JAVASCRIPT RESTORED ---
         let u, l, f, activeC, sbtInterval, sbtSeconds = 0;
         function getDB() { let key = "d_" + u + "_" + l; let raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }
         function saveDB(d) { localStorage.setItem("d_" + u + "_" + l, JSON.stringify(d)); }
         function show(id) { document.getElementById(id).classList.remove('hide'); }
         function hide(id) { document.getElementById(id).classList.add('hide'); }
-
-        function init() {
-            u = localStorage.getItem('u'); l = localStorage.getItem('l'); f = localStorage.getItem('f') || 'baseline';
-            if (u && l) { restore(); } else if (u) { renderL(); } else { renderP(); }
-        }
-
+        function init() { u = localStorage.getItem('u'); l = localStorage.getItem('l'); f = localStorage.getItem('f') || 'baseline'; if (u && l) { restore(); } else if (u) { renderL(); } else { renderP(); } }
         function restore() { hide('s-loc'); hide('s-prof'); show('app'); document.getElementById('u-lab').innerText = u + " | " + l; refresh(); }
         function tab(x) { f = x; localStorage.setItem('f', x); stopTimer(); hide('cyc'); show('app'); refresh(); }
-
         function refresh() {
             const list = document.getElementById('m-list'); list.innerHTML = '';
             document.querySelectorAll('button[id^="b-"]').forEach(b => b.classList.remove('act-t'));
             let currentTab = document.getElementById('b-' + f); if (currentTab) currentTab.classList.add('act-t');
             let d = getDB();
-
             if (f === 'baseline' || f === 'treatment' || f === 'maintenance') {
                 list.innerHTML = `<button onclick="forceOpenGrid()" class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black uppercase text-sm shadow-xl mb-6">⚡ Open SBT Grid ⚡</button><div class="bg-white p-6 rounded-[35px] border mb-6"><input id="t-in" type="text" placeholder="TASK NAME..." class="w-full p-4 border rounded-2xl mb-4 uppercase font-black text-sm"><button onclick="addT()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase">+ Add Task</button></div>`;
-                d.filter(t => t.f === f && !t.res).forEach(t => {
-                    list.innerHTML += `<div class="bg-white p-5 rounded-[32px] border flex justify-between items-center mb-3 shadow-sm"><div onclick="runById(${t.id})" class="flex-1 font-black uppercase text-sm">${t.text}</div><button onclick="delT(${t.id})" class="text-red-200 px-3 font-bold">✕</button></div>`;
-                });
+                d.filter(t => t.f === f && !t.res).forEach(t => { list.innerHTML += `<div class="bg-white p-5 rounded-[32px] border flex justify-between items-center mb-3 shadow-sm"><div onclick="runById(${t.id})" class="flex-1 font-black uppercase text-sm">${t.text}</div><button onclick="delT(${t.id})" class="text-red-200 px-3 font-bold">✕</button></div>`; });
             } else {
-                d.filter(t => t.f === f || (f === 'recall' && t.res)).reverse().forEach(t => {
-                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2 font-black text-[10px] flex justify-between uppercase"><span>${t.text}</span><span class="text-indigo-600">${t.res}</span></div>`;
-                });
+                d.filter(t => t.f === f || (f === 'recall' && t.res)).reverse().forEach(t => { list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2 font-black text-[10px] flex justify-between uppercase"><span>${t.text}</span><span class="text-indigo-600">${t.res}</span></div>`; });
             }
         }
-
         function forceOpenGrid() { activeC = { id: Date.now(), text: "GENERAL SESSION" }; show('cyc'); hide('app'); document.getElementById('c-task').innerText = activeC.text; startTimer(); }
         function runById(id) { let t = getDB().find(x => x.id == id); if (!t) return; activeC = t; show('cyc'); hide('app'); document.getElementById('c-task').innerText = t.text; startTimer(); }
         function clickRec(v) { let d = getDB(); let fv = v + " (" + document.getElementById('sbt-timer').innerText + ")"; d.push({ id: Date.now(), text: activeC.text, res: fv, f: 'recall' }); saveDB(d); startTimer(); }
         function startTimer() { clearInterval(sbtInterval); sbtSeconds = 0; sbtInterval = setInterval(() => { sbtSeconds++; let m = Math.floor(sbtSeconds/60).toString().padStart(2,'0'); let s = (sbtSeconds%60).toString().padStart(2,'0'); document.getElementById('sbt-timer').innerText = m+":"+s; }, 1000); }
         function stopTimer() { clearInterval(sbtInterval); }
         function pauseCycle() { stopTimer(); hide('cyc'); show('app'); refresh(); }
-        
         function addP() { let v = document.getElementById('p-in').value.trim().toUpperCase(); if (!v) return; let p = JSON.parse(localStorage.getItem('profiles') || '[]'); p.push(v); localStorage.setItem('profiles', JSON.stringify(p)); renderP(); }
         function renderP() { hide('s-loc'); hide('app'); show('s-prof'); let p = JSON.parse(localStorage.getItem('profiles') || '[]'); const list = document.getElementById('p-list'); list.innerHTML = ''; p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white/20 text-white p-6 rounded-3xl font-black mb-2 uppercase text-left border border-white/5 shadow-md">${x}</button>`; }); }
         function selP(x) { u = x; localStorage.setItem('u', x); renderL(); }
