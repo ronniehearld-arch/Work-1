@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.7.9 - Full Replica Sheet</title>
+    <title>Tracker Pro v6.7.9 - FTF SBT Replica</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .act-t { border-bottom: 4px solid #4f46e5 !important; color: #4f46e5 !important; font-weight: 900 !important; } 
         .hide { display: none !important; }
         
-        /* DATA ENTRY GRID (SAME AS BEFORE) */
+        /* GRID STYLING */
         .sbt-grid-container { 
-            display: grid; 
-            grid-template-columns: 2fr 1fr; 
-            gap: 1px; background-color: #000; 
-            border: 2px solid #000; border-radius: 12px; 
-            overflow: hidden; margin-bottom: 12px;
+            display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background-color: #000; 
+            border: 2px solid #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px;
         }
         .grid-header { background-color: #f3f4f6; font-size: 11px; font-weight: 900; text-transform: uppercase; padding: 12px 5px; text-align: center; border-bottom: 1px solid #000; }
         .grid-cell { background-color: #ffffff; padding: 22px 5px; font-weight: 900; font-size: 13px; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .grid-cell:active { background-color: #e5e7eb; }
         .cell-eng { background-color: #f9fafb; color: #4f46e5; border-left: 1px solid #000; }
 
-        /* FULL HANDOUT REPLICA STYLING */
-        .replica-container { border: 2px solid #000; background: #fff; margin-bottom: 20px; }
-        .replica-row { display: flex; border-bottom: 1px solid #000; }
-        .replica-row:last-child { border-bottom: none; }
-        .replica-header { background: #e5e7eb; font-weight: 900; text-transform: uppercase; font-size: 9px; padding: 4px; border-right: 1px solid #000; text-align: center; }
-        .replica-cell { flex: 1; border-right: 1px solid #000; padding: 6px 2px; font-size: 10px; text-align: center; font-weight: 700; min-height: 25px; }
-        .replica-cell:last-child { border-right: none; }
-        .col-sm { flex: 0 0 30px; }
+        /* FULL FTF REPLICA STYLING */
+        .ftf-sheet { background: #fff; width: 100%; font-family: sans-serif; border: 1px solid #000; border-collapse: collapse; }
+        .ftf-sheet th, .ftf-sheet td { border: 1px solid #000; padding: 4px; font-size: 9px; vertical-align: top; }
+        .ftf-sheet th { background: #f3f4f6; text-transform: uppercase; font-weight: 900; text-align: center; }
+        .ftf-branch-header { background: #e5e7eb; font-weight: 900; text-align: center; font-size: 11px; }
+        .ftf-instruction-cell { font-size: 8px; color: #374151; line-height: 1.2; }
+        
+        .session-tab { flex: 1; padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid transparent; color: #9ca3af; }
+        .session-tab.active { border-bottom: 4px solid #4f46e5; color: #4f46e5; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
@@ -50,9 +47,8 @@
                 <button onclick="tab('maintenance')" id="b-maintenance" class="p-4 flex-1 text-[11px] font-bold uppercase">Maint</button>
             </div>
         </div>
-
         <div id="m-list" class="p-4 space-y-3 pb-24 max-w-md mx-auto"></div>
-
+        
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3 shadow-lg z-50">
             <button onclick="tab('trials')" id="b-trials" class="flex flex-col items-center w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trial Sheet</span></button>
             <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center w-1/4"><span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span></button>
@@ -61,18 +57,23 @@
         </div>
     </div>
 
-    <div id="cyc" class="hide fixed inset-0 bg-white z-[220] p-4 text-center flex flex-col overflow-y-auto">
-        <div class="flex justify-between items-center pt-8 mb-4">
-            <div class="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">SBT SESSION</div>
-            <button onclick="openUndoMenu()" class="bg-gray-800 text-white px-4 py-2 rounded-full font-black text-[10px] uppercase">Undo</button>
+    <div id="cyc" class="hide fixed inset-0 bg-white z-[220] flex flex-col overflow-y-auto">
+        <div class="flex border-b bg-gray-50 sticky top-0 z-[230]">
+            <button onclick="switchSessionView('tracker')" id="tab-tracker" class="session-tab active">Tracker</button>
+            <button onclick="switchSessionView('sheet')" id="tab-sheet" class="session-tab">SBT Data Sheet</button>
         </div>
-        <div class="mb-4 bg-gray-50 py-4 rounded-2xl border"><span id="sbt-timer" class="text-5xl font-black font-mono text-indigo-600">00:00</span></div>
-        <div class="bg-white p-6 rounded-[35px] border-4 border-blue-500 mb-6 flex items-center justify-center min-h-[80px] shadow-xl">
-            <h2 id="c-task" class="text-xl font-black uppercase text-gray-800 leading-tight"></h2>
-        </div>
-        <div class="flex flex-col flex-1">
+
+        <div id="session-tracker-view" class="p-4 text-center">
+            <div class="flex justify-between items-center mb-4">
+                <div class="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Active Session</div>
+                <button onclick="openUndoMenu()" class="bg-gray-800 text-white px-4 py-2 rounded-full font-black text-[10px] uppercase">Undo</button>
+            </div>
+            <div class="mb-4 bg-gray-50 py-4 rounded-2xl border font-mono text-5xl font-black text-indigo-600" id="sbt-timer">00:00</div>
+            <div class="bg-white p-6 rounded-[35px] border-4 border-blue-500 mb-6 flex items-center justify-center min-h-[80px] shadow-xl">
+                <h2 id="c-task" class="text-xl font-black uppercase leading-tight"></h2>
+            </div>
             <div class="sbt-grid-container shadow-2xl">
-                <div class="grid-header">Response (SR)</div><div class="grid-header">Engaged</div>
+                <div class="grid-header">Response</div><div class="grid-header">Engaged</div>
                 <div onclick="clickRec('FCR')" class="grid-cell">FCR</div><div onclick="clickRec('FCR+ENG')" class="grid-cell cell-eng">ENG</div>
                 <div onclick="clickRec('TR')" class="grid-cell">TR</div><div onclick="clickRec('TR+ENG')" class="grid-cell cell-eng">ENG</div>
                 <div onclick="clickRec('CAB-1')" class="grid-cell">CAB-1</div><div onclick="clickRec('CAB-1+ENG')" class="grid-cell cell-eng">ENG</div>
@@ -82,9 +83,12 @@
                 <div onclick="clickRec('CAB-5')" class="grid-cell">CAB-5</div><div onclick="clickRec('CAB-5+ENG')" class="grid-cell cell-eng">ENG</div>
                 <div onclick="clickRec('R1')" class="grid-cell text-red-600 border-t border-black">R1 (Danger)</div><div onclick="clickRec('R2')" class="grid-cell text-orange-500 border-t border-black">R2 (Non-D)</div>
             </div>
-            <button onclick="clickRec('EO/NO-RESPONSE')" class="w-full py-4 border-2 border-dashed border-gray-400 text-gray-500 font-black text-[10px] rounded-2xl uppercase mb-6">EO / NO RESPONSE</button>
+            <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-8 underline">Exit Session</button>
         </div>
-        <button onclick="pauseCycle()" class="text-gray-400 font-bold uppercase text-[10px] mb-8 underline">Exit Session</button>
+
+        <div id="session-sheet-view" class="p-2 hide">
+            <div id="sheet-content"></div>
+        </div>
     </div>
 
     <div id="undo-modal" class="hide fixed inset-0 bg-black/90 z-[350] flex items-center justify-center p-6"><div class="bg-white w-full max-w-xs rounded-[40px] p-8 flex flex-col max-h-[75vh]"><div id="undo-list" class="space-y-3 overflow-y-auto mb-6"></div><button onclick="hide('undo-modal')" class="bg-gray-100 text-gray-500 py-4 rounded-2xl font-black uppercase text-[10px]">Close</button></div></div>
@@ -118,58 +122,68 @@
                     list.innerHTML += `<div class="bg-white p-5 rounded-[32px] border flex justify-between items-center mb-3 shadow-sm"><div onclick="runById(${t.id})" class="flex-1 font-black uppercase text-sm">${t.text}</div><button onclick="delT(${t.id})" class="text-red-200 px-3 font-bold">✕</button></div>`;
                 });
             } else if (f === 'trials') {
-                list.innerHTML = `<h2 class="text-xl font-black uppercase mb-4 italic tracking-tight text-center">Full Handout Replica Sheet</h2>`;
-                
-                // DATA REPLICA LAYOUT (1:1 with handout)
+                list.innerHTML = `<h2 class="text-center font-black uppercase mb-4 italic">Full Trial Replica</h2>`;
                 let logs = d.filter(t => t.res);
                 for (let i = 0; i < logs.length; i += 5) {
                     let chunk = logs.slice(i, i + 5);
-                    let tableHTML = `<div class="replica-container shadow-md">
-                        <div class="replica-row">
-                            <div class="replica-header col-sm">Tr#</div>
-                            <div class="replica-header">EO</div>
-                            <div class="replica-header">SR (Response)</div>
-                            <div class="replica-header col-sm">Eng</div>
-                            <div class="replica-header">Time</div>
-                        </div>`;
-                    
+                    let h = `<div class="bg-white border-2 border-black mb-4"><div class="flex bg-gray-200 border-b border-black font-black text-[9px] uppercase"><div class="w-8 border-r border-black p-1">Tr</div><div class="flex-1 p-1">Response (SR)</div><div class="w-12 border-l border-black p-1 text-center">Eng</div></div>`;
                     chunk.forEach((item, index) => {
                         let parts = item.res.split(' (');
-                        let isEng = parts[0].includes('ENG');
-                        let srText = parts[0].replace('+ENG', '');
-                        let timeText = parts[1] ? parts[1].replace(')', '') : '--';
-                        tableHTML += `
-                        <div class="replica-row">
-                            <div class="replica-cell col-sm">${i + index + 1}</div>
-                            <div class="replica-cell">SD/EO</div>
-                            <div class="replica-cell uppercase font-black">${srText}</div>
-                            <div class="replica-cell col-sm uppercase">${isEng ? 'Y' : 'N'}</div>
-                            <div class="replica-cell text-[8px]">${timeText}</div>
-                        </div>`;
+                        h += `<div class="flex border-b border-black text-[10px]"><div class="w-8 border-r border-black p-2 font-bold">${i + index + 1}</div><div class="flex-1 p-2 uppercase font-black">${parts[0].replace('+ENG','')}</div><div class="w-12 border-l border-black p-2 text-center font-bold">${parts[0].includes('ENG')?'Y':'N'}</div></div>`;
                     });
-                    tableHTML += `</div>`;
-                    list.innerHTML += tableHTML;
+                    list.innerHTML += h + `</div>`;
                 }
-                if (logs.length === 0) list.innerHTML += `<div class="text-center py-20 text-gray-300 font-black uppercase">No Data Collected Yet</div>`;
-            } else {
-                list.innerHTML = `<h2 class="text-xl font-black uppercase mb-4 italic">${f.toUpperCase()} LOG</h2>`;
-                d.filter(t => t.f === f || (f === 'recall' && t.res)).reverse().forEach(t => {
-                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2 font-black text-[10px] flex justify-between uppercase"><span>${t.text}</span><span class="text-indigo-600">${t.res}</span></div>`;
-                });
             }
         }
 
-        function forceOpenGrid() { activeC = { id: Date.now(), text: "GENERAL SESSION" }; show('cyc'); hide('app'); document.getElementById('c-task').innerText = activeC.text; startTimer(); }
-        function runById(id) { let t = getDB().find(x => x.id == id); if (!t) return; activeC = t; show('cyc'); hide('app'); document.getElementById('c-task').innerText = t.text; startTimer(); }
-
-        function clickRec(v) {
-            let d = getDB();
-            let finalValue = v + " (" + document.getElementById('sbt-timer').innerText + ")";
-            d.push({ id: Date.now(), text: activeC.text, res: finalValue, f: 'recall', loc: l, date: new Date().toLocaleDateString('en-US', {month:'2-digit', day:'2-digit'}) });
-            saveDB(d);
-            startTimer();
+        function switchSessionView(view) {
+            if (view === 'tracker') {
+                show('session-tracker-view'); hide('session-sheet-view');
+                document.getElementById('tab-tracker').classList.add('active');
+                document.getElementById('tab-sheet').classList.remove('active');
+            } else {
+                hide('session-tracker-view'); show('session-sheet-view');
+                document.getElementById('tab-tracker').classList.remove('active');
+                document.getElementById('tab-sheet').classList.add('active');
+                renderFTFSheet();
+            }
         }
 
+        function renderFTFSheet() {
+            const content = document.getElementById('sheet-content');
+            const name = activeC.text.toUpperCase();
+            
+            // Build official FTF Template
+            let html = `<table class="ftf-sheet">
+                <thead>
+                    <tr><th colspan="4" class="ftf-branch-header">SBT Data Sheet and Guide: Diversified Chaining</th></tr>
+                    <tr><th style="width:10%">Step</th><th style="width:25%">EO (Establishing Operation)</th><th style="width:30%">SR (Response Reinforced)</th><th style="width:35%">Instructions</th></tr>
+                </thead>
+                <tbody>`;
+
+            if (name.includes('CAB 4')) {
+                html += `
+                <tr><td>CAB 4-1</td><td>Removal of SR, intro to work</td><td>Cooperate with academic/pre-vocational tasks for 1 min.</td><td class="ftf-instruction-cell">Circle Y if cooperative throughout 1-min interval. Toggle ENG on grid.</td></tr>
+                <tr><td>CAB 4-2</td><td>Removal of SR, intro to work</td><td>Cooperate with Life Skills/Self-care for 1 min.</td><td class="ftf-instruction-cell">Expect variety in tasks. Ensure ENG is maintained.</td></tr>
+                <tr><td>CAB 4-3</td><td>Delay/Denial intro</td><td>Cooperate with 1 task during delay.</td><td class="ftf-instruction-cell">Reinforce at end of task.</td></tr>`;
+            } else if (name.includes('CAB 5')) {
+                html += `
+                <tr><td>CAB 5</td><td>Removal of SR, transition to work</td><td>Cooperate with academic/life skills for 3+ mins.</td><td class="ftf-instruction-cell">Progressively increase duration. Record engagement throughout.</td></tr>`;
+            } else {
+                html += `
+                <tr><td>FCR/TR</td><td>Removal of SR</td><td>Simple FCR or Transition Response</td><td class="ftf-instruction-cell">Prompt if necessary. Reinforce immediately.</td></tr>`;
+            }
+
+            html += `</tbody></table>
+            <div class="mt-4 p-2 bg-gray-50 border border-black text-[7px] uppercase font-bold italic">
+                EO = establishing operation; SR = synthesized reinforcement; FCR = functional communication; TR = transition response; CAB = contextually appropriate behavior.
+            </div>`;
+            content.innerHTML = html;
+        }
+
+        function forceOpenGrid() { activeC = { id: Date.now(), text: "GENERAL SESSION" }; show('cyc'); hide('app'); switchSessionView('tracker'); document.getElementById('c-task').innerText = activeC.text; startTimer(); }
+        function runById(id) { let t = getDB().find(x => x.id == id); if (!t) return; activeC = t; show('cyc'); hide('app'); switchSessionView('tracker'); document.getElementById('c-task').innerText = t.text; startTimer(); }
+        function clickRec(v) { let d = getDB(); let fv = v + " (" + document.getElementById('sbt-timer').innerText + ")"; d.push({ id: Date.now(), text: activeC.text, res: fv, f: 'recall' }); saveDB(d); startTimer(); }
         function startTimer() { clearInterval(sbtInterval); sbtSeconds = 0; sbtInterval = setInterval(() => { sbtSeconds++; let m = Math.floor(sbtSeconds/60).toString().padStart(2,'0'); let s = (sbtSeconds%60).toString().padStart(2,'0'); document.getElementById('sbt-timer').innerText = m+":"+s; }, 1000); }
         function stopTimer() { clearInterval(sbtInterval); }
         function pauseCycle() { stopTimer(); hide('cyc'); show('app'); refresh(); }
@@ -181,7 +195,7 @@
         function selL(x) { l = x; localStorage.setItem('l', x); restore(); }
         function addT() { let v = document.getElementById('t-in').value.trim().toUpperCase(); if (!v) return; let d = getDB(); d.push({ id: Date.now(), text: v, f: f }); saveDB(d); document.getElementById('t-in').value = ''; refresh(); }
         function delT(id) { if(confirm('Delete?')) { saveDB(getDB().filter(t => t.id != id)); refresh(); } }
-        function openUndoMenu() { let history = getDB().filter(x => x.res).slice(-8).reverse(); const list = document.getElementById('undo-list'); list.innerHTML = ''; history.forEach(item => { list.innerHTML += `<button onclick="confirmUndo(${item.id})" class="w-full bg-gray-50 p-4 rounded-xl border font-black mb-2 text-left text-[10px] uppercase shadow-sm">Undo: ${item.text} - ${item.res}</button>`; }); show('undo-modal'); }
+        function openUndoMenu() { let h = getDB().filter(x => x.res).slice(-8).reverse(); const list = document.getElementById('undo-list'); list.innerHTML = ''; h.forEach(item => { list.innerHTML += `<button onclick="confirmUndo(${item.id})" class="w-full bg-gray-50 p-4 rounded-xl border font-black mb-2 text-left text-[10px] uppercase shadow-sm">Undo: ${item.res}</button>`; }); show('undo-modal'); }
         function confirmUndo(id) { saveDB(getDB().filter(x => x.id !== id)); hide('undo-modal'); refresh(); }
         function exitN() { localStorage.removeItem('u'); location.reload(); }
         function exitL() { localStorage.removeItem('l'); location.reload(); }
