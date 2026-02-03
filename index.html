@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.8.5 - Complete Original Integration</title>
+    <title>Tracker Pro v6.8.6 - Full 50-Trial Matrix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .act-t { border-bottom: 4px solid #4f46e5 !important; color: #4f46e5 !important; font-weight: 900 !important; } 
@@ -15,18 +15,19 @@
         .grid-cell { background-color: #ffffff; padding: 22px 5px; font-weight: 900; font-size: 13px; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .cell-eng { background-color: #f9fafb; color: #4f46e5; border-left: 1px solid #000; }
 
-        /* THE 10-ROW WORKBOOK STYLING (The "Missing" Piece) */
+        /* FULL 10-ROW / 5-TRIAL WORKBOOK STYLING */
         #wb-overlay { position: fixed; inset: 0; background: white; z-index: 3000; display: none; overflow: auto; }
-        .wb-page { width: 1400px; padding: 40px; color: black; font-family: Arial; }
-        .ftf-table { width: 100%; border-collapse: collapse; border: 2.5px solid black; }
-        .ftf-table th, .ftf-table td { border: 1.5px solid black; padding: 8px; font-size: 11px; text-align: center; font-weight: bold; }
-        .wb-vert { writing-mode: vertical-rl; transform: rotate(180deg); padding: 15px !important; background: #f1f5f9; }
-        .wb-left { text-align: left !important; font-weight: normal; font-size: 10px; padding: 10px; line-height: 1.4; }
+        .wb-page { width: 1500px; padding: 30px; color: black; font-family: Arial; }
+        .ftf-table { width: 100%; border-collapse: collapse; border: 2px solid black; }
+        .ftf-table th, .ftf-table td { border: 1px solid black; padding: 6px; font-size: 10px; text-align: center; font-weight: bold; }
+        .wb-vert { writing-mode: vertical-rl; transform: rotate(180deg); padding: 10px !important; background: #f1f5f9; font-size: 11px; }
+        .wb-left { text-align: left !important; font-weight: normal; font-size: 9px; padding: 8px; line-height: 1.2; }
+        .trial-col { width: 60px; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans pb-24 text-gray-900">
 
-    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-2 uppercase sticky top-0 z-[150]">Tracker Pro v6.8.5 | (Switch User)</div>
+    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-2 uppercase sticky top-0 z-[150]">Tracker Pro v6.8.6 | (Switch User)</div>
 
     <div id="app" class="hide min-h-screen">
         <div class="bg-white sticky top-8 z-50 shadow-md">
@@ -52,26 +53,36 @@
 
     <div id="wb-overlay">
         <div class="sticky top-0 left-0 bg-indigo-900 text-white p-4 flex justify-between items-center w-full z-[3100]">
-            <span id="wb-title" class="font-black text-xs uppercase">CAB 4 BRANCH (10 ROWS)</span>
-            <button onclick="document.getElementById('wb-overlay').style.display='none'" class="bg-white text-indigo-900 px-6 py-2 rounded-full font-black text-xs uppercase">Close Sheet</button>
+            <span id="wb-title" class="font-black text-xs uppercase italic">Diversified Chaining Sheet</span>
+            <button onclick="document.getElementById('wb-overlay').style.display='none'" class="bg-white text-indigo-900 px-6 py-2 rounded-full font-black text-xs uppercase">Back to Session</button>
         </div>
         <div class="wb-page">
-            <div class="text-[14px] font-black border-b-2 border-black mb-4">FTF Behavioral Consulting Skill-Based Treatment (May 2019)</div>
-            <table class="ftf-table" id="wb-table-content">
-                </table>
+            <div class="text-[14px] font-black border-b-2 border-black mb-4 italic">SBT Data Sheet and Guide (Revised May 2019)</div>
+            <table class="ftf-table">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th rowspan="2">Step</th><th rowspan="2" style="width:250px">Responses Reinforced</th><th colspan="2">Trial 1</th><th colspan="2">Trial 2</th><th colspan="2">Trial 3</th><th colspan="2">Trial 4</th><th colspan="2">Trial 5</th><th rowspan="2">Notes/Instructions</th>
+                    </tr>
+                    <tr class="bg-gray-200">
+                        <th class="trial-col">EO</th><th class="trial-col">SR</th><th class="trial-col">EO</th><th class="trial-col">SR</th><th class="trial-col">EO</th><th class="trial-col">SR</th><th class="trial-col">EO</th><th class="trial-col">SR</th><th class="trial-col">EO</th><th class="trial-col">SR</th>
+                    </tr>
+                </thead>
+                <tbody id="wb-body">
+                    </tbody>
+            </table>
         </div>
     </div>
 
     <div id="cyc" class="hide fixed inset-0 bg-white z-[220] flex flex-col overflow-y-auto">
         <div class="p-4 text-center">
             <div class="flex flex-wrap justify-center gap-2 mb-4">
-                <button onclick="openWBSheet('CAB4')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-md">Open CAB 4 (10 Rows)</button>
-                <button onclick="openWBSheet('CAB5')" class="bg-slate-700 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-md">Open CAB 5 (10 Rows)</button>
+                <button onclick="buildSheet('CAB 4')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-md">Open CAB 4 (10 Rows)</button>
+                <button onclick="buildSheet('CAB 5')" class="bg-slate-700 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-md">Open CAB 5 (10 Rows)</button>
                 <button onclick="openUndoMenu()" class="bg-gray-800 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase">Undo</button>
             </div>
             <div class="mb-4 bg-gray-50 py-4 rounded-2xl border font-mono text-5xl font-black text-indigo-600" id="sbt-timer">00:00</div>
             <div class="bg-white p-6 rounded-[35px] border-4 border-blue-500 mb-6 flex items-center justify-center min-h-[80px]">
-                <h2 id="c-task" class="text-xl font-black uppercase leading-tight"></h2>
+                <h2 id="c-task" class="text-xl font-black uppercase"></h2>
             </div>
             <div class="sbt-grid-container shadow-2xl">
                 <div class="grid-header">Response</div><div class="grid-header">Eng</div>
@@ -84,47 +95,28 @@
         </div>
     </div>
 
-    <div id="s-prof" class="fixed inset-0 bg-indigo-950 z-[100] p-8 flex flex-col items-center hide">
-        <h1 class="text-white font-black text-3xl mb-12 mt-12 uppercase italic">Tracker Pro</h1>
-        <div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div>
-        <input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-black text-center">
-        <button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-4 rounded-2xl uppercase">+ Create</button>
-    </div>
-
-    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center overflow-y-auto">
-        <h1 class="font-black text-3xl mb-10 mt-12 uppercase italic">Folders</h1>
-        <div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div>
-        <div class="w-full max-w-md bg-white p-8 rounded-[40px] shadow-xl border">
-            <input id="l-in" type="text" placeholder="FOLDER..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-sm">
-            <button onclick="addL()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl uppercase">+ Add</button>
-        </div>
-    </div>
+    <div id="s-prof" class="fixed inset-0 bg-indigo-950 z-[100] p-8 flex flex-col items-center hide"><h1 class="text-white font-black text-3xl mb-12 mt-12 uppercase italic">Tracker Pro</h1><div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div><input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-black text-center"><button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-4 rounded-2xl uppercase">+ Create</button></div>
+    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center overflow-y-auto"><h1 class="font-black text-3xl mb-10 mt-12 uppercase italic">Folders</h1><div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div><div class="w-full max-w-md bg-white p-8 rounded-[40px] shadow-xl border"><input id="l-in" type="text" placeholder="FOLDER..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-sm"><button onclick="addL()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl uppercase">+ Add</button></div></div>
 
     <script>
         let u, l, f, activeC, sbtInterval, sbtSeconds = 0;
 
-        // NEW 10-ROW GENERATOR
-        function openWBSheet(type) {
+        function buildSheet(type) {
             document.getElementById('wb-overlay').style.display = 'block';
-            document.getElementById('wb-title').innerText = type + " Diversified Branch (10 Rows)";
-            const content = document.getElementById('wb-table-content');
-            let rows = `<tr class="bg-gray-100">
-                <th rowspan="2">Step</th><th rowspan="2" style="width:300px">Response Requirement</th><th colspan="2">Trial 1</th><th colspan="2">Trial 2</th><th colspan="2">Trial 3</th><th colspan="2">Trial 4</th><th colspan="2">Trial 5</th><th rowspan="2">Instructions</th>
-            </tr>
-            <tr class="bg-gray-100"><th>EO</th><th>SR</th><th>EO</th><th>SR</th><th>EO</th><th>SR</th><th>EO</th><th>SR</th><th>EO</th><th>SR</th></tr>`;
-            
+            document.getElementById('wb-title').innerText = type + " - Diversified Chaining (10 Rows)";
+            const body = document.getElementById('wb-body');
+            body.innerHTML = '';
             for(let i=1; i<=10; i++) {
-                rows += `<tr>
-                    <td class="wb-vert">${type} Step ${i}</td>
-                    <td class="wb-left">Cooperate with academic/life skills for target duration.</td>
+                body.innerHTML += `<tr>
+                    <td class="wb-vert">${type} - ${i}</td>
+                    <td class="wb-left">Respond accurately to multiple instructions (academic/vocational) for target duration.</td>
                     <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    ${i===1 ? '<td rowspan="10" class="wb-left font-bold"><b>DATA COLLECTION:</b><br>Circle independent (EO). Slash prompted.<br><br><b>REINFORCEMENT:</b><br>30s - 1m Synthesized.</td>' : ''}
+                    ${i===1 ? '<td rowspan="10" class="wb-left"><b>SHAPING:</b><br>Stay at step until 3 consecutive trials with 0 PB. Circle independent. Slash prompted.</td>' : ''}
                 </tr>`;
             }
-            content.innerHTML = rows;
         }
 
-        /* ORIGINAL CORE LOGIC */
+        /* ORIGINAL v6.7.9 FUNCTIONS */
         function getDB() { let key = "d_" + u + "_" + l; let raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }
         function saveDB(d) { localStorage.setItem("d_" + u + "_" + l, JSON.stringify(d)); }
         function show(id) { document.getElementById(id).classList.remove('hide'); }
@@ -133,7 +125,7 @@
         function restore() { hide('s-loc'); hide('s-prof'); show('app'); document.getElementById('u-lab').innerText = u + " | " + l; refresh(); }
         function tab(x) { f = x; localStorage.setItem('f', x); stopTimer(); hide('cyc'); show('app'); refresh(); }
         function refresh() {
-            const list = document.getElementById('m-list'); list.innerHTML = '';
+            const list = document.getElementById('m-list'); if(!list) return; list.innerHTML = '';
             document.querySelectorAll('button[id^="b-"]').forEach(b => b.classList.remove('act-t'));
             let currentTab = document.getElementById('b-' + f); if (currentTab) currentTab.classList.add('act-t');
             let d = getDB();
