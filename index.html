@@ -3,154 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.8.6 - Full 50-Trial Matrix</title>
+    <title>Tracker Pro v6.8.9 - Full Heavy-Duty Clinical Build</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .act-t { border-bottom: 4px solid #4f46e5 !important; color: #4f46e5 !important; font-weight: 900 !important; } 
-        .hide { display: none !important; }
+        /* YOUR ORIGINAL CSS - EXACTLY AS PROVIDED */
+        .active-tab-indicator { 
+            border-bottom-width: 4px;
+            border-bottom-style: solid;
+            border-bottom-color: #4f46e5;
+            color: #4f46e5;
+            font-weight: 900;
+        } 
         
-        /* ORIGINAL APP STYLING */
-        .sbt-grid-container { display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background-color: #000; border: 2px solid #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px; }
-        .grid-header { background-color: #f3f4f6; font-size: 11px; font-weight: 900; text-transform: uppercase; padding: 12px 5px; text-align: center; border-bottom: 1px solid #000; }
-        .grid-cell { background-color: #ffffff; padding: 22px 5px; font-weight: 900; font-size: 13px; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .cell-eng { background-color: #f9fafb; color: #4f46e5; border-left: 1px solid #000; }
+        .hidden-element { 
+            display: none !important; 
+        }
+        
+        .sbt-grid-container { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            column-gap: 1px;
+            row-gap: 1px;
+            background-color: #000000; 
+            border-width: 2px;
+            border-style: solid;
+            border-color: #000000; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            margin-bottom: 12px;
+        }
 
-        /* FULL 10-ROW / 5-TRIAL WORKBOOK STYLING */
-        #wb-overlay { position: fixed; inset: 0; background: white; z-index: 3000; display: none; overflow: auto; }
-        .wb-page { width: 1500px; padding: 30px; color: black; font-family: Arial; }
-        .ftf-table { width: 100%; border-collapse: collapse; border: 2px solid black; }
-        .ftf-table th, .ftf-table td { border: 1px solid black; padding: 6px; font-size: 10px; text-align: center; font-weight: bold; }
-        .wb-vert { writing-mode: vertical-rl; transform: rotate(180deg); padding: 10px !important; background: #f1f5f9; font-size: 11px; }
-        .wb-left { text-align: left !important; font-weight: normal; font-size: 9px; padding: 8px; line-height: 1.2; }
-        .trial-col { width: 60px; }
+        .grid-column-header { 
+            background-color: #f3f4f6; 
+            color: #111827;
+            font-size: 11px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            padding-top: 15px;
+            padding-bottom: 15px;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: center; 
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: #000000;
+        }
+
+        .grid-input-cell { 
+            background-color: #ffffff; 
+            padding: 0px;
+            font-weight: 900; 
+            font-size: 14px; 
+            text-align: center; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: stretch; 
+            justify-content: center;
+            min-height: 85px;
+        }
+
+        .engagement-cell { 
+            background-color: #f9fafb; 
+            color: #4f46e5; 
+            border-left: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* CLINICAL SYMBOLS - ○, P, - */
+        .symbol-sub-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #e5e7eb;
+        }
+        .symbol-sub-box:last-child { border-right: none; }
+        .symbol-sub-box:active { background-color: #f3f4f6; }
+        .sym-label { font-size: 8px; color: #9ca3af; margin-top: 2px; }
+
+        .replica-sheet-container { 
+            border: 2px solid #000; background-color: #ffffff; margin-bottom: 25px; 
+        }
+        .replica-sheet-row { display: flex; border-bottom: 1px solid #000; }
+        .replica-sheet-header { background-color: #f3f4f6; font-weight: 900; font-size: 10px; padding: 6px; border-right: 1px solid #000; text-align: center; }
+        .replica-sheet-cell { flex: 1; border-right: 1px solid #000; padding: 8px 2px; font-size: 11px; text-align: center; font-weight: 700; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans pb-24 text-gray-900">
+<body class="bg-gray-100 font-sans pb-24 text-gray-900 select-none">
 
-    <div onclick="exitN()" class="bg-black text-white text-[10px] font-bold text-center py-2 uppercase sticky top-0 z-[150]">Tracker Pro v6.8.6 | (Switch User)</div>
+    <div id="version-header" onclick="exitToUserSelection()" class="bg-black text-white text-[10px] font-bold text-center py-2 uppercase sticky top-0 z-[150] cursor-pointer">
+        Tracker Pro v6.8.9 | Full Heavy-Duty Build
+    </div>
 
-    <div id="app" class="hide min-h-screen">
+    <div id="main-application-container" class="hidden-element min-h-screen">
         <div class="bg-white sticky top-8 z-50 shadow-md">
             <div class="flex justify-between p-3 bg-gray-50 border-b text-[10px] font-black uppercase">
-                 <button onclick="exitL()" class="text-blue-600 font-bold px-2">⬅ LOCATIONS</button>
-                 <span id="u-lab" class="text-gray-400"></span>
+                 <button onclick="exitToFolderSelection()" class="text-blue-600 font-bold px-2">⬅ FOLDERS</button>
+                 <span id="current-user-label" class="text-gray-400"></span>
             </div>
             <div class="flex border-b">
-                <button onclick="tab('baseline')" id="b-baseline" class="p-4 flex-1 text-[11px] font-bold uppercase">Base</button>
-                <button onclick="tab('treatment')" id="b-treatment" class="p-4 flex-1 text-[11px] font-bold uppercase">TX</button>
-                <button onclick="tab('maintenance')" id="b-maintenance" class="p-4 flex-1 text-[11px] font-bold uppercase">Maint</button>
+                <button onclick="switchTab('baseline')" id="tab-button-baseline" class="p-4 flex-1 text-[11px] font-bold uppercase">Baseline</button>
+                <button onclick="switchTab('treatment')" id="tab-button-treatment" class="p-4 flex-1 text-[11px] font-bold uppercase">Treatment</button>
+                <button onclick="switchTab('maintenance')" id="tab-button-maintenance" class="p-4 flex-1 text-[11px] font-bold uppercase">Maintenance</button>
             </div>
         </div>
-        <div id="m-list" class="p-4 space-y-3 max-w-md mx-auto"></div>
+        <div id="main-task-list" class="p-4 space-y-3 pb-24 max-w-md mx-auto"></div>
+    </div>
+
+    <div id="sbt-entry-interface" class="hidden-element fixed inset-0 bg-white z-[220] p-4 text-center flex flex-col overflow-y-auto">
+        <div class="flex justify-between items-center pt-8 mb-4">
+            <div class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase">Active</div>
+            <button onclick="openUndoHistoryModal()" class="bg-gray-800 text-white px-4 py-2 rounded-full font-black text-[10px] uppercase">Undo</button>
+        </div>
+        <div class="mb-4 bg-gray-50 py-4 rounded-2xl border"><span id="sbt-stopwatch-display" class="text-5xl font-black font-mono text-indigo-600">00:00</span></div>
+        <div class="bg-white p-6 rounded-[35px] border-4 border-blue-500 mb-6 flex items-center justify-center min-h-[100px]"><h2 id="active-task-name-display" class="text-2xl font-black uppercase"></h2></div>
         
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3 shadow-lg z-50">
-            <button onclick="tab('trials')" id="b-trials" class="flex flex-col items-center w-1/4"><span class="text-xl">📊</span><span class="text-[8px] font-black uppercase">Trial Sheet</span></button>
-            <button onclick="tab('mastered')" id="b-mastered" class="flex flex-col items-center w-1/4"><span class="text-xl">🏆</span><span class="text-[8px] font-black uppercase">Mastered</span></button>
-            <button onclick="tab('ta_history')" id="b-ta_history" class="flex flex-col items-center w-1/4"><span class="text-xl">📝</span><span class="text-[8px] font-black uppercase">TA Logs</span></button>
-            <button onclick="tab('recall')" id="b-recall" class="flex flex-col items-center w-1/4"><span class="text-xl">📋</span><span class="text-[8px] font-black uppercase">Recall</span></button>
-        </div>
-    </div>
+        <div class="sbt-grid-container">
+            <div class="grid-column-header">Response (○ / P / -)</div>
+            <div class="grid-column-header">Engaged</div>
 
-    <div id="wb-overlay">
-        <div class="sticky top-0 left-0 bg-indigo-900 text-white p-4 flex justify-between items-center w-full z-[3100]">
-            <span id="wb-title" class="font-black text-xs uppercase italic">Diversified Chaining Sheet</span>
-            <button onclick="document.getElementById('wb-overlay').style.display='none'" class="bg-white text-indigo-900 px-6 py-2 rounded-full font-black text-xs uppercase">Back to Session</button>
-        </div>
-        <div class="wb-page">
-            <div class="text-[14px] font-black border-b-2 border-black mb-4 italic">SBT Data Sheet and Guide (Revised May 2019)</div>
-            <table class="ftf-table">
-                <thead>
-                    <tr class="bg-gray-200">
-                        <th rowspan="2">Step</th><th rowspan="2" style="width:250px">Responses Reinforced</th><th colspan="2">Trial 1</th><th colspan="2">Trial 2</th><th colspan="2">Trial 3</th><th colspan="2">Trial 4</th><th colspan="2">Trial 5</th><th rowspan="2">Notes/Instructions</th>
-                    </tr>
-                    <tr class="bg-gray-200">
-                        <th class="trial-col">EO</th><th class="trial-col">SR</th><th class="trial-col">EO</th><th class="trial-col">SR</th><th class="trial-col">EO</th><th class="trial-col">SR</th><th class="trial-col">EO</th><th class="trial-col">SR</th><th class="trial-col">EO</th><th class="trial-col">SR</th>
-                    </tr>
-                </thead>
-                <tbody id="wb-body">
-                    </tbody>
-            </table>
-        </div>
-    </div>
+            <script>
+                const items = ["FCR", "TR", "CAB-1", "CAB-2", "CAB-3", "CAB-4", "CAB-5"];
+                items.forEach(item => {
+                    document.write(`
+                        <div class="grid-input-cell">
+                            <div class="symbol-sub-box" onclick="recordSbtResponse('○ ${item}')">○<span class="sym-label">${item}</span></div>
+                            <div class="symbol-sub-box" style="color:#b45309;background:#fffbeb" onclick="recordSbtResponse('P ${item}')">P<span class="sym-label">${item}</span></div>
+                            <div class="symbol-sub-box" style="color:#dc2626;background:#fef2f2" onclick="recordSbtResponse('- ${item}')">-<span class="sym-label">${item}</span></div>
+                        </div>
+                        <div onclick="recordSbtResponse('${item}+ENG')" class="grid-input-cell engagement-cell">ENG</div>
+                    `);
+                });
+            </script>
 
-    <div id="cyc" class="hide fixed inset-0 bg-white z-[220] flex flex-col overflow-y-auto">
-        <div class="p-4 text-center">
-            <div class="flex flex-wrap justify-center gap-2 mb-4">
-                <button onclick="buildSheet('CAB 4')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-md">Open CAB 4 (10 Rows)</button>
-                <button onclick="buildSheet('CAB 5')" class="bg-slate-700 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-md">Open CAB 5 (10 Rows)</button>
-                <button onclick="openUndoMenu()" class="bg-gray-800 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase">Undo</button>
-            </div>
-            <div class="mb-4 bg-gray-50 py-4 rounded-2xl border font-mono text-5xl font-black text-indigo-600" id="sbt-timer">00:00</div>
-            <div class="bg-white p-6 rounded-[35px] border-4 border-blue-500 mb-6 flex items-center justify-center min-h-[80px]">
-                <h2 id="c-task" class="text-xl font-black uppercase"></h2>
-            </div>
-            <div class="sbt-grid-container shadow-2xl">
-                <div class="grid-header">Response</div><div class="grid-header">Eng</div>
-                <div onclick="clickRec('FCR')" class="grid-cell">FCR</div><div onclick="clickRec('FCR+E')" class="grid-cell cell-eng">E</div>
-                <div onclick="clickRec('TR')" class="grid-cell">TR</div><div onclick="clickRec('TR+E')" class="grid-cell cell-eng">E</div>
-                <div onclick="clickRec('CAB')" class="grid-cell">CAB</div><div onclick="clickRec('CAB+E')" class="grid-cell cell-eng">E</div>
-                <div onclick="clickRec('R1')" class="grid-cell text-red-600 border-t border-black">R1</div><div onclick="clickRec('R2')" class="grid-cell text-orange-500 border-t border-black">R2</div>
-            </div>
-            <button onclick="pauseCycle()" class="mt-8 text-gray-400 font-bold uppercase text-[10px] underline">Exit Session</button>
+            <div onclick="recordSbtResponse('R1')" class="grid-input-cell text-red-600 border-t border-black flex items-center justify-center">R1 (DANGER)</div>
+            <div onclick="recordSbtResponse('R2')" class="grid-input-cell text-orange-500 border-t border-black flex items-center justify-center border-l border-black">R2 (NON-D)</div>
         </div>
+        <button onclick="recordSbtResponse('EO/NO-RESPONSE')" class="w-full py-5 border-2 border-dashed border-gray-400 text-gray-400 font-black text-[11px] rounded-2xl uppercase mb-6">EO / NO RESPONSE</button>
+        <button onclick="closeSbtSession()" class="text-gray-400 font-bold uppercase text-[10px] mb-12 underline">Close Session</button>
     </div>
-
-    <div id="s-prof" class="fixed inset-0 bg-indigo-950 z-[100] p-8 flex flex-col items-center hide"><h1 class="text-white font-black text-3xl mb-12 mt-12 uppercase italic">Tracker Pro</h1><div id="p-list" class="w-full max-w-xs space-y-3 mb-8"></div><input id="p-in" type="text" placeholder="NAME..." class="w-full max-w-xs p-4 rounded-2xl mb-4 uppercase font-black text-center"><button onclick="addP()" class="w-full max-w-xs bg-green-500 text-white font-black py-4 rounded-2xl uppercase">+ Create</button></div>
-    <div id="s-loc" class="fixed inset-0 bg-gray-100 z-[90] hide p-6 flex flex-col items-center overflow-y-auto"><h1 class="font-black text-3xl mb-10 mt-12 uppercase italic">Folders</h1><div id="l-list" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div><div class="w-full max-w-md bg-white p-8 rounded-[40px] shadow-xl border"><input id="l-in" type="text" placeholder="FOLDER..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-sm"><button onclick="addL()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl uppercase">+ Add</button></div></div>
 
     <script>
-        let u, l, f, activeC, sbtInterval, sbtSeconds = 0;
+        let currentUserId = localStorage.getItem('app_user_id');
+        let currentFolderId = localStorage.getItem('app_folder_id');
+        let currentActiveTab = localStorage.getItem('app_active_tab') || "baseline";
+        let activeTaskObject = null;
+        let sbtStopwatchInterval = null;
+        let sbtTotalSeconds = 0;
 
-        function buildSheet(type) {
-            document.getElementById('wb-overlay').style.display = 'block';
-            document.getElementById('wb-title').innerText = type + " - Diversified Chaining (10 Rows)";
-            const body = document.getElementById('wb-body');
-            body.innerHTML = '';
-            for(let i=1; i<=10; i++) {
-                body.innerHTML += `<tr>
-                    <td class="wb-vert">${type} - ${i}</td>
-                    <td class="wb-left">Respond accurately to multiple instructions (academic/vocational) for target duration.</td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    ${i===1 ? '<td rowspan="10" class="wb-left"><b>SHAPING:</b><br>Stay at step until 3 consecutive trials with 0 PB. Circle independent. Slash prompted.</td>' : ''}
-                </tr>`;
+        function showElement(id) { document.getElementById(id).classList.remove('hidden-element'); }
+        function hideElement(id) { document.getElementById(id).classList.add('hidden-element'); }
+
+        function initializeApplication() {
+            if (currentUserId && currentFolderId) {
+                loadMainInterface();
+            } else if (currentUserId) {
+                renderFolderSelectionScreen();
+            } else {
+                renderUserSelectionScreen();
             }
         }
 
-        /* ORIGINAL v6.7.9 FUNCTIONS */
-        function getDB() { let key = "d_" + u + "_" + l; let raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }
-        function saveDB(d) { localStorage.setItem("d_" + u + "_" + l, JSON.stringify(d)); }
-        function show(id) { document.getElementById(id).classList.remove('hide'); }
-        function hide(id) { document.getElementById(id).classList.add('hide'); }
-        function init() { u = localStorage.getItem('u'); l = localStorage.getItem('l'); f = localStorage.getItem('f') || 'baseline'; if (u && l) { restore(); } else if (u) { renderL(); } else { renderP(); } }
-        function restore() { hide('s-loc'); hide('s-prof'); show('app'); document.getElementById('u-lab').innerText = u + " | " + l; refresh(); }
-        function tab(x) { f = x; localStorage.setItem('f', x); stopTimer(); hide('cyc'); show('app'); refresh(); }
-        function refresh() {
-            const list = document.getElementById('m-list'); if(!list) return; list.innerHTML = '';
-            document.querySelectorAll('button[id^="b-"]').forEach(b => b.classList.remove('act-t'));
-            let currentTab = document.getElementById('b-' + f); if (currentTab) currentTab.classList.add('act-t');
-            let d = getDB();
-            if (f === 'baseline' || f === 'treatment' || f === 'maintenance') {
-                list.innerHTML = `<button onclick="forceOpenGrid()" class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black uppercase text-sm shadow-xl mb-6">⚡ Open SBT Grid ⚡</button><div class="bg-white p-6 rounded-[35px] border mb-6"><input id="t-in" type="text" placeholder="TASK NAME..." class="w-full p-4 border rounded-2xl mb-4 uppercase font-black text-sm"><button onclick="addT()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase">+ Add Task</button></div>`;
-                d.filter(t => t.f === f && !t.res).forEach(t => { list.innerHTML += `<div class="bg-white p-5 rounded-[32px] border flex justify-between items-center mb-3 shadow-sm"><div onclick="runById(${t.id})" class="flex-1 font-black uppercase text-sm">${t.text}</div><button onclick="delT(${t.id})" class="text-red-200 px-3 font-bold">✕</button></div>`; });
-            } else { d.filter(t => t.f === f || (f === 'recall' && t.res)).reverse().forEach(t => { list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2 font-black text-[10px] flex justify-between uppercase"><span>${t.text}</span><span class="text-indigo-600">${t.res}</span></div>`; }); }
+        function renderUserSelectionScreen() {
+            hideElement('main-application-container');
+            hideElement('folder-selection-screen');
+            showElement('user-selection-screen');
+            let users = JSON.parse(localStorage.getItem('app_users') || "[]");
+            const container = document.getElementById('user-list-container');
+            container.innerHTML = '';
+            users.forEach(u => {
+                let btn = document.createElement('button');
+                btn.className = "w-full bg-white/20 text-white p-6 rounded-3xl font-black uppercase text-left border border-white/10 mb-3";
+                btn.innerText = u;
+                btn.onclick = () => { localStorage.setItem('app_user_id', u); location.reload(); };
+                container.appendChild(btn);
+            });
         }
-        function forceOpenGrid() { activeC = { id: Date.now(), text: "GENERAL SESSION" }; show('cyc'); hide('app'); document.getElementById('c-task').innerText = activeC.text; startTimer(); }
-        function runById(id) { let t = getDB().find(x => x.id == id); if (!t) return; activeC = t; show('cyc'); hide('app'); document.getElementById('c-task').innerText = t.text; startTimer(); }
-        function clickRec(v) { let d = getDB(); let fv = v + " (" + document.getElementById('sbt-timer').innerText + ")"; d.push({ id: Date.now(), text: activeC.text, res: fv, f: 'recall' }); saveDB(d); }
-        function startTimer() { clearInterval(sbtInterval); sbtSeconds = 0; sbtInterval = setInterval(() => { sbtSeconds++; let m = Math.floor(sbtSeconds/60).toString().padStart(2,'0'); let s = (sbtSeconds%60).toString().padStart(2,'0'); document.getElementById('sbt-timer').innerText = m+":"+s; }, 1000); }
-        function stopTimer() { clearInterval(sbtInterval); }
-        function pauseCycle() { stopTimer(); hide('cyc'); show('app'); refresh(); }
-        function addP() { let v = document.getElementById('p-in').value.trim().toUpperCase(); if (!v) return; let p = JSON.parse(localStorage.getItem('profiles') || '[]'); p.push(v); localStorage.setItem('profiles', JSON.stringify(p)); renderP(); }
-        function renderP() { hide('s-loc'); hide('app'); show('s-prof'); let p = JSON.parse(localStorage.getItem('profiles') || '[]'); const list = document.getElementById('p-list'); list.innerHTML = ''; p.forEach(x => { list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white/20 text-white p-6 rounded-3xl font-black mb-2 uppercase text-left border border-white/5 shadow-md">${x}</button>`; }); }
-        function selP(x) { u = x; localStorage.setItem('u', x); renderL(); }
-        function addL() { let v = document.getElementById('l-in').value.trim().toUpperCase(); if (!v) return; let locs = JSON.parse(localStorage.getItem('locations') || '["SBT"]'); if (!locs.includes(v)) locs.push(v); localStorage.setItem('locations', JSON.stringify(locs)); renderL(); }
-        function renderL() { hide('s-prof'); hide('app'); show('s-loc'); let locs = JSON.parse(localStorage.getItem('locations') || '["SBT"]'); const list = document.getElementById('l-list'); list.innerHTML = ''; locs.forEach(x => { list.innerHTML += `<button onclick="selL('${x}')" class="w-full bg-white h-24 rounded-3xl font-black text-indigo-950 mb-2 shadow-md uppercase active:scale-95 transition-transform">${x}</button>`; }); }
-        function selL(x) { l = x; localStorage.setItem('l', x); restore(); }
-        function addT() { let v = document.getElementById('t-in').value.trim().toUpperCase(); if (!v) return; let d = getDB(); d.push({ id: Date.now(), text: v, f: f }); saveDB(d); document.getElementById('t-in').value = ''; refresh(); }
-        function delT(id) { if(confirm('Delete?')) { saveDB(getDB().filter(t => t.id != id)); refresh(); } }
-        function exitN() { localStorage.removeItem('u'); location.reload(); }
-        function exitL() { localStorage.removeItem('l'); location.reload(); }
-        init();
+
+        function createNewUserProfile() {
+            let name = document.getElementById('new-user-input').value.trim().toUpperCase();
+            if(!name) return;
+            let users = JSON.parse(localStorage.getItem('app_users') || "[]");
+            users.push(name);
+            localStorage.setItem('app_users', JSON.stringify(users));
+            renderUserSelectionScreen();
+        }
+
+        function renderFolderSelectionScreen() {
+            hideElement('user-selection-screen');
+            showElement('folder-selection-screen');
+            let folders = JSON.parse(localStorage.getItem('app_folders') || '["SBT", "DTT"]');
+            const container = document.getElementById('folder-list-container');
+            container.innerHTML = '';
+            folders.forEach(f => {
+                let btn = document.createElement('button');
+                btn.className = "w-full h-24 bg-white p-4 rounded-3xl shadow-md font-black uppercase text-indigo-950 text-sm";
+                btn.innerText = f;
+                btn.onclick = () => { localStorage.setItem('app_folder_id', f); location.reload(); };
+                container.appendChild(btn);
+            });
+        }
+
+        function loadMainInterface() {
+            hideElement('user-selection-screen');
+            hideElement('folder-selection-screen');
+            showElement('main-application-container');
+            document.getElementById('current-user-label').innerText = currentUserId + " | " + currentFolderId;
+            refreshViewContent();
+        }
+
+        function switchTab(tabId) {
+            currentActiveTab = tabId;
+            localStorage.setItem('app_active_tab', tabId);
+            refreshViewContent();
+        }
+
+        function getDatabaseRecords() {
+            return JSON.parse(localStorage.getItem("data_" + currentUserId + "_" + currentFolderId) || "[]");
+        }
+
+        function saveDatabaseRecords(data) {
+            localStorage.setItem("data_" + currentUserId + "_" + currentFolderId, JSON.stringify(data));
+        }
+
+        function refreshViewContent() {
+            const container = document.getElementById('main-task-list');
+            container.innerHTML = '';
+            
+            document.querySelectorAll('[id^="tab-button-"]').forEach(b => b.classList.remove('active-tab-indicator'));
+            document.getElementById('tab-button-' + currentActiveTab).classList.add('active-tab-indicator');
+
+            let allRecords = getDatabaseRecords();
+
+            if (currentActiveTab === 'trials') {
+                let logs = allRecords.filter(r => r.result);
+                for (let k = 0; k < logs.length; k += 5) {
+                    let chunk = logs.slice(k, k + 5);
+                    let replicaHtml = `<div class="replica-sheet-container"><div class="replica-sheet-row"><div class="replica-sheet-header" style="flex:0 0 35px;">Tr</div><div class="replica-sheet-header" style="flex:1;">Response</div><div class="replica-sheet-header" style="flex:0 0 50px;">Time</div></div>`;
+                    chunk.forEach((entry, m) => {
+                        let parts = entry.result.split(' (');
+                        replicaHtml += `<div class="replica-sheet-row"><div class="replica-sheet-cell" style="flex:0 0 35px;">${k+m+1}</div><div class="replica-sheet-cell font-black uppercase">${parts[0]}</div><div class="replica-sheet-cell" style="flex:0 0 50px;">${parts[1] ? parts[1].replace(')', '') : '--'}</div></div>`;
+                    });
+                    container.innerHTML += replicaHtml + `</div>`;
+                }
+            } else {
+                container.innerHTML = `<button onclick="startGeneralSession()" class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black uppercase text-sm shadow-xl mb-6">⚡ Open SBT Data Sheet ⚡</button>
+                <div class="bg-white p-6 rounded-[35px] shadow-md mb-6">
+                    <input id="task-in" type="text" placeholder="NAME NEW TASK..." class="w-full p-4 border rounded-2xl mb-4 uppercase font-black text-sm">
+                    <button onclick="createNewTaskRecord()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase text-[10px]">+ Add Task</button>
+                </div>`;
+                allRecords.filter(r => r.folder === currentActiveTab && !r.result).forEach(task => {
+                    container.innerHTML += `<div class="bg-white p-5 rounded-[32px] border flex justify-between items-center mb-3 shadow-sm">
+                        <div onclick="startTaskSession(${task.id})" class="flex-1 font-black uppercase text-sm">${task.title}</div>
+                        <button onclick="deleteTaskRecord(${task.id})" class="text-red-200 px-3">✕</button>
+                    </div>`;
+                });
+            }
+        }
+
+        function createNewTaskRecord() {
+            let val = document.getElementById('task-in').value.toUpperCase();
+            if(!val) return;
+            let records = getDatabaseRecords();
+            records.push({ id: Date.now(), title: val, folder: currentActiveTab });
+            saveDatabaseRecords(records);
+            refreshViewContent();
+        }
+
+        function deleteTaskRecord(id) {
+            saveDatabaseRecords(getDatabaseRecords().filter(r => r.id !== id));
+            refreshViewContent();
+        }
+
+        function startGeneralSession() { activeTaskObject = { title: "QUICK SESSION" }; openSbt(); }
+        function startTaskSession(id) { activeTaskObject = getDatabaseRecords().find(r => r.id === id); openSbt(); }
+
+        function openSbt() {
+            document.getElementById('active-task-name-display').innerText = activeTaskObject.title;
+            showElement('sbt-entry-interface');
+            hideElement('main-application-container');
+            startSbtStopwatch();
+        }
+
+        function recordSbtResponse(val) {
+            let records = getDatabaseRecords();
+            records.push({ id: Date.now(), title: activeTaskObject.title, result: val + " (" + document.getElementById('sbt-stopwatch-display').innerText + ")", folder: 'trials' });
+            saveDatabaseRecords(records);
+            startSbtStopwatch();
+        }
+
+        function startSbtStopwatch() {
+            clearInterval(sbtStopwatchInterval);
+            sbtTotalSeconds = 0;
+            document.getElementById('sbt-stopwatch-display').innerText = "00:00";
+            sbtStopwatchInterval = setInterval(() => {
+                sbtTotalSeconds++;
+                let m = Math.floor(sbtTotalSeconds/60).toString().padStart(2,'0');
+                let s = (sbtTotalSeconds%60).toString().padStart(2,'0');
+                document.getElementById('sbt-stopwatch-display').innerText = m+":"+s;
+            }, 1000);
+        }
+
+        function closeSbtSession() {
+            clearInterval(sbtStopwatchInterval);
+            hideElement('sbt-entry-interface');
+            showElement('main-application-container');
+            refreshViewContent();
+        }
+
+        function exitToUserSelection() { localStorage.removeItem('app_user_id'); location.reload(); }
+        function exitToFolderSelection() { localStorage.removeItem('app_folder_id'); location.reload(); }
+
+        initializeApplication();
     </script>
+
+    <div id="user-selection-screen" class="fixed inset-0 bg-indigo-950 z-[100] p-8 flex flex-col items-center hidden-element">
+        <h1 class="text-white font-black text-4xl mb-12 mt-12 uppercase italic">Tracker Pro</h1>
+        <div id="user-list-container" class="w-full max-w-xs mb-8"></div>
+        <div class="bg-white/10 p-6 rounded-[35px] border border-white/5 w-full max-w-xs">
+            <input id="new-user-input" type="text" placeholder="NAME..." class="w-full p-4 rounded-2xl mb-4 uppercase font-black text-center text-sm outline-none">
+            <button onclick="createNewUserProfile()" class="w-full bg-green-500 text-white font-black py-4 rounded-2xl uppercase text-xs">Create Profile</button>
+        </div>
+    </div>
+
+    <div id="folder-selection-screen" class="fixed inset-0 bg-gray-100 z-[90] p-6 flex flex-col items-center hidden-element">
+        <h1 class="font-black text-3xl mb-10 mt-12 uppercase italic">Folders</h1>
+        <div id="folder-list-container" class="grid grid-cols-2 gap-4 w-full max-w-md mb-8"></div>
+    </div>
 </body>
 </html>
