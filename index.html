@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracker Pro v6.5.9</title>
+    <title>Tracker Pro v6.5.9 - Clinical</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .act-t{border-bottom:4px solid #4f46e5;color:#4f46e5} 
@@ -49,6 +49,7 @@
         </div>
         <div class="grid grid-cols-2 gap-2 flex-1 pb-4">
             <button onclick="clickRec('IND')" class="prompt-btn bg-green-600 text-white rounded-xl font-black text-[10px] uppercase">Independent</button>
+            <button onclick="clickRec('ERROR')" class="prompt-btn bg-indigo-600 text-white rounded-xl font-black text-[10px] uppercase italic">Errorless (Skip)</button>
             <button onclick="clickRec('POS')" class="prompt-btn bg-yellow-500 text-white rounded-xl font-black text-[10px] uppercase">Positional</button>
             <button onclick="clickRec('GES')" class="prompt-btn bg-teal-500 text-white rounded-xl font-black text-[10px] uppercase">Gestural</button>
             <button onclick="clickRec('VB')" class="prompt-btn bg-blue-500 text-white rounded-xl font-black text-[10px] uppercase">Verbal</button>
@@ -139,7 +140,57 @@
             } catch(e) {}
         }
 
-        function clickRec(v) { playClick(); rec(v); }
+        // UPDATED LOGIC HERE
+        function clickRec(v) { 
+            playClick(); 
+            rec(v); 
+
+            // Only advance the cycle if result is Independent or the Errorless Skip button
+            if (v === 'IND' || v === 'ERROR') {
+                setTimeout(() => next(), 100); 
+            } else {
+                // If it was a prompt (POS, GES, VB, etc.) or PB, we do nothing.
+                // The task remains the same on the screen.
+                console.log("Prompt recorded. Staying on current target.");
+            }
+        }
+
+        function rec(v) {
+            let d = getDB();
+            let entry = {
+                id: Date.now(),
+                text: activeC.text,
+                res: v,
+                f: 'recall',
+                origin: f,
+                loc: l,
+                time: new Date().toLocaleTimeString()
+            };
+            d.push(entry);
+            saveDB(d);
+            refresh();
+        }
+
+        function next() {
+            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
+            if(!savedQueue) return;
+            let queue = JSON.parse(savedQueue);
+            queue.shift();
+            if(queue.length === 0) {
+                localStorage.removeItem(`queue_${u}_${l}_${f}`);
+                pauseCycle();
+            } else {
+                localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue));
+                runById(queue[0]);
+            }
+        }
+
+        function finishSkip(reason) {
+            clickRec('SKIP: ' + reason);
+            hide('skip-modal');
+            // Force move to next after skip
+            setTimeout(() => next(), 150);
+        }
 
         function init(){
             u = localStorage.getItem('u'); l = localStorage.getItem('l');
@@ -263,103 +314,147 @@
             runById(ids[0]);
         }
 
+        function resetCycle(){
+            localStorage.removeItem(`queue_${u}_${l}_${f}`);
+            refresh();
+        }
+
         function runById(id){
-            let d = getDB(); let t = d.find(x => x.id == id); if(!t) { resetCycle(); return; }
-            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
-            let queue = savedQueue ? JSON.parse(savedQueue) : [];
-            if(!queue.includes(id)) { queue.unshift(id); localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue)); }
-            if(t.type === 'ta') { runTA(t.id); } else { activeC = t; show('cyc'); hide('app'); document.getElementById('c-task').innerText = t.text; document.getElementById('c-f-name').innerText = f.toUpperCase(); }
-        }
-
-        function advance(currId){
-            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
-            if(!savedQueue) { resetCycle(); return; }
-            let queue = JSON.parse(savedQueue); queue.shift();
-            if(queue.length > 0) { localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue)); runById(queue[0]); } else { resetCycle(); }
-        }
-
-        function finishSkip(reason){
-            let d = getDB(); 
-            d.push({id:Date.now(), text:activeC.text, res:'SKIPPED: '+reason, f:'recall', loc:l, origin:f, date:new Date().toLocaleDateString()}); 
-            saveDB(d); hide('skip-modal'); hide('cyc'); advance(activeC.id);
-        }
-
-        function rec(v){ let d = getDB(); d.push({id:Date.now(), text:activeC.text, res:v, f:'recall', loc:l, origin:f, date:new Date().toLocaleDateString()}); saveDB(d); advance(activeC.id); }
-
-        function subTA(){
-            let d=getDB(); d.push({id:Date.now(), text:taS.name, steps: taS.steps, res:taS.res, f:'ta_history', loc:l, origin:f, date:new Date().toLocaleDateString()}); 
-            saveDB(d); hide('ta-run'); advance(taS.id);
-        }
-
-        function runTA(id){ let d=getDB().find(t=>t.id==id); taS={id:id,name:d.text,steps:d.steps,res:{}}; resTA(); }
-        function resTA(){ 
-            hide('app'); hide('cyc'); show('ta-run'); document.getElementById('ta-h').innerText=taS.name; 
-            const list=document.getElementById('ta-s-list'); list.innerHTML=''; 
-            taS.steps.forEach((s,i)=>{ 
-                let v=taS.res[i] || '—'; 
-                list.innerHTML+=`<div class="flex justify-between items-center p-3 border rounded-xl font-bold uppercase text-[10px] mb-2 bg-white"><span>${s}</span><div class="flex gap-2 items-center"><span class="text-blue-600 mr-2 font-black">${v}</span><button onclick="promptTA(${i})" class="ta-btn w-10 h-10 rounded-full border-2 border-gray-300 text-gray-400">-</button><button onclick="setTAStep('IND', ${i})" class="ta-btn w-10 h-10 rounded-full border-2 border-blue-900 text-blue-900 font-black">+</button></div></div>`; 
-            }); 
-        }
-        function promptTA(i){ curTAStepIdx = i; playClick(); show('ta-p-modal'); }
-        function setTAStep(val, i = null){ 
-            if(i !== null) curTAStepIdx = i;
-            playClick();
-            taS.res[curTAStepIdx] = val; 
-            hide('ta-p-modal'); resTA(); 
-        }
-
-        function pauseCycle(){ hide('cyc'); hide('ta-run'); show('app'); refresh(); }
-        function resetCycle(){ localStorage.removeItem(`queue_${u}_${l}_${f}`); pauseCycle(); }
-        function mov(id){ let d=getDB(); d.forEach(t=>{ if(t.id==id){ t.f=t.f==='baseline'?'treatment':t.f==='treatment'?'maintenance':t.f==='maintenance'?'mastered':'baseline'; } }); saveDB(d); resetCycle(); }
-        function addT(type){ let v=document.getElementById('t-in').value.trim().toUpperCase(); if(!v) return; let steps = []; if(type==='ta'){ let s; while(s = prompt("Step:")) if(s) steps.push(s.toUpperCase()); } if(type==='ta' && steps.length === 0) return; let d=getDB(); d.push({id:Date.now(), text:v, type:type, f:f, steps:steps}); saveDB(d); refresh(); }
-        
-        function renderP(){ 
-            hide('s-loc'); hide('app'); show('s-prof'); 
-            const list=document.getElementById('p-list'); 
-            let p=JSON.parse(localStorage.getItem('profiles')||'[]'); 
-            list.innerHTML=''; 
-            p.forEach(x=>{ list.innerHTML+=`<button onclick="selP('${x}')" class="w-full bg-white p-4 rounded-2xl font-black shadow-md uppercase mb-2 text-left">${x}</button>`; }); 
-        }
-        function selP(x){ u=x; localStorage.setItem('u',x); renderL(); }
-
-        // NEW LOCATION LOGIC
-        function renderL(){ 
-            hide('s-prof'); hide('app'); show('s-loc'); 
-            const list=document.getElementById('l-list'); 
-            let locs = JSON.parse(localStorage.getItem('locations') || '["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"]');
-            list.innerHTML=''; 
-            locs.forEach(x=>{ 
-                list.innerHTML+=`
-                <div class="relative h-20">
-                    <button onclick="selL('${x}')" class="w-full h-full bg-white p-4 rounded-2xl shadow-sm border font-black uppercase text-[10px] text-blue-900">${x}</button>
-                    <button onclick="delL('${x}')" class="absolute -top-2 -right-2 bg-red-100 text-red-600 w-6 h-6 rounded-full font-black text-xs border border-red-200">✕</button>
-                </div>`; 
-            }); 
-        }
-        function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
-        function addL(){
-            let v = document.getElementById('l-in').value.trim().toUpperCase();
-            if(!v) return;
-            let locs = JSON.parse(localStorage.getItem('locations') || '["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"]');
-            if(!locs.includes(v)) locs.push(v);
-            localStorage.setItem('locations', JSON.stringify(locs));
-            document.getElementById('l-in').value = '';
-            renderL();
-        }
-        function delL(x){
-            if(confirm(`Delete folder "${x}"?`)){
-                let locs = JSON.parse(localStorage.getItem('locations') || '["DTT","MOTOR ROOM","CENTERS","ARTS/CRAFTS","SENSORY","OUTSIDE","BATHROOM","MIDDAY"]');
-                locs = locs.filter(i => i !== x);
-                localStorage.setItem('locations', JSON.stringify(locs));
-                renderL();
+            let t = getDB().find(x=>x.id==id);
+            if(!t) return;
+            activeC = t;
+            if(t.steps){
+                taS = {}; curTAStepIdx = 0;
+                show('ta-run'); hide('app');
+                document.getElementById('ta-h').innerText = t.text;
+                renderTASteps();
+            } else {
+                show('cyc'); hide('app');
+                document.getElementById('c-task').innerText = t.text;
+                document.getElementById('c-f-name').innerText = f;
             }
         }
 
-        function addP(){ let v=document.getElementById('p-in').value.trim().toUpperCase(); if(!v) return; let p=JSON.parse(localStorage.getItem('profiles')||'[]'); p.push(v); localStorage.setItem('profiles',JSON.stringify(p)); renderP(); }
-        function delT(id){ if(confirm('Delete?')){ let d=getDB().filter(t=>t.id!=id); saveDB(d); refresh(); } }
-        function clearHistory(){ if(confirm("Clear history?")){ let d=getDB(); saveDB(d.filter(t=>!t.res)); refresh(); } }
+        function renderTASteps(){
+            const list = document.getElementById('ta-s-list');
+            list.innerHTML = '';
+            activeC.steps.forEach((s, idx)=>{
+                let res = taS[idx] || '—';
+                let color = res === 'IND' ? 'bg-green-600 text-white' : (res === '—' ? 'bg-white text-gray-400' : 'bg-red-500 text-white');
+                list.innerHTML += `<button onclick="curTAStepIdx=${idx}; show('ta-p-modal')" class="w-full p-4 rounded-xl border-2 font-bold uppercase text-[10px] flex justify-between items-center ${color}"><span>${s}</span><span>${res}</span></button>`;
+            });
+        }
+
+        function setTAStep(v){
+            taS[curTAStepIdx] = v;
+            hide('ta-p-modal');
+            renderTASteps();
+        }
+
+        function subTA(){
+            let d = getDB();
+            d.push({
+                id: Date.now(),
+                text: activeC.text,
+                res: taS,
+                f: 'ta_history',
+                steps: activeC.steps,
+                origin: f,
+                loc: l
+            });
+            saveDB(d);
+            next();
+        }
+
+        function pauseCycle(){
+            hide('cyc'); hide('ta-run'); show('app');
+            refresh();
+        }
+
+        function addT(type){
+            let v = document.getElementById('t-in').value.trim().toUpperCase();
+            if(!v) return;
+            let d = getDB();
+            let newTask = { id: Date.now(), text: v, f: f };
+            if(type==='ta'){
+                let s = prompt("Enter steps separated by commas:");
+                if(!s) return;
+                newTask.steps = s.split(',').map(x=>x.trim().toUpperCase());
+            }
+            d.push(newTask);
+            saveDB(d);
+            document.getElementById('t-in').value='';
+            refresh();
+        }
+
+        function delT(id){
+            if(confirm('Delete goal?')){
+                saveDB(getDB().filter(t=>t.id!=id));
+                refresh();
+            }
+        }
+
+        function mov(id){
+            let d = getDB();
+            let t = d.find(x=>x.id==id);
+            if(t.f === 'baseline') t.f = 'treatment';
+            else if(t.f === 'treatment') t.f = 'maintenance';
+            else if(t.f === 'maintenance') t.f = 'mastered';
+            else t.f = 'baseline';
+            saveDB(d);
+            refresh();
+        }
+
+        function clearHistory(){
+            if(confirm('Clear all recorded data?')){
+                let d = getDB().filter(t=>!t.res);
+                saveDB(d);
+                refresh();
+            }
+        }
+
+        function addP(){
+            let v = document.getElementById('p-in').value.trim().toUpperCase();
+            if(!v) return;
+            let p = JSON.parse(localStorage.getItem('profiles')||'[]');
+            if(!p.includes(v)) p.push(v);
+            localStorage.setItem('profiles', JSON.stringify(p));
+            renderP();
+        }
+
+        function renderP(){
+            hide('s-loc'); hide('app'); show('s-prof');
+            let p = JSON.parse(localStorage.getItem('profiles')||'[]');
+            const list = document.getElementById('p-list'); list.innerHTML='';
+            p.forEach(x => {
+                list.innerHTML += `<button onclick="selP('${x}')" class="w-full bg-white p-5 rounded-2xl font-black text-blue-900 uppercase shadow-md">${x}</button>`;
+            });
+        }
+
+        function selP(x){ u=x; localStorage.setItem('u',x); renderL(); }
+
+        function addL(){
+            let v = document.getElementById('l-in').value.trim().toUpperCase();
+            if(!v) return;
+            let locs = JSON.parse(localStorage.getItem('locations')||'["SBT"]');
+            if(!locs.includes(v)) locs.push(v);
+            localStorage.setItem('locations', JSON.stringify(locs));
+            renderL();
+        }
+
+        function renderL(){
+            hide('s-prof'); hide('app'); show('s-loc');
+            let locs = JSON.parse(localStorage.getItem('locations')||'["SBT"]');
+            const list = document.getElementById('l-list'); list.innerHTML='';
+            locs.forEach(x => {
+                list.innerHTML += `<button onclick="selL('${x}')" class="w-full bg-white h-20 rounded-2xl font-black text-indigo-900 uppercase shadow-sm border flex items-center justify-center">${x}</button>`;
+            });
+        }
+
+        function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
         function exitN(){ localStorage.removeItem('u'); location.reload(); }
         function exitL(){ localStorage.removeItem('l'); location.reload(); }
+
         init();
     </script>
 </body>
