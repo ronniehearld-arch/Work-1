@@ -143,45 +143,9 @@
         function clickRec(v) { 
             playClick(); 
             rec(v); 
-            if (v === 'IND' || v === 'ERRORLESS') {
+            if(v === 'IND' || v === 'ERRORLESS') {
                 setTimeout(() => next(), 100);
             }
-        }
-
-        function rec(v) {
-            let d = getDB();
-            let entry = {
-                id: Date.now(),
-                text: activeC.text,
-                res: v,
-                f: 'recall',
-                origin: f,
-                loc: l,
-                time: new Date().toLocaleTimeString()
-            };
-            d.push(entry);
-            saveDB(d);
-            refresh();
-        }
-
-        function next() {
-            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
-            if(!savedQueue) return;
-            let queue = JSON.parse(savedQueue);
-            queue.shift();
-            if(queue.length === 0) {
-                localStorage.removeItem(`queue_${u}_${l}_${f}`);
-                pauseCycle();
-            } else {
-                localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue));
-                runById(queue[0]);
-            }
-        }
-
-        function finishSkip(reason) {
-            clickRec('SKIP: ' + reason);
-            hide('skip-modal');
-            setTimeout(() => next(), 150);
         }
 
         function init(){
@@ -255,9 +219,11 @@
                         });
                         resultDisplay += `</div>`;
                     } else { resultDisplay = `<span class="font-black text-indigo-600">${t.res}</span>`; }
+                    
                     let originMap = {baseline:'BASE', treatment:'TX', maintenance:'MAINT', mastered:'MAST'};
                     let tabLabel = t.origin ? `<span class="text-gray-400 text-[7px] ml-1 font-black">(${originMap[t.origin] || t.origin.toUpperCase()})</span>` : '';
                     let locLabel = t.loc ? `<span class="text-gray-400 text-[7px] ml-1 font-black">[${t.loc}]</span>` : '';
+                    
                     list.innerHTML += `<div class="bg-white p-4 rounded-2xl border mb-2"><div class="flex justify-between font-bold uppercase text-[10px]"><span>${t.text} ${tabLabel}${locLabel}</span> ${f==='recall'?resultDisplay:''}</div> ${f==='ta_history'?resultDisplay:''}</div>`;
                 });
             }
@@ -444,6 +410,40 @@
         function selL(x){ l=x; localStorage.setItem('l',x); restore(); }
         function exitN(){ localStorage.removeItem('u'); location.reload(); }
         function exitL(){ localStorage.removeItem('l'); location.reload(); }
+
+        function rec(v) {
+            let d = getDB();
+            d.push({
+                id: Date.now(),
+                text: activeC.text,
+                res: v,
+                f: 'recall',
+                origin: f,
+                loc: l
+            });
+            saveDB(d);
+            refresh();
+        }
+
+        function next() {
+            let savedQueue = localStorage.getItem(`queue_${u}_${l}_${f}`);
+            if(!savedQueue) return;
+            let queue = JSON.parse(savedQueue);
+            queue.shift();
+            if(queue.length === 0) {
+                localStorage.removeItem(`queue_${u}_${l}_${f}`);
+                pauseCycle();
+            } else {
+                localStorage.setItem(`queue_${u}_${l}_${f}`, JSON.stringify(queue));
+                runById(queue[0]);
+            }
+        }
+
+        function finishSkip(reason) {
+            clickRec('SKIP: ' + reason);
+            hide('skip-modal');
+            setTimeout(() => next(), 150);
+        }
 
         init();
     </script>
